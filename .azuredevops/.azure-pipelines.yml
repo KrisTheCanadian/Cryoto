@@ -1,0 +1,92 @@
+# Cryoto
+trigger:
+  - master
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+  - job: Frontend_build_and_test
+    pool: 
+      vmImage: ubuntu-latest
+    steps:
+      - script: cd ./client && npm install --global yarn && yarn install && yarn run build && yarn run test
+        displayName: "Building Frontend"
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: client/dist
+          artifactName: "Cryoto-Frontend"
+  - job: API_build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      - script:  cd ./API && dotnet restore && dotnet publish API.csproj -c Release -o out
+        displayName: "Building Backend"
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: API/out
+          artifactName: "Cryoto-API"
+  - job: API_test
+    pool:
+      vmImage: ubuntu-latest
+    dependsOn:
+      - API_build
+    steps:
+      - script: cd ./API && dotnet restore && dotnet test --logger "junit;LogFilePath=coverage/results.xml"
+        displayName: "Testing Backend"
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: 'API/API.Tests/coverage/results.xml'
+          testResultsFormat: 'JUnit'
+  - job: End_to_end_testing
+    pool: 
+      vmImage: ubuntu-latest
+    dependsOn:
+      - API_test
+      - Frontend_build_and_test
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: 16.x
+      - task: UseDotNet@2
+        displayName: .NET Core Installer
+        inputs:
+          packageType: sdk
+          version: 6.x
+      - script: | 
+          echo "Running Back-end"
+          dotnet run --project ./API & 
+        displayName: Running Back-end
+      - script: |
+          echo "Running Front-end"
+          npm install --location=global yarn
+          yarn --cwd ./client add cypress --dev --frozen-lockfile
+          yarn --cwd ./client
+          yarn --cwd ./client dev &
+        displayName: Running Front-End
+
+      - script: yarn --cwd ./client cypress verify
+        displayName: Cypress Verify
+
+      - script: yarn --cwd ./client cypress run
+        displayName: Cypress Test
+      
+      - task: PublishBuildArtifacts@1
+        condition: failed()
+        inputs:
+          PathtoPublish: client/cypress/videos/
+          artifactName: "Cypress UI Test Videos"
+      
+      - task: PublishBuildArtifacts@1
+        condition: failed()
+        inputs:
+          PathtoPublish: client/cypress/screenshots/
+          artifactName: "Cypress UI Test Screenshots"
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFiles: '**/test-output-*.xml'
+          testResultsFormat: 'JUnit'
+      

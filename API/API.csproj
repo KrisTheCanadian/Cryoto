@@ -12,4 +12,33 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="out\web.config" />
+      <_ContentIncludedByDefault Remove="out\API.deps.json" />
+      <_ContentIncludedByDefault Remove="out\API.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="out\appsettings.json" />
+      <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.deps.json" />
+      <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="API.Tests\obj\API.Tests.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="API.Tests\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="API.Tests\obj\project.packagespec.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="API.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="API.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="API.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="API.Tests\**" />
+    </ItemGroup>
+
 </Project>

@@ -399,3 +399,6 @@ FodyWeavers.xsd
 
 # IDEA
 .idea/
+
+# binary out files
+out/
