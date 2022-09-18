@@ -13,7 +13,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       - script: cd ./client && npm install --global yarn && yarn install && yarn run build && yarn run test
-        displayName: "Building Frontend"
+        displayName: "Building Frontend & Running Tests"
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: client/dist
@@ -78,12 +78,14 @@ jobs:
         inputs:
           PathtoPublish: client/cypress/videos/
           artifactName: "Cypress UI Test Videos"
+        displayName: Cypress Upload video on failure
       
       - task: PublishBuildArtifacts@1
         condition: failed()
         inputs:
           PathtoPublish: client/cypress/screenshots/
           artifactName: "Cypress UI Test Screenshots"
+        displayName: Cypress Upload screenshot on failure
 
       - task: PublishTestResults@2
         inputs:
