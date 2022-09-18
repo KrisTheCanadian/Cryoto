@@ -1,0 +1,8 @@
+{
+  "testEnvironment": "jsdom",
+  "verbose": true,
+  "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+  "moduleNameMapper": {
+    "\\.(css|less)$": "identity-obj-proxy"
+  }
+}
