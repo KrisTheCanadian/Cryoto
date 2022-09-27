@@ -3,42 +3,44 @@ trigger:
   - master
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  disable.coverage.autogenerate: "true"
 
 jobs:
   - job: Frontend_build_and_test
-    pool: 
+    pool:
       vmImage: ubuntu-latest
     steps:
       - script: cd ./client && npm install --global yarn && yarn install && yarn run build && yarn run test
         displayName: "Building Frontend & Running Tests"
       - task: PublishTestResults@2
         inputs:
-          testResultsFiles: 'client/junit.xml'
+          testResultsFiles: "client/junit.xml"
           mergeTestResults: true
-          testResultsFormat: 'JUnit'
+          testResultsFormat: "JUnit"
           failTaskOnFailedTests: true
-      - task: PublishCodeCoverageResults@1
-        inputs:
-          codeCoverageTool: 'Cobertura'
-          summaryFileLocation: 'client/coverage/cobertura-coverage.xml'
-          failIfCoverageEmpty: true
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: client/dist
           artifactName: "Cryoto-Frontend"
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: "client/coverage/cobertura-coverage.xml"
+          artifactName: Frontend_build_and_test_coverage
+
   - job: API_build
     pool:
       vmImage: ubuntu-latest
     steps:
-      - script:  cd ./API && dotnet restore && dotnet publish API.csproj -c Release -o out
+      - script: cd ./API && dotnet restore && dotnet publish API.csproj -c Release -o out
         displayName: "Building Backend"
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: API/out
           artifactName: "Cryoto-API"
+
   - job: API_test
     pool:
       vmImage: ubuntu-latest
@@ -49,15 +51,17 @@ jobs:
         displayName: "Testing Backend"
       - task: PublishTestResults@2
         inputs:
-          testResultsFiles: 'API/API.Tests/coverage/results.xml'
-          testResultsFormat: 'JUnit'
+          testResultsFiles: "API/API.Tests/coverage/results.xml"
+          testResultsFormat: "JUnit"
           mergeTestResults: true
-      - task: PublishCodeCoverageResults@1
+      - task: PublishPipelineArtifact@1
         inputs:
-          codeCoverageTool: 'Cobertura'
-          summaryFileLocation: '**/TestResults/**/coverage.cobertura.xml'
+          targetPath: 'API/API.Tests/TestResults/'
+          patterns: '**/cobertura-coverage.xml'
+          artifactName: API_test_coverage
+
   - job: End_to_end_testing
-    pool: 
+    pool:
       vmImage: ubuntu-latest
     dependsOn:
       - API_test
@@ -71,9 +75,9 @@ jobs:
         inputs:
           packageType: sdk
           version: 6.x
-      - script: | 
+      - script: |
           echo "Running Back-end"
-          dotnet run --project ./API & 
+          dotnet run --project ./API &
         displayName: Running Back-end
       - script: |
           echo "Running Front-end"
@@ -88,24 +92,42 @@ jobs:
 
       - script: yarn --cwd ./client cypress run
         displayName: Cypress Test
-      
+
       - task: PublishBuildArtifacts@1
         condition: failed()
         inputs:
           PathtoPublish: client/cypress/videos/
           artifactName: "Cypress UI Test Videos"
         displayName: Cypress Upload video on failure
-      
       - task: PublishBuildArtifacts@1
         condition: failed()
         inputs:
           PathtoPublish: client/cypress/screenshots/
           artifactName: "Cypress UI Test Screenshots"
         displayName: Cypress Upload screenshot on failure
-
       - task: PublishTestResults@2
         inputs:
-          testResultsFiles: '**/test-output-*.xml'
-          testResultsFormat: 'JUnit'
+          testResultsFiles: "**/test-output-*.xml"
+          testResultsFormat: "JUnit"
           mergeTestResults: true
-      
+
+  - job: Code_coverage
+    pool:
+      vmImage: ubuntu-latest
+    dependsOn:
+      - API_test
+      - Frontend_build_and_test
+    steps:
+      - task: DownloadPipelineArtifact@2
+        inputs:
+          path: $(Build.SourcesDirectory)/bin
+      - script: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:$(Build.SourcesDirectory)/bin/**/*.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:'HtmlInline_AzurePipelines;Cobertura'
+        displayName: Create code coverage report
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish code coverage report'
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+          reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
