@@ -7,127 +7,136 @@ variables:
   buildPlatform: "Any CPU"
   buildConfiguration: "Release"
   disable.coverage.autogenerate: "true"
+  ASPNETCORE_ENVIRONMENT: "CI"
 
-jobs:
-  - job: Frontend_build_and_test
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      - script: cd ./client && npm install --global yarn && yarn install && yarn run build && yarn run test
-        displayName: "Building Frontend & Running Tests"
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFiles: "client/junit.xml"
-          mergeTestResults: true
-          testResultsFormat: "JUnit"
-          failTaskOnFailedTests: true
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: client/dist
-          artifactName: "Cryoto-Frontend"
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: "client/coverage/cobertura-coverage.xml"
-          artifactName: Frontend_build_and_test_coverage
+stages:
+  - stage: build
+    displayName: 'Building & Testing Both Client and API...'
+    jobs:
+      - job: Frontend_build_and_test
+        displayName: 'Client Build & Test'
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: cd ./client && npm install --global yarn && yarn install && yarn run build && yarn run test
+            displayName: "Building Frontend & Running Tests"
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "client/junit.xml"
+              mergeTestResults: true
+              testResultsFormat: "JUnit"
+              failTaskOnFailedTests: true
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: client/dist
+              artifactName: "Cryoto-Frontend"
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: "client/coverage/cobertura-coverage.xml"
+              artifactName: Frontend_build_and_test_coverage
 
-  - job: API_build
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      - script: cd ./API && dotnet restore && dotnet publish API.csproj -c Release -o out
-        displayName: "Building Backend"
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: API/out
-          artifactName: "Cryoto-API"
+      - job: API_build
+        displayName: 'API Build'
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: cd ./API && dotnet restore && dotnet publish API.csproj -c Release -o out
+            displayName: "Building Backend"
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: API/out
+              artifactName: "Cryoto-API"
 
-  - job: API_test
-    pool:
-      vmImage: ubuntu-latest
+      - job: API_test
+        displayName: 'API Testing'
+        pool:
+          vmImage: ubuntu-latest
+        dependsOn:
+          - API_build
+        steps:
+          - script: cd ./API && dotnet restore && dotnet test --logger "junit;LogFilePath=coverage/results.xml" --collect:"XPlat Code Coverage"
+            displayName: "Testing Backend"
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "API/API.Tests/coverage/results.xml"
+              testResultsFormat: "JUnit"
+              mergeTestResults: true
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: 'API/API.Tests/TestResults/'
+              artifactName: API_test_coverage
+      - job: Code_coverage
+        displayName: 'Uploading Code Coverage'
+        pool:
+          vmImage: ubuntu-latest
+        dependsOn:
+          - Frontend_build_and_test
+          - API_test
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              path: $(Build.SourcesDirectory)/bin
+          - script: |
+              dotnet tool install -g dotnet-reportgenerator-globaltool
+              reportgenerator -reports:$(Build.SourcesDirectory)/bin/**/*.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:'HtmlInline_AzurePipelines;Cobertura'
+            displayName: Create code coverage report
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish code coverage report'
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
+              reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
+
+  - stage: End_to_end_testing
+    displayName: 'Performing End to End Testing...'
     dependsOn:
-      - API_build
-    steps:
-      - script: cd ./API && dotnet restore && dotnet test --logger "junit;LogFilePath=coverage/results.xml" --collect:"XPlat Code Coverage"
-        displayName: "Testing Backend"
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFiles: "API/API.Tests/coverage/results.xml"
-          testResultsFormat: "JUnit"
-          mergeTestResults: true
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: 'API/API.Tests/TestResults/'
-          patterns: '**/cobertura-coverage.xml'
-          artifactName: API_test_coverage
+      - build
+    jobs:
+      - job: End_to_end_test
+        displayName: 'End to End Testing'
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: 16.x
+          - task: UseDotNet@2
+            displayName: .NET Core Installer
+            inputs:
+              packageType: sdk
+              version: 6.x
+          - script: |
+              echo "Running Back-end"
+              dotnet run --project ./API &
+            displayName: Running Back-end
+          - script: |
+              echo "Running Front-end"
+              npm install --location=global yarn
+              yarn --cwd ./client add cypress --dev --frozen-lockfile
+              yarn --cwd ./client
+              yarn --cwd ./client dev &
+            displayName: Running Front-End
 
-  - job: End_to_end_testing
-    pool:
-      vmImage: ubuntu-latest
-    dependsOn:
-      - API_test
-      - Frontend_build_and_test
-    steps:
-      - task: NodeTool@0
-        inputs:
-          versionSpec: 16.x
-      - task: UseDotNet@2
-        displayName: .NET Core Installer
-        inputs:
-          packageType: sdk
-          version: 6.x
-      - script: |
-          echo "Running Back-end"
-          dotnet run --project ./API &
-        displayName: Running Back-end
-      - script: |
-          echo "Running Front-end"
-          npm install --location=global yarn
-          yarn --cwd ./client add cypress --dev --frozen-lockfile
-          yarn --cwd ./client
-          yarn --cwd ./client dev &
-        displayName: Running Front-End
+          - script: yarn --cwd ./client cypress verify
+            displayName: Cypress Verify
 
-      - script: yarn --cwd ./client cypress verify
-        displayName: Cypress Verify
+          - script: yarn --cwd ./client cypress run
+            displayName: Cypress Test
 
-      - script: yarn --cwd ./client cypress run
-        displayName: Cypress Test
-
-      - task: PublishBuildArtifacts@1
-        condition: failed()
-        inputs:
-          PathtoPublish: client/cypress/videos/
-          artifactName: "Cypress UI Test Videos"
-        displayName: Cypress Upload video on failure
-      - task: PublishBuildArtifacts@1
-        condition: failed()
-        inputs:
-          PathtoPublish: client/cypress/screenshots/
-          artifactName: "Cypress UI Test Screenshots"
-        displayName: Cypress Upload screenshot on failure
-      - task: PublishTestResults@2
-        inputs:
-          testResultsFiles: "**/test-output-*.xml"
-          testResultsFormat: "JUnit"
-          mergeTestResults: true
-
-  - job: Code_coverage
-    pool:
-      vmImage: ubuntu-latest
-    dependsOn:
-      - API_test
-      - Frontend_build_and_test
-    steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          path: $(Build.SourcesDirectory)/bin
-      - script: |
-          dotnet tool install -g dotnet-reportgenerator-globaltool
-          reportgenerator -reports:$(Build.SourcesDirectory)/bin/**/*.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:'HtmlInline_AzurePipelines;Cobertura'
-        displayName: Create code coverage report
-      - task: PublishCodeCoverageResults@1
-        displayName: 'Publish code coverage report'
-        inputs:
-          codeCoverageTool: 'Cobertura'
-          summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
-          reportDirectory: '$(Build.SourcesDirectory)/CodeCoverage'
+          - task: PublishBuildArtifacts@1
+            condition: failed()
+            inputs:
+              PathtoPublish: client/cypress/videos/
+              artifactName: "Cypress UI Test Videos"
+            displayName: Cypress Upload video on failure
+          - task: PublishBuildArtifacts@1
+            condition: failed()
+            inputs:
+              PathtoPublish: client/cypress/screenshots/
+              artifactName: "Cypress UI Test Screenshots"
+            displayName: Cypress Upload screenshot on failure
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "**/test-output-*.xml"
+              testResultsFormat: "JUnit"
+              mergeTestResults: true
