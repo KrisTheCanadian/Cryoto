@@ -2,8 +2,10 @@
   "testEnvironment": "jsdom",
   "verbose": true,
   "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+  "moduleDirectories": ["node_modules", "src/"],
   "moduleNameMapper": {
-    "\\.(css|less)$": "identity-obj-proxy"
+    "\\.(css|less)$": "identity-obj-proxy",
+    "^@shared(.*)$": "<rootDir>/src/pages/shared$1"
   },
   "collectCoverage": true,
   "coverageReporters": ["json", "html"]
