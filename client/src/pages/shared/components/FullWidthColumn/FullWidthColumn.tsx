@@ -9,7 +9,7 @@ function FullWidthColumn(props: FullWidthColumnProps) {
   const {children} = props;
   return (
     <Box flex={8} p={0} sx={{marginLeft: '0!important'}}>
-      <Box p={2} display="flex" alignItems="center" flexDirection="column">
+      <Box p={2} display="flex" alignItems="left" flexDirection="column">
         {children}
       </Box>
     </Box>

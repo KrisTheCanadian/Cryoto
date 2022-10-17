@@ -6,10 +6,14 @@ import {Routes, Route} from 'react-router-dom';
 import {NavBar} from '@shared/components/NavBar';
 import {SideBar} from '@shared/components/SideBar';
 
+import {MarketPlace} from './pages/MarketPlace';
 import {HomePage} from './pages/HomePage';
 import {Wallet} from './pages/Wallet';
 import getDesignTokens from './theme';
 import './App.css';
+import {Profile} from './pages/Profile';
+import {Orders} from './pages/Orders';
+import {Settings} from './pages/Settings';
 
 function App() {
   const {t, i18n} = useTranslation();
@@ -42,6 +46,10 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/wallet" element={<Wallet />} />
+            <Route path="/marketplace" element={<MarketPlace />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </Stack>
       </ThemeProvider>

@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
-import {MockThemePropvider, theme} from '@shared/testing/mocks';
+import {MockAppProviders} from '@shared/testing/mocks';
 
 import NavBar from './NavBar';
 
@@ -9,9 +9,9 @@ const toggleColorMode = jest.fn;
 describe('Search functionality', () => {
   it('Should open the search box when search feild is focused', async () => {
     render(
-      <MockThemePropvider>
+      <MockAppProviders>
         <NavBar toggleColorMode={toggleColorMode} />
-      </MockThemePropvider>,
+      </MockAppProviders>,
     );
     const searchInput = screen.getByPlaceholderText('Search');
 
@@ -24,9 +24,9 @@ describe('Search functionality', () => {
 
   it('Should close the search box when search feild is blurred', async () => {
     render(
-      <MockThemePropvider>
+      <MockAppProviders>
         <NavBar toggleColorMode={toggleColorMode} />
-      </MockThemePropvider>,
+      </MockAppProviders>,
     );
     const searchInput = screen.getByPlaceholderText('Search');
 

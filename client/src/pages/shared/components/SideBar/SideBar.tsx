@@ -10,8 +10,12 @@ import {
 import {useTheme} from '@mui/material/styles';
 import {NavLink, useLocation} from 'react-router-dom';
 import {Home, Wallet} from '@mui/icons-material';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import {useTranslation} from 'react-i18next';
 
 function SideBar() {
+  const {t} = useTranslation();
   const location = useLocation();
   const theme = useTheme();
 
@@ -50,7 +54,29 @@ function SideBar() {
               <ListItemIcon>
                 <Home />
               </ListItemIcon>
-              <ListItemText primary="Home" />
+              <ListItemText primary={t('layout.Home')} />
+            </ListItemButton>
+
+            <ListItemButton
+              component={NavLink}
+              to="/marketplace"
+              selected={location.pathname === '/marketplace'}
+            >
+              <ListItemIcon>
+                <StorefrontIcon />
+              </ListItemIcon>
+              <ListItemText primary={t('layout.MarketPlace')} />
+            </ListItemButton>
+
+            <ListItemButton
+              component={NavLink}
+              to="/orders"
+              selected={location.pathname === '/orders'}
+            >
+              <ListItemIcon>
+                <LocalShippingIcon />
+              </ListItemIcon>
+              <ListItemText primary={t('layout.Orders')} />
             </ListItemButton>
 
             <ListItemButton
@@ -61,7 +87,7 @@ function SideBar() {
               <ListItemIcon>
                 <Wallet />
               </ListItemIcon>
-              <ListItemText primary="Wallet" />
+              <ListItemText primary={t('layout.Wallet')} />
             </ListItemButton>
           </List>
         </nav>

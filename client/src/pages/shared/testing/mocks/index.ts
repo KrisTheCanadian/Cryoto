@@ -1,3 +1,3 @@
-import {MockThemePropvider, theme} from './MockThemeProvider';
+import {MockAppProviders, theme} from './MockAppProviders';
 
-export {MockThemePropvider, theme};
+export {MockAppProviders, theme};

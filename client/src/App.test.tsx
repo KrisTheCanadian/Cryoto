@@ -1,14 +1,19 @@
+import {MockAppProviders} from '@shared/testing/mocks';
 import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {MemoryRouter} from 'react-router-dom';
+import {I18nextProvider} from 'react-i18next';
 
+import i18n from './i18n/i18n';
 import App from './App';
 
 it('should load Main Page at /', async () => {
   render(
-    <MemoryRouter initialEntries={['/']}>
-      <App />
-    </MemoryRouter>,
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>
+    </I18nextProvider>,
   );
   const homeLink = screen.getByText('Home').closest('a');
 
@@ -17,9 +22,11 @@ it('should load Main Page at /', async () => {
 
 it('should load wallet at /wallet', async () => {
   render(
-    <MemoryRouter initialEntries={['/wallet']}>
-      <App />
-    </MemoryRouter>,
+    <I18nextProvider i18n={i18n}>
+      <MemoryRouter initialEntries={['/wallet']}>
+        <App />
+      </MemoryRouter>
+    </I18nextProvider>,
   );
   const homeLink = screen.getByText('Wallet').closest('a');
 

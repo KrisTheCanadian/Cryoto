@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import {AccountCircle, Search} from '@mui/icons-material';
+import {Search} from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -13,12 +13,17 @@ import {
 } from '@mui/material';
 import {styled, useTheme} from '@mui/material/styles';
 import {useRef, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
+
+import {ProfileMenu} from './components';
 
 interface Props {
   toggleColorMode: () => void;
 }
 
 function NavBar(props: Props) {
+  const {t} = useTranslation();
   const [searchOpen, setOpen] = useState(false);
 
   // All styling is done here with custom styling based on theme breakpoints and searchOpen state
@@ -125,16 +130,18 @@ function NavBar(props: Props) {
   return (
     <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
       <MainNavigationBar>
-        <Typography variant="h6" sx={{color: theme.palette.text.primary}}>
-          {companyName}
-        </Typography>
+        <Link to="/" style={{textDecoration: 'none'}}>
+          <Typography variant="h6" sx={{color: theme.palette.text.primary}}>
+            {companyName}
+          </Typography>
+        </Link>
         <Box sx={searchBoxStyle} data-testid="searchBox">
           <Box sx={searchInputStyle}>
             <Search
               sx={{color: theme.palette.action.active, ml: theme.spacing(0.5)}}
             />
             <InputBase
-              placeholder="Search"
+              placeholder={t('layout.Search')}
               inputRef={inputFieldRef}
               onBlur={closeSearch}
               onFocus={openSearch}
@@ -147,7 +154,7 @@ function NavBar(props: Props) {
         </Box>
         <RightNavBarSection>
           <IconButton
-            aria-label="search"
+            aria-label={t('layout.search')}
             size="large"
             sx={searchButtonStyle}
             onClick={openSearch}
@@ -161,9 +168,7 @@ function NavBar(props: Props) {
           >
             {brightnessIcon()}
           </IconButton>
-          <IconButton aria-label="account" size="large">
-            <AccountCircle />
-          </IconButton>
+          <ProfileMenu />
         </RightNavBarSection>
       </MainNavigationBar>
     </AppBar>
