@@ -16,6 +16,9 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
+        <PackageReference Include="Solnet.Extensions" Version="6.1.0" />
+        <PackageReference Include="Solnet.KeyStore" Version="6.1.0" />
+        <PackageReference Include="Solnet.Wallet" Version="6.1.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     </ItemGroup>
 
