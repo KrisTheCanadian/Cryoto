@@ -1,4 +1,5 @@
 import {MiddleColumn} from '@shared/components/MiddleColumn';
+import PageFrame from '@shared/components/PageFrame';
 import {RightBar} from '@shared/components/RightBar';
 
 import {Post} from './components';
@@ -16,7 +17,7 @@ function HomePage() {
   };
   const rightBarContent = 'Right bar content';
   return (
-    <>
+    <PageFrame>
       <MiddleColumn>
         <Post {...samplePostProps} />
         <Post
@@ -29,7 +30,7 @@ function HomePage() {
         <Post {...samplePostProps} />
       </MiddleColumn>
       <RightBar>{rightBarContent}</RightBar>
-    </>
+    </PageFrame>
   );
 }
 

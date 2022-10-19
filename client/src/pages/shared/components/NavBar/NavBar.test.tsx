@@ -4,13 +4,11 @@ import {MockAppProviders} from '@shared/testing/mocks';
 
 import NavBar from './NavBar';
 
-const toggleColorMode = jest.fn;
-
 describe('Search functionality', () => {
   it('Should open the search box when search feild is focused', async () => {
     render(
       <MockAppProviders>
-        <NavBar toggleColorMode={toggleColorMode} />
+        <NavBar />
       </MockAppProviders>,
     );
     const searchInput = screen.getByPlaceholderText('Search');
@@ -25,7 +23,7 @@ describe('Search functionality', () => {
   it('Should close the search box when search feild is blurred', async () => {
     render(
       <MockAppProviders>
-        <NavBar toggleColorMode={toggleColorMode} />
+        <NavBar />
       </MockAppProviders>,
     );
     const searchInput = screen.getByPlaceholderText('Search');

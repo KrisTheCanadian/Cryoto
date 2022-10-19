@@ -1,8 +1,9 @@
-import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {createTheme} from '@mui/material/styles';
 import getDesignTokens from 'theme';
-import {ReactNode, Suspense} from 'react';
+import {ReactNode} from 'react';
 import {BrowserRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
+import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 
 import i18n from '../../../../i18n/i18n';
 
@@ -13,7 +14,7 @@ function MockAppProviders(props: {children: ReactNode}) {
   return (
     <I18nextProvider i18n={i18n}>
       <BrowserRouter>
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <ThemeContextProvider>{children}</ThemeContextProvider>
       </BrowserRouter>
     </I18nextProvider>
   );

@@ -6,6 +6,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material';
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
+import PageFrame from '@shared/components/PageFrame';
 import {useTranslation} from 'react-i18next';
 
 function Settings() {
@@ -15,7 +16,7 @@ function Settings() {
     i18n.changeLanguage(event.target.value);
   };
   return (
-    <>
+    <PageFrame>
       <FullWidthColumn>
         <Box>{rightBarContent}</Box>
 
@@ -32,7 +33,7 @@ function Settings() {
           <MenuItem value="en">{t('layout.English')}</MenuItem>
         </Select>
       </FullWidthColumn>
-    </>
+    </PageFrame>
   );
 }
 

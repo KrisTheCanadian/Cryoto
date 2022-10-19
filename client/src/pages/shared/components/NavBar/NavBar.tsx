@@ -15,20 +15,18 @@ import {styled, useTheme} from '@mui/material/styles';
 import {useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
+import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
 
 import {ProfileMenu} from './components';
 
-interface Props {
-  toggleColorMode: () => void;
-}
-
-function NavBar(props: Props) {
+function NavBar() {
+  const {colorMode} = useThemeModeContext();
   const {t} = useTranslation();
   const [searchOpen, setOpen] = useState(false);
 
   // All styling is done here with custom styling based on theme breakpoints and searchOpen state
   const theme = useTheme();
-  const toggleColorMode = props.toggleColorMode;
+  const toggleColorMode = colorMode.toggleColorMode;
 
   const MainNavigationBar = styled(Toolbar)(({theme}) => ({
     background: theme.interface.main,
