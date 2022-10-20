@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {NavLink, useLocation} from 'react-router-dom';
-import {Home, Wallet} from '@mui/icons-material';
+import {Home, Wallet, Login} from '@mui/icons-material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
@@ -88,6 +88,17 @@ function SideBar() {
                 <Wallet />
               </ListItemIcon>
               <ListItemText primary={t('layout.Wallet')} />
+            </ListItemButton>
+
+            <ListItemButton
+              component={NavLink}
+              to="/Authentication"
+              selected={location.pathname === '/Authentication'}
+            >
+              <ListItemIcon>
+                <Login />
+              </ListItemIcon>
+              <ListItemText primary="Authentication" />
             </ListItemButton>
           </List>
         </nav>

@@ -1,26 +1,45 @@
-using API.Data;
 using API.Models;
+using API.Services.Interfaces.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class UserProfileController : ControllerBase
 {
-    private readonly ILogger<UserProfileController> _logger;
-    private readonly DataContext _context;
+    private readonly IUserProfileService _userProfileService;
 
-    public UserProfileController(ILogger<UserProfileController> logger, DataContext context)
+    public UserProfileController(IUserProfileService userProfileService)
     {
-        _logger = logger;
-        _context = context;
+        _userProfileService = userProfileService;
     }
 
-    [HttpGet(Name = "GetUserProfileController")]
-    public async Task<ActionResult<List<UserProfileModel>>> Get()
+    [HttpGet("/userProfile/all", Name = "GetAllUsersController")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<List<UserProfileModel>>> GetAllUsers()
     {
-        return Ok(await _context.UserProfiles.ToListAsync());
+        return Ok(await _userProfileService.GetAllUsersService());
+    }
+
+    [HttpGet("/userProfile", Name = "GetUserProfileController")]
+    public async Task<ActionResult<UserWorkdayModel>> GetUserProfile([FromHeader] string authorization)
+    {
+        var userWorkday = _userProfileService.GetUserWorkday().Result;
+        var userDetails = _userProfileService.GetUserProfileDetails(authorization);
+        var user = await _userProfileService.GetUserProfileService(userDetails.OId);
+        if (user != null)
+        {
+            userWorkday.UserProfile = user;
+            return Ok(userWorkday);
+        }
+        else
+        {
+            var numberOfLinesChanged = await _userProfileService.AddUserProfileService(userDetails);
+            userWorkday.UserProfile = userDetails;
+            return Ok(userWorkday);
+        }
     }
 }

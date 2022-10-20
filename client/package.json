@@ -11,6 +11,8 @@
     "test": "NODE_ENV=test jest --reporters=jest-junit --reporters=default --coverage --coverageReporters=cobertura --coverageReporters=html"
   },
   "dependencies": {
+    "@azure/msal-browser": "^2.29.0",
+    "@azure/msal-react": "^1.4.8",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.3",
@@ -21,9 +23,11 @@
     "i18next-http-backend": "^1.4.4",
     "jest-junit": "^14.0.1",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^11.18.6",
-    "react-router-dom": "^6.4.2"
+    "react-router-dom": "^6.4.2",
+    "vite-plugin-environment": "^1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",

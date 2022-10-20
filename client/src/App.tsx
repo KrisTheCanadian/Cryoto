@@ -4,6 +4,7 @@ import {Routes, Route} from 'react-router-dom';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 
 import {StyleGuide} from './pages/StyleGuide';
+import {AuthenticationPage} from './pages/Authentication';
 import {MarketPlace} from './pages/MarketPlace';
 import {HomePage} from './pages/HomePage';
 import {Wallet} from './pages/Wallet';
@@ -26,9 +27,11 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/styleguide" element={<StyleGuide />} />
+          <Route path="/authentication" element={<AuthenticationPage />} />
         </Routes>
       </ThemeContextProvider>
     </Suspense>
   );
 }
+
 export default App;

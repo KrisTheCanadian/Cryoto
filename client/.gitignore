@@ -26,3 +26,5 @@ dist-ssr
 # testing
 coverage
 junit.xml
+
+.env

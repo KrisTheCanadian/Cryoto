@@ -1,0 +1,14 @@
+﻿using API.Models;
+
+namespace API.Services.Interfaces.Interfaces;
+
+public interface IUserProfileService
+{
+    public Task<UserWorkdayModel> GetUserWorkday();
+    public UserProfileModel GetUserProfileDetails(string authorization);
+    public Task AddUserProfile(UserProfileModel user);
+    public void SendEmail(string recipient, string sender);
+    public Task<List<UserProfileModel>> GetAllUsersService();
+    public Task<UserProfileModel?> GetUserProfileService(string oid);
+    public Task<int> AddUserProfileService(UserProfileModel user);
+}
