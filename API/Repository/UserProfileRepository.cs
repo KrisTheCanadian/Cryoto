@@ -1,4 +1,4 @@
-﻿using API.Models;
+﻿using API.Models.WorkDay;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,5 +28,10 @@ public class UserProfileRepository : IUserProfileRepository
     {
         await Context.UserProfiles.AddAsync(userProfile);
         return await Context.SaveChangesAsync();
+    }
+
+    public async Task<UserProfileModel?> GetUserById(string userId)
+    {
+        return await Context.UserProfiles.AsNoTracking().FirstAsync(x => x.OId.Equals(userId));
     }
 }

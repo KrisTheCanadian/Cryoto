@@ -1,0 +1,39 @@
+version: "3.8"
+
+volumes:
+  local_postgres_data: {}
+
+services:
+  client:
+    container_name: "client"
+    build: ../client/
+    volumes:
+      - ./src:/app/src
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+  
+  api:
+    container_name: "api"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - postgresql_database
+    environment:
+      - ASPNETCORE_ENVIRONMENT='Production'
+    ports:
+      - "5000:5000"
+
+  postgresql_database:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data

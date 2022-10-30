@@ -11,19 +11,20 @@
         <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1" />
         <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
         <PackageReference Include="Azure.Identity" Version="1.7.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.9" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.10" />
         <PackageReference Include="Microsoft.Identity.Web" Version="2.0.0-preview" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
         <PackageReference Include="Solnet.Extensions" Version="6.1.0" />
         <PackageReference Include="Solnet.KeyStore" Version="6.1.0" />
         <PackageReference Include="Solnet.Wallet" Version="6.1.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -53,6 +54,10 @@
 
     <ItemGroup>
         <Content Remove="API.Tests\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations" />
     </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 using API.Repository;
 using API.Repository.Interfaces;
 using API.Services;
-using API.Services.Interfaces.Interfaces;
+using API.Services.Interfaces;
 using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -44,14 +44,18 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<IDataContext, DataContext>();
 
-builder.Services.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options =>
+builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.GetConnectionString("PostgresConnection"));
 });
+
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -103,17 +107,14 @@ configuration.AddAzureKeyVault(
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.OAuthAppName("Swagger Client");
-        options.OAuthClientId(configuration.GetSection("OAuthClientId").Value);
-        options.OAuthClientSecret(configuration.GetSection("OAuthClientSecret").Value);
-        options.OAuthUseBasicAuthenticationWithAccessCodeGrant();
-    });
-}
+    options.OAuthAppName("Swagger Client");
+    options.OAuthClientId(configuration.GetSection("OAuthClientId").Value);
+    options.OAuthClientSecret(configuration.GetSection("OAuthClientSecret").Value);
+    options.OAuthUseBasicAuthenticationWithAccessCodeGrant();
+});
 
 
 app.UseHttpsRedirection();

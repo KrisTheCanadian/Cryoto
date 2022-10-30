@@ -4,8 +4,10 @@ import {BrowserRouter} from 'react-router-dom';
 import {PublicClientApplication} from '@azure/msal-browser';
 import {MsalProvider} from '@azure/msal-react';
 
+// eslint-disable-next-line @shopify/strict-component-boundaries
 import {msalConfig} from './pages/Authentication/authConfig';
 import App from './App';
+
 import './index.css';
 import './i18n/i18n';
 

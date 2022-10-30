@@ -15,8 +15,6 @@ function ProfileContent() {
   const name = accounts[0] && accounts[0].name;
 
   const welcome = 'Welcome ';
-  const email = 'Email: ';
-  const id = 'Id: ';
   const resquest = 'Request Profile Information';
 
   function RequestProfileData() {
@@ -33,7 +31,7 @@ function ProfileContent() {
           setUserProfileData(response),
         );
       })
-      .catch((error) => {
+      .catch(() => {
         instance.acquireTokenPopup(request).then((response) => {
           getUserProfile(response.accessToken).then((response: any) =>
             setUserProfileData(response),

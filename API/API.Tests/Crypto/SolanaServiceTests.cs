@@ -204,12 +204,9 @@ public class SolanaServiceTests
         // Act
         var balance1 = solanaCryptoService.GetTokenBalance(wallet1.Account.PublicKey, tokenAddress );
         var balance2 = solanaCryptoService.GetTokenBalance(wallet2.Account.PublicKey, tokenAddress );
-        
+
         // Assert
-        Assert.NotNull(balance1); 
         Assert.Equal(0,balance1);
-        
-        Assert.NotNull(balance2); 
         Assert.Equal(10000,balance2);
 
 

@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using API.Models;
+using API.Models.WorkDay;
 using API.Repository.Interfaces;
-using API.Services.Interfaces.Interfaces;
+using API.Services.Interfaces;
 using Azure.Communication.Email;
 using Azure.Communication.Email.Models;
 using Newtonsoft.Json;
@@ -22,7 +22,7 @@ public class UserProfileService : IUserProfileService
         _configuration = configuration;
     }
 
-    public async Task<UserWorkdayModel> GetUserWorkday()
+    public async Task<UserWorkdayModel?> GetUserWorkday()
     {
         var uri = new Uri("https://my.api.mockaroo.com/workday.json?key=f8e15420");
         var response = await _client.GetStringAsync(uri);
@@ -43,10 +43,11 @@ public class UserProfileService : IUserProfileService
         var oId = claims.First(claim => claim.Type == "oid").Value;
         var name = claims.First(claim => claim.Type == "name").Value;
         var email = claims.First(claim => claim.Type == "preferred_username").Value;
-        var roles = claims.First(claim => claim.Type == "roles").Value;
-        UserProfileModel userDetails = new UserProfileModel(oId, name, email, "en", roles);
-
-        return userDetails;
+        var roles = claims.Where(claim => claim.Type == "roles").Select(x => x.Value).ToArray();
+        
+        
+        
+        return new UserProfileModel(oId, name, email, "en", roles);
     }
 
     public async Task AddUserProfile(UserProfileModel user)
@@ -92,5 +93,10 @@ public class UserProfileService : IUserProfileService
     public async Task<int> AddUserProfileService(UserProfileModel user)
     {
         return await _context.AddUserProfileAsync(user);
+    }
+
+    public async Task<UserProfileModel?> GetUserByIdAsync(string userId)
+    {
+        return await _context.GetUserById(userId);
     }
 }

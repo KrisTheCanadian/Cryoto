@@ -5,6 +5,9 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
+  "ConnectionStrings": {
+    "PostgresConnection": "Username=postgres;Password=postgres;Server=localhost;Database=postgres"
+  },
   "AllowedHosts": "*",
   "AllowedOrigins": "http://localhost:5173;https://cryotoclient.azurewebsites.net;https://cryotoclientprod.azurewebsites.net/;https://cryotoclienttesting.azurewebsites.net/"
 }

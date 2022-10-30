@@ -105,6 +105,6 @@ public class SolanaTransactions
         
         // Deserializes Json result of transaction response
         var dataResult = JsonSerializer.Deserialize<RpcTransactionResult>(sig.RawRpcResponse);
-        return dataResult;
+        return dataResult!;
     }
 }

@@ -2,7 +2,7 @@ namespace API.Services.Crypto.Solana.SolanaObjects;
 
 public class RpcTransactionResult
 {
-    public string jsonrpc { get; set; }
+    public string? jsonrpc { get; set; }
     public string? result { get; set; }
     public Error? error { get; set; }
     public int id { get; set; }
@@ -10,14 +10,14 @@ public class RpcTransactionResult
     public class Error
     {
         public int code { get; set; }
-        public string message { get; set; }
-        public Data data { get; set; }
+        public string? message { get; set; }
+        public Data? data { get; set; }
     }
     
     public class Data
     {
-        public object accounts { get; set; }
-        public List<string> logs { get; set; }
+        public object? accounts { get; set; }
+        public List<string>? logs { get; set; }
         public int unitsConsumed { get; set; }
     }
 
@@ -44,7 +44,7 @@ public class RpcTransactionResult
             errorLogs = "\nError Code: " + error.code
                                          + "\nError Message: " + error.message;
 
-            foreach (string errorlog in error.data.logs) errorLogs += "\n" + errorlog;
+            foreach (string errorlog in error.data!.logs!) errorLogs += "\n" + errorlog;
 
         }
         

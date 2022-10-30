@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using API.Controllers;
-using API.Models;
-using API.Repository.Interfaces;
-using Microsoft.Extensions.Configuration;
+using API.Models.WorkDay;
+using API.Services.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using API.Services.Interfaces.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.OpenApi.Any;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace API.Tests.Controllers;
+namespace API.Tests.ControllersTests;
 
 public class UserProfileControllerTests
 {
@@ -70,7 +66,7 @@ public class UserProfileControllerTests
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
         var userWorkdayModel = GetUserWorkdayModel();
-        A.CallTo(() => _userProfileService.GetUserWorkday()).Returns(userWorkdayModel);
+        A.CallTo(() => _userProfileService.GetUserWorkday())!.Returns(userWorkdayModel);
         A.CallTo(() => _userProfileService.GetUserProfileDetails(A<string>._)).Returns(userProfileModel);
         A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._)).Returns(userProfileModel);
 
@@ -93,7 +89,7 @@ public class UserProfileControllerTests
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
         var userWorkdayModel = GetUserWorkdayModel();
-        A.CallTo(() => _userProfileService.GetUserWorkday()).Returns(userWorkdayModel);
+        A.CallTo(() => _userProfileService.GetUserWorkday())!.Returns(userWorkdayModel);
         A.CallTo(() => _userProfileService.GetUserProfileDetails(A<string>._)).Returns(userProfileModel);
         A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._))!.Returns(
             Task.FromResult<UserProfileModel>(null!));
@@ -115,10 +111,12 @@ public class UserProfileControllerTests
 
     private Task<List<UserProfileModel>> GetUserProfileModelList()
     {
-        List<UserProfileModel> userProfileModelList = new List<UserProfileModel>
+        var roles1 = new[] { "roles1" };
+        var roles2 = new[] { "roles1" };
+        var userProfileModelList = new List<UserProfileModel>
         {
-            new UserProfileModel("oid1", "name1", "email1", "en1", "roles1"),
-            new UserProfileModel("oid2", "name2", "email2", "en2", "roles2")
+            new("oid1", "name1", "email1", "en1", roles1),
+            new("oid2", "name2", "email2", "en2", roles2)
         };
         return Task.FromResult(userProfileModelList);
     }

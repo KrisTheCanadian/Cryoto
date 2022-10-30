@@ -3,14 +3,16 @@ import {act, render, screen} from '@testing-library/react';
 
 import ProfileMenu from './ProfileMenu';
 
-test('Should display menu when clicked', () => {
-  render(
-    <MockAppProviders>
-      <ProfileMenu />
-    </MockAppProviders>,
-  );
+test('Should display menu when clicked', async () => {
+  await act(async () => {
+    render(
+      <MockAppProviders>
+        <ProfileMenu />
+      </MockAppProviders>,
+    );
+  });
   const profileButton = screen.getByRole('button');
-  act(() => {
+  await act(async () => {
     profileButton.click();
   });
   expect(screen.getByText('Logout')).toBeVisible();

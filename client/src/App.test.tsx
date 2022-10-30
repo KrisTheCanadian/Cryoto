@@ -8,13 +8,22 @@ import i18n from './i18n/i18n';
 import App from './App';
 
 it('should load Main Page at /', async () => {
-  render(
-    <I18nextProvider i18n={i18n}>
+  const intersectionObserverMock = () => ({
+    observe: () => null,
+  });
+  window.IntersectionObserver = jest
+    .fn()
+    .mockImplementation(intersectionObserverMock);
+
+  await act(async () => {
+    render(
       <MemoryRouter initialEntries={['/']}>
-        <App />
-      </MemoryRouter>
-    </I18nextProvider>,
-  );
+        <I18nextProvider i18n={i18n}>
+          <App />
+        </I18nextProvider>
+      </MemoryRouter>,
+    );
+  });
   const homeLink = screen.getByText('Home').closest('a');
 
   expect(homeLink).toHaveClass('Mui-selected');

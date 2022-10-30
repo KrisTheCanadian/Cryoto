@@ -6,11 +6,13 @@ import NavBar from './NavBar';
 
 describe('Search functionality', () => {
   it('Should open the search box when search feild is focused', async () => {
-    render(
-      <MockAppProviders>
-        <NavBar />
-      </MockAppProviders>,
-    );
+    await act(async () => {
+      render(
+        <MockAppProviders>
+          <NavBar />
+        </MockAppProviders>,
+      );
+    });
     const searchInput = screen.getByPlaceholderText('Search');
 
     act(() => {

@@ -1,5 +1,5 @@
-using API.Models;
-using API.Services.Interfaces.Interfaces;
+using API.Models.WorkDay;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +7,7 @@ namespace API.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfileService;
@@ -17,14 +17,24 @@ public class UserProfileController : ControllerBase
         _userProfileService = userProfileService;
     }
 
-    [HttpGet("/userProfile/all", Name = "GetAllUsersController")]
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<UserProfileModel>> GetUserById(string userId)
+    {
+        var user = await _userProfileService.GetUserByIdAsync(userId);
+        if (user == null) { return Conflict("User was not found."); }
+
+        return Ok(user);
+    }
+
+    [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<UserProfileModel>>> GetAllUsers()
     {
         return Ok(await _userProfileService.GetAllUsersService());
     }
 
-    [HttpGet("/userProfile", Name = "GetUserProfileController")]
+    [HttpGet]
     public async Task<ActionResult<UserWorkdayModel>> GetUserProfile([FromHeader] string authorization)
     {
         var userWorkday = _userProfileService.GetUserWorkday().Result;
@@ -32,13 +42,13 @@ public class UserProfileController : ControllerBase
         var user = await _userProfileService.GetUserProfileService(userDetails.OId);
         if (user != null)
         {
-            userWorkday.UserProfile = user;
+            userWorkday!.UserProfile = user;
             return Ok(userWorkday);
         }
         else
         {
             var numberOfLinesChanged = await _userProfileService.AddUserProfileService(userDetails);
-            userWorkday.UserProfile = userDetails;
+            userWorkday!.UserProfile = userDetails;
             return Ok(userWorkday);
         }
     }

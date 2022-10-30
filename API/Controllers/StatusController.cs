@@ -7,7 +7,7 @@ namespace API.Controllers;
 public class StatusController: ControllerBase
 {
     [HttpGet]
-    public ActionResult Check()
+    public ActionResult<string> Check()
     {
         return Ok("Online!");
     }

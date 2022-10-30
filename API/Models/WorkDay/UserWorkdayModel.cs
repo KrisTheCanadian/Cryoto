@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
-
-namespace API.Models;
+﻿namespace API.Models.WorkDay;
 
 public class UserWorkdayModel
 {

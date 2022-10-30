@@ -2,7 +2,19 @@ import {Suspense} from 'react';
 import {CssBaseline} from '@mui/material';
 import {Routes, Route} from 'react-router-dom';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
+import {QueryClient, QueryClientProvider} from 'react-query';
+import {ReactQueryDevtools} from 'react-query/devtools';
 
+import {
+  routeAuthentication,
+  routeHome,
+  routeMarket,
+  routeOrders,
+  routeProfile,
+  routeSettings,
+  routeStyleGuide,
+  routeWallet,
+} from './pages/routes';
 import {StyleGuide} from './pages/StyleGuide';
 import {AuthenticationPage} from './pages/Authentication';
 import {MarketPlace} from './pages/MarketPlace';
@@ -13,24 +25,38 @@ import {Profile} from './pages/Profile';
 import {Orders} from './pages/Orders';
 import {Settings} from './pages/Settings';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
+    },
+  },
+});
+
 function App() {
   return (
-    <Suspense fallback="Loading...">
-      <ThemeContextProvider>
-        <CssBaseline />
-
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/wallet" element={<Wallet />} />
-          <Route path="/marketplace" element={<MarketPlace />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/styleguide" element={<StyleGuide />} />
-          <Route path="/authentication" element={<AuthenticationPage />} />
-        </Routes>
-      </ThemeContextProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback="Loading...">
+        <ThemeContextProvider>
+          <CssBaseline />
+          <Routes>
+            <Route path={routeHome} element={<HomePage />} />
+            <Route path={routeWallet} element={<Wallet />} />
+            <Route path={routeMarket} element={<MarketPlace />} />
+            <Route path={routeProfile} element={<Profile />} />
+            <Route path={routeOrders} element={<Orders />} />
+            <Route path={routeSettings} element={<Settings />} />
+            <Route path={routeStyleGuide} element={<StyleGuide />} />
+            <Route
+              path={routeAuthentication}
+              element={<AuthenticationPage />}
+            />
+          </Routes>
+        </ThemeContextProvider>
+      </Suspense>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 }
 

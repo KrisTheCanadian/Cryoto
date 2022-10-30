@@ -14,6 +14,13 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
 
+import {
+  routeAuthentication,
+  routeMarket,
+  routeOrders,
+  routeWallet,
+} from '../../../routes';
+
 function SideBar() {
   const {t} = useTranslation();
   const location = useLocation();
@@ -59,8 +66,8 @@ function SideBar() {
 
             <ListItemButton
               component={NavLink}
-              to="/marketplace"
-              selected={location.pathname === '/marketplace'}
+              to={routeMarket}
+              selected={location.pathname === routeMarket}
             >
               <ListItemIcon>
                 <StorefrontIcon />
@@ -70,8 +77,8 @@ function SideBar() {
 
             <ListItemButton
               component={NavLink}
-              to="/orders"
-              selected={location.pathname === '/orders'}
+              to={routeOrders}
+              selected={location.pathname === routeOrders}
             >
               <ListItemIcon>
                 <LocalShippingIcon />
@@ -81,8 +88,8 @@ function SideBar() {
 
             <ListItemButton
               component={NavLink}
-              to="/wallet"
-              selected={location.pathname === '/wallet'}
+              to={routeWallet}
+              selected={location.pathname === routeWallet}
             >
               <ListItemIcon>
                 <Wallet />
@@ -92,8 +99,8 @@ function SideBar() {
 
             <ListItemButton
               component={NavLink}
-              to="/Authentication"
-              selected={location.pathname === '/Authentication'}
+              to={routeAuthentication}
+              selected={location.pathname === routeAuthentication}
             >
               <ListItemIcon>
                 <Login />
