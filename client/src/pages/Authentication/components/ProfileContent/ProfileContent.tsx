@@ -15,7 +15,7 @@ function ProfileContent() {
   const name = accounts[0] && accounts[0].name;
 
   const welcome = 'Welcome ';
-  const resquest = 'Request Profile Information';
+  const request = 'Request Profile Information';
 
   function RequestProfileData() {
     const request = {
@@ -49,7 +49,7 @@ function ProfileContent() {
         <ProfileData userProfileData={userProfileData} />
       ) : (
         <Button variant="secondary" onClick={RequestProfileData}>
-          {resquest}
+          {request}
         </Button>
       )}
     </>

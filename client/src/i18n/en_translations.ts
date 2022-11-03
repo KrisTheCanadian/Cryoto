@@ -12,4 +12,8 @@ export const englishTranslations = {
     Search: 'Search',
     MarketPlace: 'Marketplace',
   },
+  errors: {
+    PermissionError: 'You do not have permission to access this page.',
+    AuthenticationError: 'Please log in to view this page.',
+  },
 };

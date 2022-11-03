@@ -2,9 +2,11 @@ import {Suspense} from 'react';
 import {CssBaseline} from '@mui/material';
 import {Routes, Route} from 'react-router-dom';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
+import {RequireAuth} from '@shared/components/RequireAuth';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {ReactQueryDevtools} from 'react-query/devtools';
 
+import Role from './pages/roles';
 import {
   routeAuthentication,
   routeHome,
@@ -41,13 +43,17 @@ function App() {
         <ThemeContextProvider>
           <CssBaseline />
           <Routes>
-            <Route path={routeHome} element={<HomePage />} />
-            <Route path={routeWallet} element={<Wallet />} />
-            <Route path={routeMarket} element={<MarketPlace />} />
-            <Route path={routeProfile} element={<Profile />} />
-            <Route path={routeOrders} element={<Orders />} />
-            <Route path={routeSettings} element={<Settings />} />
-            <Route path={routeStyleGuide} element={<StyleGuide />} />
+            <Route element={<RequireAuth {...[]} />}>
+              <Route path={routeHome} element={<HomePage />} />
+              <Route path={routeWallet} element={<Wallet />} />
+              <Route path={routeMarket} element={<MarketPlace />} />
+              <Route path={routeProfile} element={<Profile />} />
+              <Route path={routeOrders} element={<Orders />} />
+              <Route path={routeSettings} element={<Settings />} />
+            </Route>
+            <Route element={<RequireAuth {...[Role.Admin]} />}>
+              <Route path={routeStyleGuide} element={<StyleGuide />} />
+            </Route>
             <Route
               path={routeAuthentication}
               element={<AuthenticationPage />}

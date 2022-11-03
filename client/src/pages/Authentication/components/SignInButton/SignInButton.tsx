@@ -11,14 +11,14 @@ function handleLogin(instance: IPublicClientApplication) {
 
 function SignInButton() {
   const {instance} = useMsal();
-  const singIn = 'Sign in';
+  const signIn = 'Sign in';
   return (
     <Button
       variant="secondary"
       className="ml-auto"
       onClick={() => handleLogin(instance)}
     >
-      {singIn}
+      {signIn}
     </Button>
   );
 }

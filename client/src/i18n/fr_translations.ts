@@ -12,4 +12,9 @@ export const frenchTranslations = {
     Search: 'Rechercher',
     MarketPlace: 'Marché',
   },
+  errors: {
+    PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
+    AuthenticationError:
+      "Veuillez s'il vous plaît vous connecter pour accéder à cette page.",
+  },
 };

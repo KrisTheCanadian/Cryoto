@@ -9,11 +9,7 @@ import IPage from 'data/api/types/IPage';
 import IPost from 'data/api/types/IPost';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useInfiniteQuery} from 'react-query';
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useMsal,
-} from '@azure/msal-react';
+import {useMsal} from '@azure/msal-react';
 
 import {getNextPage} from '../../data/api/requests/posts';
 
@@ -62,89 +58,75 @@ function HomePage() {
 
   const rightBarContent = 'Right bar content';
   return (
-    <>
-      <UnauthenticatedTemplate>
-        <PageFrame>
-          <MiddleColumn>
-            <Alert severity="error">
-              You are not logged in. Please log in to view posts.
+    <PageFrame>
+      <MiddleColumn>
+        {status === 'error' && (
+          <Alert key="connection error" severity="error">
+            Unable to connect to back-end service.
+          </Alert>
+        )}
+        {status === 'loading' &&
+          Array.from(Array(12)).map(
+            (_: any, index: React.Key | null | undefined) => (
+              <Post
+                key={`Skeleton-Card:${index}`}
+                firstName=""
+                recipient=""
+                coinsGiven={0}
+                tags={['']}
+                message=""
+                date=""
+                loading
+              />
+            ),
+          )}
+        <>
+          {status === 'success' &&
+            data?.pages.map((page) =>
+              page.data.map((post: IPost) => (
+                <Post
+                  key={post.id}
+                  firstName={post.authorProfile.name}
+                  recipient={post.recipientProfiles[0].name}
+                  coinsGiven={post.coins}
+                  tags={post.tags}
+                  message={post.message}
+                  date={post.createdDate}
+                  loading={false}
+                />
+              )),
+            )}
+        </>
+        <Box
+          ref={loader}
+          id="loader"
+          sx={{display: `${hasNextPage ? 'hidden' : ''}`}}
+        />
+        {isFetchingNextPage &&
+          Array.from(Array(1)).map(
+            (_: any, index: React.Key | null | undefined) => (
+              <Post
+                key={`Skeleton-Card:${index}`}
+                firstName=""
+                recipient=""
+                coinsGiven={0}
+                tags={['']}
+                message=""
+                date=""
+                loading
+              />
+            ),
+          )}
+        {!isFetchingNextPage && !hasNextPage && (
+          <Box>
+            <Alert key="no more posts" severity="info">
+              No more posts to show!
             </Alert>
-          </MiddleColumn>
-          <RightBar>{rightBarContent}</RightBar>
-        </PageFrame>
-      </UnauthenticatedTemplate>
-      <AuthenticatedTemplate>
-        <PageFrame>
-          <MiddleColumn>
-            {status === 'error' && (
-              <Alert key="connection error" severity="error">
-                Unable to connect to back-end service.
-              </Alert>
-            )}
-            {status === 'loading' &&
-              Array.from(Array(12)).map(
-                (_: any, index: React.Key | null | undefined) => (
-                  <Post
-                    key={`Skeleton-Card:${index}`}
-                    firstName=""
-                    recipient=""
-                    coinsGiven={0}
-                    tags={['']}
-                    message=""
-                    date=""
-                    loading
-                  />
-                ),
-              )}
-            <>
-              {status === 'success' &&
-                data?.pages.map((page) =>
-                  page.data.map((post: IPost) => (
-                    <Post
-                      key={post.id}
-                      firstName={post.authorProfile.name}
-                      recipient={post.recipientProfiles[0].name}
-                      coinsGiven={post.coins}
-                      tags={post.tags}
-                      message={post.message}
-                      date={post.createdDate}
-                      loading={false}
-                    />
-                  )),
-                )}
-            </>
-            <Box
-              ref={loader}
-              id="loader"
-              sx={{display: `${hasNextPage ? 'hidden' : ''}`}}
-            />
-            {isFetchingNextPage &&
-              Array.from(Array(1)).map(
-                (_: any, index: React.Key | null | undefined) => (
-                  <Post
-                    key={`Skeleton-Card:${index}`}
-                    firstName=""
-                    recipient=""
-                    coinsGiven={0}
-                    tags={['']}
-                    message=""
-                    date=""
-                    loading
-                  />
-                ),
-              )}
-            {!isFetchingNextPage && !hasNextPage && (
-              <Box>
-                <Alert key="no more posts" severity="info">
-                  No more posts to show!
-                </Alert>
-              </Box>
-            )}
-          </MiddleColumn>
-          <RightBar>{rightBarContent}</RightBar>
-        </PageFrame>
-      </AuthenticatedTemplate>
-    </>
+          </Box>
+        )}
+      </MiddleColumn>
+      <RightBar>{rightBarContent}</RightBar>
+    </PageFrame>
   );
 }
 
