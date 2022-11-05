@@ -14,6 +14,7 @@ function SignInButton() {
   const signIn = 'Sign in';
   return (
     <Button
+      id="sign-in-button"
       variant="secondary"
       className="ml-auto"
       onClick={() => handleLogin(instance)}

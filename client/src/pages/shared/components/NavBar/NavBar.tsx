@@ -129,7 +129,11 @@ function NavBar() {
     <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
       <MainNavigationBar>
         <Link to="/" style={{textDecoration: 'none'}}>
-          <Typography variant="h6" sx={{color: theme.palette.text.primary}}>
+          <Typography
+            id="companyName"
+            variant="h6"
+            sx={{color: theme.palette.text.primary}}
+          >
             {companyName}
           </Typography>
         </Link>

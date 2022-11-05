@@ -15,12 +15,12 @@ export default defineConfig({
     toConsole: true,
     attachments: true,
   },
-  env: {
-    REACT_URL: 'http://localhost:3000/',
-  },
   e2e: {
     setupNodeEvents(on, config) {
       // runs before all tests in the project
     },
+    experimentalModifyObstructiveThirdPartyCode: true,
+    experimentalSessionAndOrigin: true,
+    chromeWebSecurity: false,
   },
 });

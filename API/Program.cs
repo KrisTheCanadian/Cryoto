@@ -107,6 +107,14 @@ configuration.AddAzureKeyVault(
 
 var app = builder.Build();
 
+// Run migrations if needed
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate();
+}
+
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {

@@ -2,11 +2,16 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@shared/*": ["pages/shared/*"]
+      "@shared/*": [
+        "pages/shared/*"
+      ]
     },
     "target": "ESNext",
     "useDefineForClassFields": true,
-    "lib": ["es6", "dom"],
+    "lib": [
+      "es6",
+      "dom"
+    ],
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
@@ -23,7 +28,12 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "exclude": ["cypress"],
-  "references": [{"path": "./tsconfig.node.json"}]
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

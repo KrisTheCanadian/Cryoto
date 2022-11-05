@@ -1,0 +1,109 @@
+# Cryoto
+trigger:
+  - master
+
+variables:
+  solution: "**/*.sln"
+  buildPlatform: "Any CPU"
+  buildConfiguration: "Release"
+  disable.coverage.autogenerate: "true"
+  ASPNETCORE_ENVIRONMENT: "CI"
+
+stages:
+  - stage: End_to_end_testing
+    displayName: "Performing End to End Testing..."
+    jobs:
+      - job: End_to_end_test
+        displayName: "End to End Testing"
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: 16.x
+          - task: UseDotNet@2
+            displayName: .NET Core Installer
+            inputs:
+              packageType: sdk
+              version: 6.x
+
+          - task: UsePythonVersion@0
+          - script: |
+              echo "Starting to Configure Environment Variables"
+              cp ./client/.env.example ./client/.env
+              cp ./API/.example.env ./API/tests.env
+              cp ./API/appsettings.example ./API/appsettings.json
+            displayName: Configuring Environment Variables
+          - script: |
+              echo "Installing Python Dependencies"
+              pip3 install -r API/scripts/requirements.txt
+            displayName: Installing Python Dependencies
+          - script: |
+              echo "Starting up Postgres"
+              docker compose -f API/docker-compose.yml --env-file API/.env.example up postgresql_database -d
+            displayName: Starting up Postgres
+
+          - script: |
+              echo "Login to Azure"
+              curl -L https://aka.ms/InstallAzureCli | bash
+              az login -u $(CYPRESS_USERNAME) -p $(CYPRESS_PASSWORD) --tenant $(CYPRESS_AUTHORITY) --allow-no-subscriptions
+            displayName: Login to Azure
+
+          - script: |
+              echo "Installing Entity Framework"
+              dotnet tool install --global dotnet-ef
+            displayName: Installing Entity Framework
+
+          - script: |
+              echo "Dotnet Restore"
+              dotnet restore API/API.sln
+            displayName: Dotnet Restore
+
+          - script: |
+              echo "Running Back-end"
+              dotnet run --project API/API.csproj &
+            displayName: Running Back-end
+
+          - script: |
+              echo "Running Front-end"
+              npm install --location=global yarn
+              yarn --cwd ./client add cypress --dev --frozen-lockfile
+              yarn --cwd ./client
+              yarn --cwd ./client dev &
+            displayName: Running Front-End
+
+          - script: |
+              echo "Running Database Seeding Script using test files"
+              python3 API/scripts/initdb.py -d "Username=postgres;Password=postgres;Server=localhost;Database=postgres" -f
+            displayName: Running Database Seeding Script
+
+          - script: yarn --cwd ./client cypress verify
+            displayName: Cypress Verify
+
+          - script: export CYPRESS_CLIENT_URL=$(CYPRESS_CLIENT_URL)
+              && export CYPRESS_API_BASE_URL=$(CYPRESS_API_BASE_URL)
+              && export CYPRESS_AUTHORITY=$(CYPRESS_AUTHORITY)
+              && export CYPRESS_CLIENT_ID=$(CYPRESS_CLIENT_ID)
+              && export CYPRESS_CLIENT_SECRET=$(CYPRESS_CLIENT_SECRET)
+              && export CYPRESS_PASSWORD=$(CYPRESS_PASSWORD)
+              && export CYPRESS_SCOPE=$(CYPRESS_SCOPE)
+              && yarn --cwd ./client cypress run
+            displayName: Cypress Test
+
+          - task: PublishBuildArtifacts@1
+            condition: failed()
+            inputs:
+              PathtoPublish: client/cypress/videos/
+              artifactName: "Cypress UI Test Videos"
+            displayName: Cypress Upload video on failure
+          - task: PublishBuildArtifacts@1
+            condition: failed()
+            inputs:
+              PathtoPublish: client/cypress/screenshots/
+              artifactName: "Cypress UI Test Screenshots"
+            displayName: Cypress Upload screenshot on failure
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFiles: "**/test-output-*.xml"
+              testResultsFormat: "JUnit"
+              mergeTestResults: true

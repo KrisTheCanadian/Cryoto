@@ -4,8 +4,9 @@
 ## -h help
 ## -p amount of posts to create
 ## -u amount of users to create
-## -s set seed for faker
 ## -d database connection string
+## -o output files
+## -f use existing files instead of generating new ones
 
 import getopt
 import json
@@ -26,16 +27,19 @@ def main(argv):
     posts = 10
     users = 10
 
+    output = False
+    files = False
+
 
     try:
-        opts, args = getopt.getopt(argv, "hd:p:u:s:", ["database=", "posts=", "users=", "seed="])
+        opts, args = getopt.getopt(argv, "hd:p:u:of", ["database=", "posts=", "users=", "output", "files"])
     except getopt.GetoptError:
-        print('init.db.py -p <amount of posts> -u <amount of users> -s <seed> -d <connectionstring<User;Password;Server;Database>>')
+        print('initdb.py -d <database connection string:"Username=postgres;Password=postgres;Server=localhost;Database=postgres"> -p <posts> -u <users>')
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print('init.db.py -p <amount of posts> -u <amount of users> -s <seed> -d <connectionstring<User;Password;Server;Database>>')
+            print('initdb.py -d <database connection string:"Username=postgres;Password=postgres;Server=localhost;Database=postgres"> -p <posts> -u <users>')
             sys.exit()
         elif opt in ("-p", "--posts"):
             posts = int(arg)
@@ -43,6 +47,11 @@ def main(argv):
             users = int(arg)
         elif opt in ("-d", "--db"):
             database = arg
+        elif opt in ("-o", "--output"):
+            output = True
+        elif opt in ("-f", "--files"):
+            files = True
+            
     
     # split connection string 
     # format is Username=postgres;Password=postgres;Server=localhost;Database=postgres
@@ -60,7 +69,7 @@ def main(argv):
     except:
         # if no database connection string is provided, grab it from appsettings.json
         try:
-            with open('../appsettings.json') as json_file:
+            with open('API/appsettings.json') as json_file:
                 data = json.load(json_file)
                 db_user = data['ConnectionStrings']['PostgresConnection'].split(';')[0].split('=')[1]
                 db_password = data['ConnectionStrings']['PostgresConnection'].split(';')[1].split('=')[1]
@@ -97,9 +106,34 @@ def main(argv):
     # create cursor
     cur = conn.cursor()
 
+    # check if files should be used (instead of generating new ones)
+    if files:
+        # load users from file
+        with open('API/scripts/data/users.json') as json_file:
+            users = json.load(json_file)
+
+        # load posts from file
+        with open('API/scripts/data/posts.json') as json_file:
+            posts = json.load(json_file)
+
+        for user in users:
+            # insert user
+            cur.execute('INSERT INTO "UserProfiles" ("OId", "Name", "Email", "Language", "Roles") VALUES (%s, %s, %s, %s, %s)', (user['Id'], user['Name'], user['Email'], user['Language'], user['Roles']))
+            conn.commit()
+        
+        for post in posts:
+            # insert post
+            cur.execute('INSERT INTO "Posts" ("Id", "Author", "Message", "Recipients", "Tags", "CreatedDate", "PostType", "IsTransactable", "Coins") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)', (post['Id'], post['Author'], post['Message'], post['Recipients'], post['Tags'], post['CreatedDate'], post['PostType'], post['IsTransactable'], post['Coins']))
+            conn.commit()
+        
+        print("done!")
+        sys.exit(0)
+
+
+
     # userIds
     userIds = []
-
+    userData = []
     # create fake users
     for i in range(int(users)):
         # create fake user
@@ -113,7 +147,9 @@ def main(argv):
         # create insert row in UserProfiles table
         cur.execute('INSERT INTO "UserProfiles" ("OId", "Name", "Email", "Language", "Roles") VALUES (%s, %s, %s, %s, %s)', (str(fake_guid), fake_name, fake_email, fake_language, [fake_role]))
         conn.commit()
+
         userIds.append(fake_guid)
+        userData.append({"Id": str(fake_guid), "Name": fake_name, "Email": fake_email, "Language": fake_language, "Roles": [fake_role]})
 
     # create random posts using faker directly in database
     # create insert row in Posts table
@@ -126,6 +162,7 @@ def main(argv):
     # PostType
     # IsTransactable (true/false)
     # Coins: number
+    postData = []
     for i in range(int(posts)):
         # create fake post
         fake = faker.Faker()
@@ -143,15 +180,21 @@ def main(argv):
         if fake_coins > 0:
             fake_postType = 'Kudos'
             fake_isTransactable = True
+        
+        postData.append({"Id": str(fake_guid), "Author": str(fake_author), "Message": fake_message, "Recipients": [str(fake_recipients)], "Tags": fake_tags, "CreatedDate": fake_createdDate, "PostType": fake_postType, "IsTransactable": fake_isTransactable, "Coins": fake_coins})
 
-        
-        
 
         # create insert row in Posts table
         cur.execute('INSERT INTO "Posts" ("Id", "Author", "Message", "Recipients", "Tags", "CreatedDate", "PostType", "IsTransactable", "Coins") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)', (str(fake_guid), str(fake_author), fake_message, [str(fake_recipients)], fake_tags, fake_createdDate, fake_postType, fake_isTransactable, fake_coins))
         conn.commit()
 
+    ## save data to file if output is set
+    if output:
+        with open('API/scripts/data/users.json', 'w') as outfile:
+            json.dump(userData, outfile)
 
+        with open('API/scripts/data/posts.json', 'w') as outfile:
+            json.dump(postData, outfile)
 
 
 
