@@ -61,8 +61,8 @@ public class PostsController : ControllerBase
         var amount = (double)createdPostModel!.Coins;
         if (amount == 0) return Ok(createdPostModel);
 
-        var actorBalance = await _cryptoService.GetTokenBalanceAsync(actorId, "toAward");
 
+        var actorBalance = await _cryptoService.GetTokenBalanceAsync(actorId, "toAward");
         if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);

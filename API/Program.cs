@@ -120,7 +120,7 @@ builder.Services.AddAzureClients(factoryBuilder =>
 {
     factoryBuilder.AddClient<QueueClient, QueueClientOptions>((options)=>
     {
-        var queueName = "cryoto-update-balance";
+        var queueName = configuration.GetSection("queueName").Value;
         var queueConnectionString = configuration.GetSection("queueConnectionString").Value;
         return new QueueClient(queueConnectionString, queueName);
     });
