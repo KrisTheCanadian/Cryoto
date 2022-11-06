@@ -17,12 +17,12 @@ public class PostRepository : IPostRepository
 
     public async Task<PostModel?> GetByIdAsync(string guid)
     {
-        var post = await Context.Posts.AsNoTracking().FirstOrDefaultAsync(x => x.Id.Equals(guid));
+        var post = await Context.Posts.FirstOrDefaultAsync(x => x.Id.Equals(guid));
         if (post == null)
         {
             return null;
         }
-
+        
         return await GetAllProfiles(post);
     }
 

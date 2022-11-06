@@ -12,6 +12,7 @@ public interface ICryptoService
     public Task<bool> CreateUserWallets(string oid);
     public Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId);
     public Task<RpcTransactionResult> CreatePurchase(double amount, string userOId);
+    public  Task<RpcTransactionResult> AddTokensAsync(double amount, string userOId, string walletType);
     public Task<double> GetTokenBalanceAsync(string oid, string walletType);
     public Task<double> GetSolanaTokenBalanceAsync(string oid, string walletType);
     public Task<bool> UpdateTokenBalance(double amount, string oid, string walletType);

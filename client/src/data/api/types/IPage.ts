@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-interface IPage<Type> {
-  data: Type;
+import IPost from './IPost';
+
+interface IPage {
+  data: IPost[];
   page: number;
   itemsPerPage: number;
   totalPages: number;

@@ -17,6 +17,8 @@ import {Link} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
 
+import {RoundedInput} from '../interface-elements/RoundedInput';
+
 import {ProfileMenu} from './components';
 
 function NavBar() {
@@ -138,7 +140,7 @@ function NavBar() {
           </Typography>
         </Link>
         <Box sx={searchBoxStyle} data-testid="searchBox">
-          <Box sx={searchInputStyle}>
+          <RoundedInput>
             <Search
               sx={{color: theme.palette.action.active, ml: theme.spacing(0.5)}}
             />
@@ -149,7 +151,8 @@ function NavBar() {
               onFocus={openSearch}
               sx={{width: '100%', ml: theme.spacing(0.5)}}
             />
-          </Box>
+          </RoundedInput>
+
           <Box sx={searchResultsStyle} data-testid="search-results">
             {sampleSearchResults}
           </Box>

@@ -1,8 +1,9 @@
+using System.Security.Claims;
 using API.Crypto.Solana.SolanaObjects;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 
 namespace API.Controllers;
 
@@ -39,7 +40,7 @@ public class CryptoController : ControllerBase
         return Ok(rpcTransactionResult);
     }
     
-    [HttpPost("/purchase", Name = "PurchaseTransactionController")]
+    [HttpPost]
     public async Task<ActionResult<RpcTransactionResult>> PurchaseTransaction([FromHeader] string authorization, double amount)
     {
         var userDetails = _userProfileService.GetUserProfileDetails(authorization);
@@ -49,6 +50,21 @@ public class CryptoController : ControllerBase
         if (rpcTransactionResult.error != null)
             return BadRequest(rpcTransactionResult.error);
         await _cryptoService.UpdateTokenBalance((-amount), userOId, "toSpend");
+
+        _cryptoService.QueueTokenUpdate(new List<string> { userOId });
+        return Ok(rpcTransactionResult);
+    }
+    
+    [HttpPost]
+    public async Task<ActionResult<RpcTransactionResult>> PostTokens( double amount, string walletType)
+    {
+        var identity = HttpContext.User.Identity as ClaimsIdentity;
+        var userOId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
+        
+        var rpcTransactionResult = await _cryptoService.AddTokensAsync(amount, userOId, walletType);
+        if (rpcTransactionResult.error != null)
+            return BadRequest(rpcTransactionResult.error);
+        await _cryptoService.UpdateTokenBalance(amount, userOId, walletType);
 
         _cryptoService.QueueTokenUpdate(new List<string> { userOId });
         return Ok(rpcTransactionResult);

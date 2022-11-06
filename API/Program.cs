@@ -11,9 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
-ConfigurationManager configuration = builder.Configuration;
+var configuration = builder.Configuration;
 var azureCredentialOptions = new DefaultAzureCredentialOptions
 {
     ExcludeEnvironmentCredential = true,
@@ -25,7 +24,7 @@ var azureCredentialOptions = new DefaultAzureCredentialOptions
     // For local development.
     ExcludeAzureCliCredential = !builder.Environment.IsDevelopment(),
     // To be used for the pipeline.
-    ExcludeManagedIdentityCredential = builder.Environment.IsDevelopment(),
+    ExcludeManagedIdentityCredential = builder.Environment.IsDevelopment()
 };
 
 // Add services to the container.
@@ -73,7 +72,7 @@ builder.Services.AddScoped<ICryptoService, CryptoService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
     {
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
         {
             {
                 new OpenApiSecurityScheme
@@ -95,7 +94,7 @@ builder.Services.AddSwaggerGen(options =>
             Type = SecuritySchemeType.OAuth2,
             Flows = new OpenApiOAuthFlows
             {
-                Implicit = new OpenApiOAuthFlow()
+                Implicit = new OpenApiOAuthFlow
                 {
                     AuthorizationUrl =
                         new Uri(
@@ -117,9 +116,9 @@ configuration.AddAzureKeyVault(
     new DefaultAzureCredential(azureCredentialOptions));
 
 builder.Services.AddHostedService<CryotoBackgroundService>();
-builder.Services.AddAzureClients(builder =>
+builder.Services.AddAzureClients(factoryBuilder =>
 {
-    builder.AddClient<QueueClient, QueueClientOptions>((options, _, _) =>
+    factoryBuilder.AddClient<QueueClient, QueueClientOptions>((options)=>
     {
         var queueName = "cryoto-update-balance";
         var queueConnectionString = configuration.GetSection("queueConnectionString").Value;

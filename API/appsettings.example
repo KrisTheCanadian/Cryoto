@@ -2,13 +2,14 @@
   "Logging": {
     "LogLevel": {
       "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
+      "Microsoft.AspNetCore": "Warning",
+      "Azure.Core": "Warning"
     }
   },
   "ConnectionStrings": {
     "PostgresConnection": "Username=postgres;Password=postgres;Server=localhost;Database=postgres"
   },
   "AllowedHosts": "*",
-  "AllowedOrigins": "http://localhost:5173;https://cryotoclient.azurewebsites.net;https://cryotoclientprod.azurewebsites.net/;https://cryotoclienttesting.azurewebsites.net/",
+  "AllowedOrigins": "http://localhost:5173;https://cryotoclient.azurewebsites.net;https://cryotoclientprod.azurewebsites.net;https://cryotoclienttesting.azurewebsites.net",
   "tokenAddress": "58XtkzqzSCJhfnzqZivu7Pc8sw4Y7tLUYbMdfXMLHzfh"
 }

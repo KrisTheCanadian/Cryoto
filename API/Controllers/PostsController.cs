@@ -5,6 +5,7 @@ using API.Services.Interfaces;
 using API.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 
 namespace API.Controllers;
 
@@ -13,8 +14,8 @@ namespace API.Controllers;
 [Route("[controller]/[action]")]
 public class PostsController : ControllerBase
 {
-    private readonly IPostService _postService;
     private readonly ICryptoService _cryptoService;
+    private readonly IPostService _postService;
 
 
     public PostsController(IPostService postService, ICryptoService cryptoService)
@@ -40,10 +41,7 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PostModel>> GetById(string guid)
     {
         var postModel = await _postService.GetByIdAsync(guid);
-        if (postModel == null)
-        {
-            return NotFound();
-        }
+        if (postModel == null) return NotFound();
 
         return Ok(postModel);
     }
@@ -53,16 +51,19 @@ public class PostsController : ControllerBase
     {
         // get ActorID
         var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var actorId = identity?.FindFirst("oid")?.Value!;
+        var actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
 
         var postModel = new PostModel(postCreateModel, actorId);
         var created = await _postService.CreateAsync(postModel);
         if (!created)
             return BadRequest("Could not create the post");
         var createdPostModel = await _postService.GetByIdAsync(postModel.Id);
+        var amount = (double)createdPostModel!.Coins;
+        if (amount == 0) return Ok(createdPostModel);
+
 
         var actorBalance = await _cryptoService.GetTokenBalanceAsync(actorId, "toAward");
-        if (createdPostModel!.Coins * (ulong)createdPostModel.RecipientProfiles.Count() > actorBalance)
+        if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);
             return BadRequest("Your balance is not enough");
@@ -72,10 +73,14 @@ public class PostsController : ControllerBase
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
         {
             oIdsList.Add(recipientProfile.OId);
-            await _cryptoService.SendTokens(createdPostModel.Coins, actorId, recipientProfile.OId);
+            await _cryptoService.SendTokens(amount, actorId, recipientProfile.OId);
+            await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
+            await _cryptoService.UpdateTokenBalance(-amount, actorId, "toAward");
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);
+
+
         return Ok(createdPostModel);
     }
 
@@ -83,29 +88,25 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PostModel>> Update(PostUpdateModel postUpdateModel)
     {
         var existingPost = await _postService.GetByIdAsync(postUpdateModel.Id);
-        if (existingPost == null)
-        {
-            return Conflict("Cannot update the post because it does not exist.");
-        }
+        if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
 
         // get ActorID
         var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var actorId = identity?.FindFirst("oid")?.Value!;
+        var actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
 
         var postModel = new PostModel(postUpdateModel, actorId);
-        await _postService.UpdateAsync(postModel);
+        var updated = await _postService.UpdateAsync(postModel);
+        if (!updated) return BadRequest("Could not upddate the post");
+        var updatedPostModel = await _postService.GetByIdAsync(postModel.Id);
 
-        return Ok(postModel);
+        return Ok(updatedPostModel);
     }
 
     [HttpDelete]
     public async Task<ActionResult<PostModel>> Delete(string guid)
     {
         var existingPost = await _postService.GetByIdAsync(guid);
-        if (existingPost == null)
-        {
-            return Conflict("Cannot update the post because it does not exist.");
-        }
+        if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
 
         await _postService.DeleteAsync(existingPost);
 

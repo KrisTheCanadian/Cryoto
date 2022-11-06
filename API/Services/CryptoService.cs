@@ -53,7 +53,7 @@ public class CryptoService : ICryptoService
     public async Task<PublicKey> GetPublicKeyByOIdAsync(string oid, string walletType)
     {
         var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        return _solanaService.GetPublicKeyFromString(walletModel!.PublicKey);
+        return _solanaService.GetPublicKeyFromString(walletModel.PublicKey);
     }
 
     public async Task<bool> CreateUserWallets(string oid)
@@ -82,7 +82,7 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = receiverWallet.Account.PublicKey;
         var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-        if (rpcTransactionResult?.error != null)
+        if (rpcTransactionResult.error != null)
         {
             await UpdateTokenBalance((-amount), senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
@@ -98,6 +98,14 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = ownerWallet.Account.PublicKey;
         return _solanaService.SendTokens(amount, userWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
+    }    
+    public async Task<RpcTransactionResult> AddTokensAsync(double amount, string userOId, string walletType)
+    {
+        var userWallet = await GetWalletByOIdAsync(userOId, walletType);
+        var ownerWallet = GetOwnerWallet();
+        var receiverPublicKey = userWallet.Account.PublicKey;
+        return _solanaService.SendTokens(amount, ownerWallet, ownerWallet, receiverPublicKey,
+            _configuration["tokenAddress"]);
     }
 
     public async Task<double> GetTokenBalanceAsync(string oid, string walletType)
@@ -111,7 +119,7 @@ public class CryptoService : ICryptoService
         var wallet = await GetWalletByOIdAsync(oid, walletType);
         var publicKey = wallet.Account.PublicKey;
 
-        return _solanaService.GetTokenBalance(publicKey, "tokenAddress");
+        return _solanaService.GetTokenBalance(publicKey, _configuration["tokenAddress"]);
     }
 
     public async Task<bool> UpdateTokenBalance(double amount, string oid, string walletType)

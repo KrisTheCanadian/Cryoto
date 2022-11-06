@@ -3,6 +3,7 @@ using System;
 using API.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221104210723_updated_PostModel_Id")]
+    partial class updated_PostModel_Id
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -85,49 +87,6 @@ namespace API.Migrations
                     b.HasKey("OId");
 
                     b.ToTable("UserProfiles");
-                });
-
-            modelBuilder.Entity("API.Models.WalletModel", b =>
-                {
-                    b.Property<string>("PublicKey")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("TokenBalance")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Wallet")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("WalletType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("PublicKey");
-
-                    b.HasIndex("OId");
-
-                    b.ToTable("Wallets");
-                });
-
-            modelBuilder.Entity("API.Models.WalletModel", b =>
-                {
-                    b.HasOne("API.Models.UserProfileModel", "UserProfileModel")
-                        .WithMany("Wallets")
-                        .HasForeignKey("OId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserProfileModel");
-                });
-
-            modelBuilder.Entity("API.Models.UserProfileModel", b =>
-                {
-                    b.Navigation("Wallets");
                 });
 #pragma warning restore 612, 618
         }

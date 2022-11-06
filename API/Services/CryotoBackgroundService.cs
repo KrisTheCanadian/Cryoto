@@ -32,16 +32,24 @@ public class CryotoBackgroundService : BackgroundService
                     var oIdsList = JsonSerializer.Deserialize<List<string>>(queueMessage.Value.MessageText);
                     foreach (var oid in oIdsList!.Select((value, index) => new { index, value }))
                     {
-                        if (oid.index == 0)
+                        try
                         {
-                            var senderTokenBalance = cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toAward");
-                            await cryptoService.UpdateSolanaTokenBalance(senderTokenBalance.Result, oid.value,
-                                "toAward");
+                            if (oid.index == 0)
+                            {
+                                var senderTokenBalance =
+                                    await cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toAward");
+                                await cryptoService.UpdateSolanaTokenBalance(senderTokenBalance, oid.value,
+                                    "toAward");
+                            }
+                            else
+                            {
+                                var tokenBalance = await cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toSpend");
+                                await cryptoService.UpdateSolanaTokenBalance(tokenBalance, oid.value, "toSpend");
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
-                            var tokenBalance = cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toSpend");
-                            await cryptoService.UpdateSolanaTokenBalance(tokenBalance.Result, oid.value, "toSpend");
+                            // ignored
                         }
                     }
 

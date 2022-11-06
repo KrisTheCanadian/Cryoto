@@ -17,3 +17,4 @@ export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;
 export const apiRouteUserProfileGetUserProfile = `${apiRouteUserProfile}/GetUserProfile`;
 export const apiRouteUserGetAllUsers = `${apiRouteUserProfile}/GetAllUsers`;
+export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;

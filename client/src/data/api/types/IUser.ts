@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 interface IUser {
-  oid: string;
+  oId: string;
   name: string;
   email: string;
   language: string;

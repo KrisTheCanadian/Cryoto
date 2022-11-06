@@ -7,7 +7,7 @@ import {RightBar} from '@shared/components/RightBar';
 import IPage from 'data/api/types/IPage';
 import IPost from 'data/api/types/IPost';
 import {useCallback, useContext, useEffect, useRef, useState} from 'react';
-import {useInfiniteQuery} from 'react-query';
+import {QueryClient, QueryClientProvider, useInfiniteQuery} from 'react-query';
 import {
   useMsal,
   AuthenticatedTemplate,
@@ -15,13 +15,41 @@ import {
 } from '@azure/msal-react';
 import AlertContext from '@shared/hooks/Alerts/AlertContext';
 import {useTranslation} from 'react-i18next';
+import IPages from 'data/api/types/IPages';
 
 import {getNextPage} from '../../data/api/requests/posts';
 import {LandingPage} from '../LandingPage';
 
-import {Post} from './components';
+import {NewPost, Post} from './components';
+
+const queryClient = new QueryClient();
+const postsQuery = ['posts-query'];
+
+function updateFirstPage(post: IPost) {
+  const data = queryClient.getQueryData(postsQuery) as IPages;
+  data.pages[0].data.unshift(post);
+  queryClient.setQueryData(postsQuery, data);
+}
 
 function HomePage() {
+  const rightBarContent = 'Right bar content';
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UnauthenticatedTemplate>
+        <LandingPage />
+      </UnauthenticatedTemplate>
+      <AuthenticatedTemplate>
+        <PageFrame>
+          <MiddleColumn>
+            <Posts />
+          </MiddleColumn>
+          <RightBar>{rightBarContent}</RightBar>
+        </PageFrame>
+      </AuthenticatedTemplate>
+    </QueryClientProvider>
+  );
+}
+function Posts() {
   const {instance, accounts} = useMsal();
   const [postsPerLoad, setPostsPerLoad] = useState(10);
   const loader = useRef();
@@ -29,8 +57,8 @@ function HomePage() {
   const {t} = useTranslation();
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
-    useInfiniteQuery<IPage<IPost[]>, Error>(
-      ['Posts'],
+    useInfiniteQuery<IPage, Error>(
+      postsQuery,
       ({pageParam = 1}) =>
         getNextPage(pageParam, postsPerLoad, accounts, instance),
       {
@@ -39,7 +67,9 @@ function HomePage() {
         },
       },
     );
-
+  const addPost = (post: IPost) => {
+    updateFirstPage(post);
+  };
   const handleObserver = useCallback(
     (entries: any[]) => {
       const target = entries[0];
@@ -80,78 +110,69 @@ function HomePage() {
 
   return (
     <>
-      <UnauthenticatedTemplate>
-        <LandingPage />
-      </UnauthenticatedTemplate>
-      <AuthenticatedTemplate>
-        <PageFrame>
-          <MiddleColumn>
-            {status === 'error' && (
-              <Alert severity="error">{t('errors.BackendError')}</Alert>
-            )}
-            {status === 'loading' &&
-              Array.from(Array(12)).map(
-                (_: any, index: React.Key | null | undefined) => (
-                  <Post
-                    key={`Skeleton-Card:${index}`}
-                    firstName=""
-                    recipient=""
-                    coinsGiven={0}
-                    tags={['']}
-                    message=""
-                    date=""
-                    loading
-                  />
-                ),
-              )}
-            <>
-              {status === 'success' &&
-                data?.pages.map((page) =>
-                  page.data.map((post: IPost) => (
-                    <Post
-                      key={post.id}
-                      firstName={post.authorProfile.name}
-                      recipient={post.recipientProfiles[0].name}
-                      coinsGiven={post.coins}
-                      tags={post.tags}
-                      message={post.message}
-                      date={post.createdDate}
-                      loading={false}
-                    />
-                  )),
-                )}
-            </>
-            <Box
-              ref={loader}
-              id="loader"
-              sx={{display: `${hasNextPage ? 'hidden' : ''}`}}
+      <NewPost addPost={addPost} />
+      {status === 'error' && (
+        <Alert severity="error">{t('errors.BackendError')}</Alert>
+      )}
+
+      {status === 'loading' &&
+        Array.from(Array(12)).map(
+          (_: any, index: React.Key | null | undefined) => (
+            <Post
+              key={`Skeleton-Card:${index}`}
+              firstName=""
+              recipient=""
+              coinsGiven={0}
+              tags={['']}
+              message=""
+              date=""
+              loading
             />
-            {isFetchingNextPage &&
-              Array.from(Array(1)).map(
-                (_: any, index: React.Key | null | undefined) => (
-                  <Post
-                    key={`Skeleton-Card:${index}`}
-                    firstName=""
-                    recipient=""
-                    coinsGiven={0}
-                    tags={['']}
-                    message=""
-                    date=""
-                    loading
-                  />
-                ),
-              )}
-            {!isFetchingNextPage && !hasNextPage && (
-              <Box>
-                <Alert key="no more posts" severity="info">
-                  {t('errors.NoMorePosts')}
-                </Alert>
-              </Box>
-            )}
-          </MiddleColumn>
-          <RightBar>{rightBarContent}</RightBar>
-        </PageFrame>
-      </AuthenticatedTemplate>
+          ),
+        )}
+
+      {status === 'success' &&
+        data?.pages.map((page) =>
+          page.data.map((post: IPost) => (
+            <Post
+              key={post.id}
+              firstName={post.authorProfile.name}
+              recipient={post.recipientProfiles[0].name}
+              coinsGiven={post.coins}
+              tags={post.tags}
+              message={post.message}
+              date={post.createdDate}
+              loading={false}
+            />
+          )),
+        )}
+      <Box
+        ref={loader}
+        id="loader"
+        sx={{display: `${hasNextPage ? 'hidden' : ''}`}}
+      />
+      {isFetchingNextPage &&
+        Array.from(Array(1)).map(
+          (_: any, index: React.Key | null | undefined) => (
+            <Post
+              key={`Skeleton-Card:${index}`}
+              firstName=""
+              recipient=""
+              coinsGiven={0}
+              tags={['']}
+              message=""
+              date=""
+              loading
+            />
+          ),
+        )}
+      {!isFetchingNextPage && !hasNextPage && (
+        <Box>
+          <Alert key="no more posts" severity="info">
+            {t('errors.NoMorePosts')}
+          </Alert>
+        </Box>
+      )}
     </>
   );
 }

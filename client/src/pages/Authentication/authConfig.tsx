@@ -10,8 +10,8 @@ export const msalConfig = {
       'https://login.microsoftonline.com/4ccf6cd1-34c6-4c18-9976-d94ae43d0f65',
     // eslint-disable-next-line eslint-comments/disable-enable-pair
     /* eslint-disable no-process-env */
-    redirectUri: process.env.VITE_API_BASE_URL,
-    postLogoutRedirectUri: process.env.VITE_API_BASE_URL,
+    redirectUri: process.env.VITE_CLIENT_BASE_URL,
+    postLogoutRedirectUri: process.env.VITE_CLIENT_BASE_URL,
     navigateToLoginRequestUrl: false,
   },
   cache: {
