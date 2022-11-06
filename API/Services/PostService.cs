@@ -8,30 +8,38 @@ namespace API.Services;
 public class PostService : IPostService
 {
     private readonly IPostRepository _postRepository;
+
     public PostService(IPostRepository postRepository)
     {
         _postRepository = postRepository;
     }
-    
-    public async Task<PostModel?> GetByIdAsync(Guid guid)
+
+    public async Task<PostModel?> GetByIdAsync(string guid)
     {
         return await _postRepository.GetByIdAsync(guid);
     }
 
-    public async Task CreateAsync(PostModel postModel)
+    public async Task<bool> CreateAsync(PostModel postModel)
     {
-        await _postRepository.CreateAsync(postModel);
+        return await _postRepository.CreateAsync(postModel);
     }
 
-    public async Task UpdateAsync(PostModel postModel)
+    public async Task<bool> UpdateAsync(PostModel postModel)
     {
-        await _postRepository.UpdateAsync(postModel);
+        return await _postRepository.UpdateAsync(postModel);
     }
 
     public async Task DeleteAsync(PostModel postModel)
     {
         await _postRepository.DeleteAsync(postModel);
     }
+
+    public async Task<bool> DeleteByIdAsync(string guid)
+    {
+        return await _postRepository.DeleteAsyncById(guid);
+
+    }
+
 
     public async Task<PaginationWrapper<PostModel>> GetUserFeedPaginatedAsync(string userId, int page, int pageCount)
     {

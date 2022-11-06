@@ -1,11 +1,16 @@
+using API.Crypto.Services;
+using API.Crypto.Services.Interfaces;
 using API.Repository;
 using API.Repository.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
 using Azure.Identity;
+using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
@@ -34,6 +39,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.SaveToken = true;
     });
 
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -43,6 +49,7 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader();
     });
 });
+
 
 builder.Services.AddScoped<IDataContext, DataContext>();
 
@@ -56,6 +63,10 @@ builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IPostService, PostService>();
+
+builder.Services.AddScoped<IWalletRepository, WalletRepository>();
+builder.Services.AddScoped<ISolanaService, SolanaService>();
+builder.Services.AddScoped<ICryptoService, CryptoService>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -104,6 +115,18 @@ builder.Services.AddSwaggerGen(options =>
 configuration.AddAzureKeyVault(
     new Uri("https://cryotovault.vault.azure.net/"),
     new DefaultAzureCredential(azureCredentialOptions));
+
+builder.Services.AddHostedService<CryotoBackgroundService>();
+builder.Services.AddAzureClients(builder =>
+{
+    builder.AddClient<QueueClient, QueueClientOptions>((options, _, _) =>
+    {
+        var queueName = "cryoto-update-balance";
+        var queueConnectionString = configuration.GetSection("queueConnectionString").Value;
+        return new QueueClient(queueConnectionString, queueName);
+    });
+});
+
 
 var app = builder.Build();
 

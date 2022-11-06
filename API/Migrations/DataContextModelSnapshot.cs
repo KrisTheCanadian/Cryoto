@@ -87,6 +87,49 @@ namespace API.Migrations
 
                     b.ToTable("UserProfiles");
                 });
+
+            modelBuilder.Entity("API.Models.WalletModel", b =>
+                {
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("TokenBalance")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Wallet")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WalletType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PublicKey");
+
+                    b.HasIndex("OId");
+
+                    b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("API.Models.WalletModel", b =>
+                {
+                    b.HasOne("API.Models.UserProfileModel", "UserProfileModel")
+                        .WithMany("Wallets")
+                        .HasForeignKey("OId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfileModel");
+                });
+
+            modelBuilder.Entity("API.Models.UserProfileModel", b =>
+                {
+                    b.Navigation("Wallets");
+                });
 #pragma warning restore 612, 618
         }
     }

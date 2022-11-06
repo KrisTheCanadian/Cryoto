@@ -1,6 +1,7 @@
 ﻿using API.Models.WorkDay;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using NinjaNye.SearchExtensions;
 
 namespace API.Repository;
 
@@ -16,12 +17,23 @@ public class UserProfileRepository : IUserProfileRepository
 
     public async Task<List<UserProfileModel>> GetAllUsersAsync()
     {
-        return await Context.UserProfiles.ToListAsync();
+        return await Context.UserProfiles.AsNoTracking().ToListAsync();
+    }
+
+    public Task<List<UserProfileModel>> GetSearchResultAsync(string keywords)
+    {
+        var keywordsList = keywords.ToLower().Split(' ')
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .ToArray();
+        List<UserProfileModel> userProfileModelList = Context.UserProfiles.AsNoTracking()
+                .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
+        return Task.FromResult(userProfileModelList);
     }
 
     public async Task<UserProfileModel?> GetUserProfileAsync(string oid)
     {
-        return await Context.UserProfiles.AsNoTracking().FirstOrDefaultAsync(x => x.OId == oid);
+        return await Context.UserProfiles.AsNoTracking()
+            .FirstOrDefaultAsync(userProfileModel => userProfileModel.OId == oid);
     }
 
     public async Task<int> AddUserProfileAsync(UserProfileModel userProfile)

@@ -1,9 +1,9 @@
 using System.Text;
+using Solnet.KeyStore;
 using Solnet.Wallet;
 using Solnet.Wallet.Bip39;
-using Solnet.KeyStore;
 
-namespace API.Services.Crypto.Solana;
+namespace API.Crypto.Solana;
 
 public class SolanaWallet
 {
@@ -16,7 +16,7 @@ public class SolanaWallet
         var wallet = new Wallet(WordCount.TwentyFour, WordList.English);
         return wallet;
     }
-    
+
     /// <summary>
     /// Encrypts the mnemonic associated with the wallet in a web3 secret storage encrypted json data
     /// </summary>
@@ -28,18 +28,20 @@ public class SolanaWallet
         // Encrypt the mnemonic associated with the wallet
         var keystoreService = new SecretKeyStoreService();
         var mnemonicByteArray = Encoding.UTF8.GetBytes(wallet.Mnemonic.ToString());
-        
-        var encryptedKeystoreJson = keystoreService.EncryptAndGenerateDefaultKeyStoreAsJson(password, mnemonicByteArray,wallet.Account.PublicKey.Key);
+
+        var encryptedKeystoreJson =
+            keystoreService.EncryptAndGenerateDefaultKeyStoreAsJson(password, mnemonicByteArray,
+                wallet.Account.PublicKey.Key);
         return encryptedKeystoreJson;
     }
-    
+
     /// <summary>
     /// Decrypts the mnemonic associated with the wallet
     /// </summary>
     /// <param name="encryptedKeystoreJson">User's encrypted Mnemonic</param>
     /// <param name="password">User's password</param>
     /// <returns>The user's restored wallet</returns>
-    public static Wallet DecryptWallet(string encryptedKeystoreJson, string password)
+    public static Wallet DecryptWallet(string encryptedKeystoreJson, string password, string passphrase = "")
     {
         // Decrypts a web3 secret storage encrypted json data
         var keystoreService = new SecretKeyStoreService();
@@ -47,12 +49,11 @@ public class SolanaWallet
         var mnemonicString = Encoding.UTF8.GetString(decryptedKeystore);
 
         // Restore the wallet from the restored mnemonic
-        var restoredMnemonic = new Mnemonic(mnemonicString);
-        var restoredWallet = new Wallet(restoredMnemonic);
+        var restoredWallet = RetrieveWallet(mnemonicString, passphrase);
 
         return restoredWallet;
     }
-    
+
     /// <summary>
     /// Get a wallet object with associated mnemonic and passphrase (if needed)
     /// </summary>
@@ -64,7 +65,17 @@ public class SolanaWallet
         // For wallets initiated with solana-keygen and have a passphrase
         if (!string.IsNullOrEmpty(passphrase))
             return new Wallet(mnemonicString, WordList.English, passphrase, SeedMode.Bip39);
-        
+
         return new Wallet(mnemonicString, WordList.English);
+    }
+    
+    /// <summary>
+    /// Transform string object to PublicKey Object
+    /// </summary>
+    /// <param name="publicKey"></param>
+    /// <returns>PublicKey Object</returns>
+    public static PublicKey GetPublicKeyFromString(string publicKey)
+    {
+        return new PublicKey(publicKey);
     }
 }

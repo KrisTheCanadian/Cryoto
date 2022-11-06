@@ -1,4 +1,4 @@
-namespace API.Services.Crypto.Solana.SolanaObjects;
+namespace API.Crypto.Solana.SolanaObjects;
 
 public class RpcTransactionResult
 {

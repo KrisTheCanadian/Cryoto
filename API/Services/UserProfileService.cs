@@ -44,9 +44,8 @@ public class UserProfileService : IUserProfileService
         var name = claims.First(claim => claim.Type == "name").Value;
         var email = claims.First(claim => claim.Type == "preferred_username").Value;
         var roles = claims.Where(claim => claim.Type == "roles").Select(x => x.Value).ToArray();
-        
-        
-        
+
+
         return new UserProfileModel(oId, name, email, "en", roles);
     }
 
@@ -55,7 +54,7 @@ public class UserProfileService : IUserProfileService
         try
         {
             await _context.AddUserProfileAsync(user);
-            SendEmail(user.Email, "CrtyotoDoNotReply@929e81fa-ad7a-4383-b58b-d29e7c30c895.azurecomm.net");
+            await SendEmail(user.Email);
         }
         catch (Exception)
         {
@@ -63,8 +62,9 @@ public class UserProfileService : IUserProfileService
         }
     }
 
-    public async void SendEmail(string recipient, string sender)
+    public async Task SendEmail(string recipient)
     {
+        var sender = "CrtyotoDoNotReply@929e81fa-ad7a-4383-b58b-d29e7c30c895.azurecomm.net";
         var connectionString = _configuration["CryotoCommunicationServiceConnectionString"];
         EmailClient emailClient = new EmailClient(connectionString);
 
@@ -85,14 +85,19 @@ public class UserProfileService : IUserProfileService
         return await _context.GetAllUsersAsync();
     }
 
+    public async Task<List<UserProfileModel>> GetSearchResultServiceAsync(string keywords)
+    {
+        return await _context.GetSearchResultAsync(keywords);
+    }
+
     public async Task<UserProfileModel?> GetUserProfileService(string oid)
     {
         return await _context.GetUserProfileAsync(oid);
     }
 
-    public async Task<int> AddUserProfileService(UserProfileModel user)
+    public async Task<bool> AddUserProfileService(UserProfileModel user)
     {
-        return await _context.AddUserProfileAsync(user);
+        return await _context.AddUserProfileAsync(user) > 0;
     }
 
     public async Task<UserProfileModel?> GetUserByIdAsync(string userId)

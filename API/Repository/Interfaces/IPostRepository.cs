@@ -5,10 +5,11 @@ namespace API.Repository.Interfaces;
 
 public interface IPostRepository
 {
-    public Task<PostModel?> GetByIdAsync(Guid guid);
-    public Task CreateAsync(PostModel postModel);
-    public Task UpdateAsync(PostModel postModel);
+    public Task<PostModel?> GetByIdAsync(string guid);
+    public Task<bool> CreateAsync(PostModel postModel);
+    public Task<bool> UpdateAsync(PostModel postModel);
     public Task DeleteAsync(PostModel postModel);
+    public Task<bool> DeleteAsyncById(string guid);
     Task<IEnumerable<PostModel>> GetAllAsync();
     Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount);
 }

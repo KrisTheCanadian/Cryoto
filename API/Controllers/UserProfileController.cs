@@ -11,10 +11,13 @@ namespace API.Controllers;
 public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfileService;
+    private readonly ICryptoService _cryptoService;
 
-    public UserProfileController(IUserProfileService userProfileService)
+
+    public UserProfileController(IUserProfileService userProfileService, ICryptoService cryptoService)
     {
         _userProfileService = userProfileService;
+        _cryptoService = cryptoService;
     }
 
     [HttpGet]
@@ -22,7 +25,10 @@ public class UserProfileController : ControllerBase
     public async Task<ActionResult<UserProfileModel>> GetUserById(string userId)
     {
         var user = await _userProfileService.GetUserByIdAsync(userId);
-        if (user == null) { return Conflict("User was not found."); }
+        if (user == null)
+        {
+            return Conflict("User was not found.");
+        }
 
         return Ok(user);
     }
@@ -32,6 +38,12 @@ public class UserProfileController : ControllerBase
     public async Task<ActionResult<List<UserProfileModel>>> GetAllUsers()
     {
         return Ok(await _userProfileService.GetAllUsersService());
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<UserProfileModel>>> GetSearchResult(string keywords)
+    {
+        return Ok(await _userProfileService.GetSearchResultServiceAsync(keywords));
     }
 
     [HttpGet]
@@ -47,7 +59,10 @@ public class UserProfileController : ControllerBase
         }
         else
         {
-            var numberOfLinesChanged = await _userProfileService.AddUserProfileService(userDetails);
+            if (!await _userProfileService.AddUserProfileService(userDetails))
+                return BadRequest("Could not create a new account");
+            if (!await _cryptoService.CreateUserWallets(userDetails.OId))
+                return BadRequest("Could not create user wallets");
             userWorkday!.UserProfile = userDetails;
             return Ok(userWorkday);
         }

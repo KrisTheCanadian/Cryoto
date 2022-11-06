@@ -15,12 +15,14 @@ namespace API.Tests.ControllersTests;
 public class UserProfileControllerTests
 {
     private readonly IUserProfileService _userProfileService;
+    private readonly ICryptoService _cryptoService;
     private readonly UserProfileController _controller;
 
     public UserProfileControllerTests()
     {
+        _cryptoService = A.Fake<ICryptoService>();
         _userProfileService = A.Fake<IUserProfileService>();
-        _controller = new UserProfileController(_userProfileService);
+        _controller = new UserProfileController(_userProfileService, _cryptoService);
     }
 
     [Fact]
@@ -46,7 +48,7 @@ public class UserProfileControllerTests
     [Fact]
     public async void UserProfileController_GetUserProfile_ReturnOK()
     {
-        var userProfileController = new UserProfileController(_userProfileService)
+        var userProfileController = new UserProfileController(_userProfileService, _cryptoService)
         {
             ControllerContext = new ControllerContext
             {
@@ -84,7 +86,7 @@ public class UserProfileControllerTests
 
 
     [Fact]
-    public async void UserProfileController_GetAllUsersWithNonExistingAccount_ReturnOK()
+    public async void UserProfileController_GetUserWithNonExistingAccount_ReturnOK()
     {
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
@@ -93,7 +95,8 @@ public class UserProfileControllerTests
         A.CallTo(() => _userProfileService.GetUserProfileDetails(A<string>._)).Returns(userProfileModel);
         A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._))!.Returns(
             Task.FromResult<UserProfileModel>(null!));
-        A.CallTo(() => _userProfileService.AddUserProfileService(userProfileModel)).Returns(1);
+        A.CallTo(() => _userProfileService.AddUserProfileService(userProfileModel)).Returns(true);
+        A.CallTo(() => _cryptoService.CreateUserWallets(userProfileModel.OId)).Returns(true);
 
 
         //Act

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models.WorkDay;
 
@@ -19,4 +20,5 @@ public class UserProfileModel
     public string Email { get; set; }
     public string Language { get; set; }
     public string[] Roles { get; set; }
+    public ICollection<WalletModel> Wallets { get; set; } = null!;
 }

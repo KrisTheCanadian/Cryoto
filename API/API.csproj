@@ -8,56 +8,59 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1" />
-        <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
-        <PackageReference Include="Azure.Identity" Version="1.7.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10" />
+        <PackageReference Include="Azure.Communication.Email" Version="1.0.0-beta.1"/>
+        <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2"/>
+        <PackageReference Include="Azure.Identity" Version="1.7.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10"/>
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.10"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.10" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="2.0.0-preview" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
-        <PackageReference Include="Solnet.Extensions" Version="6.1.0" />
-        <PackageReference Include="Solnet.KeyStore" Version="6.1.0" />
-        <PackageReference Include="Solnet.Wallet" Version="6.1.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.10"/>
+        <PackageReference Include="Microsoft.Identity.Web" Version="2.0.0-preview"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="NinjaNye.SearchExtensions" Version="3.0.1"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7"/>
+        <PackageReference Include="Solnet.Extensions" Version="6.1.0"/>
+        <PackageReference Include="Solnet.KeyStore" Version="6.1.0"/>
+        <PackageReference Include="Solnet.Wallet" Version="6.1.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="out\web.config" />
-        <_ContentIncludedByDefault Remove="out\API.deps.json" />
-        <_ContentIncludedByDefault Remove="out\API.runtimeconfig.json" />
-        <_ContentIncludedByDefault Remove="out\appsettings.Development.json" />
-        <_ContentIncludedByDefault Remove="out\appsettings.json" />
-        <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.deps.json" />
-        <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.runtimeconfig.json" />
-        <_ContentIncludedByDefault Remove="API.Tests\obj\API.Tests.csproj.nuget.dgspec.json" />
-        <_ContentIncludedByDefault Remove="API.Tests\obj\project.assets.json" />
-        <_ContentIncludedByDefault Remove="API.Tests\obj\project.packagespec.json" />
+        <_ContentIncludedByDefault Remove="out\web.config"/>
+        <_ContentIncludedByDefault Remove="out\API.deps.json"/>
+        <_ContentIncludedByDefault Remove="out\API.runtimeconfig.json"/>
+        <_ContentIncludedByDefault Remove="out\appsettings.Development.json"/>
+        <_ContentIncludedByDefault Remove="out\appsettings.json"/>
+        <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.deps.json"/>
+        <_ContentIncludedByDefault Remove="API.Tests\bin\Debug\net6.0\API.Tests.runtimeconfig.json"/>
+        <_ContentIncludedByDefault Remove="API.Tests\obj\API.Tests.csproj.nuget.dgspec.json"/>
+        <_ContentIncludedByDefault Remove="API.Tests\obj\project.assets.json"/>
+        <_ContentIncludedByDefault Remove="API.Tests\obj\project.packagespec.json"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="API.Tests\**" />
+        <Compile Remove="API.Tests\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="API.Tests\**" />
+        <EmbeddedResource Remove="API.Tests\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="API.Tests\**" />
+        <None Remove="API.Tests\**"/>
+        <None Include="appsettings.json"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove="API.Tests\**" />
+        <Content Remove="API.Tests\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations" />
+        <Folder Include="Migrations"/>
     </ItemGroup>
 
 </Project>
