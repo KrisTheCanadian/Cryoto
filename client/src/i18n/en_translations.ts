@@ -11,6 +11,9 @@ export const englishTranslations = {
     Logout: 'Logout',
     Search: 'Search',
     MarketPlace: 'Marketplace',
+    MyBalance: 'My Balance',
+    ToSpend: 'To Spend',
+    ToAward: 'To Award',
   },
   errors: {
     PermissionError: 'You do not have permission to access this page.',

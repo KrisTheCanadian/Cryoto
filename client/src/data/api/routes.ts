@@ -18,3 +18,7 @@ export const apiRouteUserProfile = `${apiEndpoint}userProfile`;
 export const apiRouteUserProfileGetUserProfile = `${apiRouteUserProfile}/GetUserProfile`;
 export const apiRouteUserGetAllUsers = `${apiRouteUserProfile}/GetAllUsers`;
 export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
+
+// Crypto
+export const apiRouteCrypto = `${apiEndpoint}Crypto`;
+export const apiRouteCryptoGetTokenBalance = `${apiRouteCrypto}/GetTokenBalance`;

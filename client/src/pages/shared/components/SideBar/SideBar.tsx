@@ -15,6 +15,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
 import {useMsal} from '@azure/msal-react';
 import {IPublicClientApplication} from '@azure/msal-browser';
+import {MiniWallet} from '@shared/components/SideBar/components/MiniWallet';
 
 import {
   routeAuthentication,
@@ -123,6 +124,7 @@ function SideBar() {
           </List>
         </nav>
       </Box>
+      {location.pathname !== routeWallet && <MiniWallet />}
     </Box>
   );
 }

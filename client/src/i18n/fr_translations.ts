@@ -11,6 +11,9 @@ export const frenchTranslations = {
     Logout: 'Se déconnecter',
     Search: 'Rechercher',
     MarketPlace: 'Marché',
+    MyBalance: 'Mon Solde',
+    ToSpend: 'Dépenser',
+    ToAward: 'Donner',
   },
   errors: {
     PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
