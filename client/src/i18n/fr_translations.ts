@@ -16,5 +16,8 @@ export const frenchTranslations = {
     PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
     AuthenticationError:
       "Veuillez s'il vous plaît vous connecter pour accéder à cette page.",
+    BackendError:
+      "Le serveur a rencontré une situation qu'il ne sait pas traiter.",
+    NoMorePosts: "Il n'y a plus de mesages à charger",
   },
 };

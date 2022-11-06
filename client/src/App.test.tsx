@@ -3,6 +3,7 @@ import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {MemoryRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
+import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
 
 import i18n from './i18n/i18n';
 import App from './App';
@@ -19,6 +20,7 @@ it('should load Main Page at /', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <I18nextProvider i18n={i18n}>
+          <AlertSystem />
           <App />
         </I18nextProvider>
       </MemoryRouter>,
@@ -33,6 +35,7 @@ it('should load wallet at /wallet', async () => {
   render(
     <I18nextProvider i18n={i18n}>
       <MemoryRouter initialEntries={['/wallet']}>
+        <AlertSystem />
         <App />
       </MemoryRouter>
     </I18nextProvider>,
@@ -45,11 +48,11 @@ it('should load wallet at /wallet', async () => {
 it('dark mode toggle should work', () => {
   render(
     <MemoryRouter initialEntries={['/wallet']}>
+      <AlertSystem />
       <App />
     </MemoryRouter>,
   );
   const darkModeSwitch = screen.getByTestId('dark-mode-toggle');
-  const bodyElement = darkModeSwitch.closest('header');
   const body = document.getElementsByTagName('body')[0];
 
   act(() => {

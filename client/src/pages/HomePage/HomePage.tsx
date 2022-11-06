@@ -1,5 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
 
 import {Alert, Box} from '@mui/material';
 import {MiddleColumn} from '@shared/components/MiddleColumn';
@@ -7,9 +6,11 @@ import PageFrame from '@shared/components/PageFrame';
 import {RightBar} from '@shared/components/RightBar';
 import IPage from 'data/api/types/IPage';
 import IPost from 'data/api/types/IPost';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useInfiniteQuery} from 'react-query';
 import {useMsal} from '@azure/msal-react';
+import AlertContext from '@shared/hooks/Alerts/AlertContext';
+import {useTranslation} from 'react-i18next';
 
 import {getNextPage} from '../../data/api/requests/posts';
 
@@ -19,6 +20,8 @@ function HomePage() {
   const {instance, accounts} = useMsal();
   const [postsPerLoad, setPostsPerLoad] = useState(10);
   const loader = useRef();
+  const dispatch = useContext(AlertContext);
+  const {t} = useTranslation();
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useInfiniteQuery<IPage<IPost[]>, Error>(
@@ -57,13 +60,24 @@ function HomePage() {
   }, [loader, handleObserver, hasNextPage]);
 
   const rightBarContent = 'Right bar content';
+
+  useEffect(() => {
+    if (status === 'success' && !isFetchingNextPage && !hasNextPage) {
+      dispatch.info(t('errors.NoMorePosts'));
+    }
+  }, [isFetchingNextPage, hasNextPage, dispatch, status, t]);
+
+  useEffect(() => {
+    if (status === 'error') {
+      dispatch.error(t('errors.BackendError'));
+    }
+  }, [isFetchingNextPage, hasNextPage, dispatch, status, t]);
+
   return (
     <PageFrame>
       <MiddleColumn>
         {status === 'error' && (
-          <Alert key="connection error" severity="error">
-            Unable to connect to back-end service.
-          </Alert>
+          <Alert severity="error">{t('errors.BackendError')}</Alert>
         )}
         {status === 'loading' &&
           Array.from(Array(12)).map(
@@ -120,7 +134,7 @@ function HomePage() {
         {!isFetchingNextPage && !hasNextPage && (
           <Box>
             <Alert key="no more posts" severity="info">
-              No more posts to show!
+              {t('errors.NoMorePosts')}
             </Alert>
           </Box>
         )}

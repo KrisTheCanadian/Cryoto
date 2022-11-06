@@ -5,6 +5,8 @@ import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {RequireAuth} from '@shared/components/RequireAuth';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {ReactQueryDevtools} from 'react-query/devtools';
+import {AlertProvider} from '@shared/hooks/Alerts/AlertContext';
+import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
 
 import Role from './pages/roles';
 import {
@@ -39,29 +41,32 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback="Loading...">
-        <ThemeContextProvider>
-          <CssBaseline />
-          <Routes>
-            <Route element={<RequireAuth {...[]} />}>
-              <Route path={routeHome} element={<HomePage />} />
-              <Route path={routeWallet} element={<Wallet />} />
-              <Route path={routeMarket} element={<MarketPlace />} />
-              <Route path={routeProfile} element={<Profile />} />
-              <Route path={routeOrders} element={<Orders />} />
-              <Route path={routeSettings} element={<Settings />} />
-            </Route>
-            <Route element={<RequireAuth {...[Role.Admin]} />}>
-              <Route path={routeStyleGuide} element={<StyleGuide />} />
-            </Route>
-            <Route
-              path={routeAuthentication}
-              element={<AuthenticationPage />}
-            />
-          </Routes>
-        </ThemeContextProvider>
-      </Suspense>
-      <ReactQueryDevtools />
+      <AlertProvider>
+        <Suspense fallback="Loading...">
+          <ThemeContextProvider>
+            <CssBaseline />
+            <AlertSystem />
+            <Routes>
+              <Route element={<RequireAuth {...[]} />}>
+                <Route path={routeHome} element={<HomePage />} />
+                <Route path={routeWallet} element={<Wallet />} />
+                <Route path={routeMarket} element={<MarketPlace />} />
+                <Route path={routeProfile} element={<Profile />} />
+                <Route path={routeOrders} element={<Orders />} />
+                <Route path={routeSettings} element={<Settings />} />
+              </Route>
+              <Route element={<RequireAuth {...[Role.Admin]} />}>
+                <Route path={routeStyleGuide} element={<StyleGuide />} />
+              </Route>
+              <Route
+                path={routeAuthentication}
+                element={<AuthenticationPage />}
+              />
+            </Routes>
+          </ThemeContextProvider>
+        </Suspense>
+        <ReactQueryDevtools />
+      </AlertProvider>
     </QueryClientProvider>
   );
 }

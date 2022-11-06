@@ -15,5 +15,7 @@ export const englishTranslations = {
   errors: {
     PermissionError: 'You do not have permission to access this page.',
     AuthenticationError: 'Please log in to view this page.',
+    BackendError: 'There was an error communicating with the server.',
+    NoMorePosts: 'No more posts to load.',
   },
 };
