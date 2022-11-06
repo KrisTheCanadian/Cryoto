@@ -20,4 +20,17 @@ export const frenchTranslations = {
       "Le serveur a rencontré une situation qu'il ne sait pas traiter.",
     NoMorePosts: "Il n'y a plus de mesages à charger",
   },
+  landingPage: {
+    SignIn: "S'identifier",
+    ActivateButton: 'Activez',
+    LandingPage1: 'Tendez la main, soyez récompensé,',
+    LandingPage2: 'Sentez-vous reconnus.',
+    LandingPageSubText:
+      'Cryoto vous permet de reconnaître et célébrer les personnes que vous côtoyez chaque jour au travail avec le pouvoir de la cryptomonaie.',
+    FeatureDescription:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    RecognizeAlt: 'Reconnaissez',
+    CelebrateAlt: 'Célébrez',
+    RewardsAlt: 'Recompenses',
+  },
 };

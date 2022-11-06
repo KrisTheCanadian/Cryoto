@@ -9,10 +9,12 @@ import {
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {NavLink, useLocation} from 'react-router-dom';
-import {Home, Wallet, Login} from '@mui/icons-material';
+import {Home, Wallet, Login, Logout} from '@mui/icons-material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
+import {useMsal} from '@azure/msal-react';
+import {IPublicClientApplication} from '@azure/msal-browser';
 
 import {
   routeAuthentication,
@@ -21,10 +23,15 @@ import {
   routeWallet,
 } from '../../../routes';
 
+function handleLogout(instance: IPublicClientApplication) {
+  instance.logoutRedirect();
+}
+
 function SideBar() {
   const {t} = useTranslation();
   const location = useLocation();
   const theme = useTheme();
+  const {instance} = useMsal();
 
   const sideBarStyle = {
     // to adjust to the navbar height
@@ -106,6 +113,12 @@ function SideBar() {
                 <Login />
               </ListItemIcon>
               <ListItemText primary="Authentication" />
+            </ListItemButton>
+            <ListItemButton onClick={() => handleLogout(instance)}>
+              <ListItemIcon>
+                <Logout />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
             </ListItemButton>
           </List>
         </nav>

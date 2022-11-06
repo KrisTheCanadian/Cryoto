@@ -49,6 +49,7 @@ describe('Authentication and Permission tests', () => {
   };
   const PermissionError = 'You do not have permission to access this page.';
   const AuthenticationError = 'Please log in to view this page.';
+  const SignIn = 'Sign In';
 
   beforeEach(() => {
     pca = new PublicClientApplication(msalConfig);
@@ -61,6 +62,12 @@ describe('Authentication and Permission tests', () => {
   });
 
   it('should ensure the home page is protected', async () => {
+    const intersectionObserverMock = () => ({
+      observe: () => null,
+    });
+    window.IntersectionObserver = jest
+      .fn()
+      .mockImplementation(intersectionObserverMock);
     render(
       <MemoryRouter initialEntries={['/']}>
         <I18nextProvider i18n={i18n}>
@@ -69,7 +76,7 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should ensure the wallet page is protected', async () => {

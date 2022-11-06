@@ -8,6 +8,8 @@ import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
 import i18n from './i18n/i18n';
 import App from './App';
 
+const SignIn = 'Sign In';
+
 it('should load Main Page at /', async () => {
   const intersectionObserverMock = () => ({
     observe: () => null,
@@ -26,9 +28,7 @@ it('should load Main Page at /', async () => {
       </MemoryRouter>,
     );
   });
-  const homeLink = screen.getByText('Home').closest('a');
-
-  expect(homeLink).toHaveClass('Mui-selected');
+  expect(screen.queryByText(SignIn)).toBeInTheDocument();
 });
 
 it('should load wallet at /wallet', async () => {

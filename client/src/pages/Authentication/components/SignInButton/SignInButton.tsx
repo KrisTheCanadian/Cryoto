@@ -1,7 +1,8 @@
 import React from 'react';
 import {useMsal} from '@azure/msal-react';
-import Button from 'react-bootstrap/Button';
+import {Button} from '@mui/material';
 import {IPublicClientApplication} from '@azure/msal-browser';
+import {useTranslation} from 'react-i18next';
 
 import {loginRequest} from '../../authConfig';
 
@@ -11,15 +12,14 @@ function handleLogin(instance: IPublicClientApplication) {
 
 function SignInButton() {
   const {instance} = useMsal();
-  const signIn = 'Sign in';
+  const {t} = useTranslation();
   return (
     <Button
       id="sign-in-button"
-      variant="secondary"
-      className="ml-auto"
+      variant="outlined"
       onClick={() => handleLogin(instance)}
     >
-      {signIn}
+      {t('landingPage.SignIn')}
     </Button>
   );
 }

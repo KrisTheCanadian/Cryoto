@@ -47,8 +47,8 @@ function App() {
             <CssBaseline />
             <AlertSystem />
             <Routes>
+              <Route path={routeHome} element={<HomePage />} />
               <Route element={<RequireAuth {...[]} />}>
-                <Route path={routeHome} element={<HomePage />} />
                 <Route path={routeWallet} element={<Wallet />} />
                 <Route path={routeMarket} element={<MarketPlace />} />
                 <Route path={routeProfile} element={<Profile />} />
