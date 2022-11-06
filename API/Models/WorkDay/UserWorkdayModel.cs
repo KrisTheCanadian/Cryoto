@@ -1,5 +1,8 @@
-﻿namespace API.Models.WorkDay;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace API.Models.WorkDay;
+
+[ExcludeFromCodeCoverage]
 public class UserWorkdayModel
 {
     public UserWorkdayModel(UserProfileModel? userProfile)

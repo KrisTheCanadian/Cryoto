@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Models.Posts;
 using API.Models.WorkDay;
 using API.Repository.Interfaces;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class PostRepository : IPostRepository
 {
     private IDataContext Context { get; set; }

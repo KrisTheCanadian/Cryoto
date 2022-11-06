@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Models.Posts;
 
+[ExcludeFromCodeCoverage]
 public class PostUpdateModel
 {
     public string Id { get; set; }

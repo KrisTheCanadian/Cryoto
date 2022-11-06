@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using API.Models.WorkDay;
 
 namespace API.Models;
 
+[ExcludeFromCodeCoverage]
 public class WalletModel
 {
     public WalletModel(string publicKey, string wallet, string oId, string walletType, double tokenBalance)

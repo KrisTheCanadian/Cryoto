@@ -34,12 +34,12 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hd:p:u:of", ["database=", "posts=", "users=", "output", "files"])
     except getopt.GetoptError:
-        print('initdb.py -d <database connection string:"Username=postgres;Password=postgres;Server=localhost;Database=postgres"> -p <posts> -u <users>')
+        print('initdb.py -d <database connection> -p <posts> -u <users>')
         sys.exit(2)
         
     for opt, arg in opts:
         if opt == '-h':
-            print('initdb.py -d <database connection string:"Username=postgres;Password=postgres;Server=localhost;Database=postgres"> -p <posts> -u <users>')
+            print('initdb.py -d <database connection string> -p <posts> -u <users>')
             sys.exit()
         elif opt in ("-p", "--posts"):
             posts = int(arg)
@@ -55,26 +55,46 @@ def main(argv):
     
     # split connection string 
     # format is Username=postgres;Password=postgres;Server=localhost;Database=postgres
+    # save it in a dictionary with the keys as the keys in the connection string
+    db = {}
+
+    for item in database.split(';'):
+        key, value = item.split('=')
+        db[key] = value
+
     db_user = ''
     db_password = ''
     db_server = ''
     db_name = ''
 
     try:
-        db_user = database.split(';')[0].split('=')[1]
-        db_password = database.split(';')[1].split('=')[1]
-        db_server = database.split(';')[2].split('=')[1]
-        db_name = database.split(';')[3].split('=')[1]
+        if(db['Username'] != ''):
+            db_user = db['Username']
+        else:
+            db_user = db['User Id']
+            
+        db_password = db['Password']
+        db_server = db['Server']
+        db_name = db['Database']
 
     except:
         # if no database connection string is provided, grab it from appsettings.json
         try:
             with open('API/appsettings.json') as json_file:
                 data = json.load(json_file)
-                db_user = data['ConnectionStrings']['PostgresConnection'].split(';')[0].split('=')[1]
-                db_password = data['ConnectionStrings']['PostgresConnection'].split(';')[1].split('=')[1]
-                db_server = data['ConnectionStrings']['PostgresConnection'].split(';')[2].split('=')[1]
-                db_name = data['ConnectionStrings']['PostgresConnection'].split(';')[3].split('=')[1]
+                connectionString = data['ConnectionStrings']['PostgresConnection'];
+                for item in connectionString.split(';'):
+                    key, value = item.split('=')
+                    db[key] = value
+
+                if(db['Username'] != ''):
+                    db_user = db['Username']
+                else:
+                    db_user = db['User Id']
+                    
+                db_password = db['Password']
+                db_server = db['Server']
+                db_name = db['Database']
         except:
             print('no database connection string provided and no valid appsettings.json found')
             sys.exit(2)

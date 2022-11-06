@@ -1,9 +1,10 @@
-import {MockAppProviders} from '@shared/testing/mocks';
 import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {MemoryRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
 import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
+import {StyleGuide} from 'pages/StyleGuide';
+import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 
 import i18n from './i18n/i18n';
 import App from './App';
@@ -43,6 +44,20 @@ it('should load wallet at /wallet', async () => {
   const homeLink = screen.getByText('Wallet').closest('a');
 
   expect(homeLink).toHaveClass('Mui-selected');
+});
+
+it('should load styleguide at /style-guide', async () => {
+  render(
+    <I18nextProvider i18n={i18n}>
+      <ThemeContextProvider>
+        <MemoryRouter initialEntries={['/style-guide']}>
+          <StyleGuide />
+        </MemoryRouter>
+      </ThemeContextProvider>
+    </I18nextProvider>,
+  );
+
+  expect(screen.getByText('Style Guide')).toBeInTheDocument();
 });
 
 it('dark mode toggle should work', () => {

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace API.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class updated_PostModel_Id : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

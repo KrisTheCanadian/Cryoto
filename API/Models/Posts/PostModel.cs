@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using API.Models.WorkDay;
 
 namespace API.Models.Posts;
 
+[ExcludeFromCodeCoverage]
 public class PostModel
 {
     [Key] public string Id { get; set; }

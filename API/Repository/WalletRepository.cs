@@ -1,9 +1,11 @@
-﻿using API.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.Models;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class WalletRepository : IWalletRepository
 {
     public WalletRepository(IDataContext context)

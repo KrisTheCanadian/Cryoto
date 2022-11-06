@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import {apiRouteUserProfileGetUserProfile} from '../../../../data/api/routes';
 
 async function getUserProfile(accessToken: any) {
@@ -6,12 +8,13 @@ async function getUserProfile(accessToken: any) {
 
   headers.append('Authorization', bearer);
 
-  const options = {
-    method: 'GET',
-    headers,
-  };
-  return fetch(apiRouteUserProfileGetUserProfile, options).then((response) =>
-    response.json(),
-  );
+  // convert fetch to axios for consistency
+  const res = await axios.get(apiRouteUserProfileGetUserProfile, {
+    headers: {
+      Authorization: bearer,
+    },
+  });
+
+  return res.data;
 }
 export default getUserProfile;

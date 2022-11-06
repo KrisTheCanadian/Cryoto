@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Utils;
 
+[ExcludeFromCodeCoverage]
 public class PaginationWrapper<T>
 {
     public IEnumerable<T> Data { get; set; }

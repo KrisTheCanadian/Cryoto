@@ -1,10 +1,12 @@
-﻿using API.Models.WorkDay;
+﻿using System.Diagnostics.CodeAnalysis;
+using API.Models.WorkDay;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using NinjaNye.SearchExtensions;
 
 namespace API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class UserProfileRepository : IUserProfileRepository
 {
     public UserProfileRepository(IDataContext context)

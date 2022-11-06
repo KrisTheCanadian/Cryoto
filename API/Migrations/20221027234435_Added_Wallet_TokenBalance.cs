@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace API.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class Added_Wallet_TokenBalance : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

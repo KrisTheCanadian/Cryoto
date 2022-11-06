@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Models.Posts;
 
+[ExcludeFromCodeCoverage]
 public class PostCreateModel
 {
     public string Message { get; set; }
