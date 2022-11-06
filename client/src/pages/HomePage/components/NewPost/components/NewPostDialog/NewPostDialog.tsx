@@ -150,6 +150,7 @@ function NewPostDialog(props: NewPostDialogProps) {
       <DialogTitle id="responsive-dialog-title">
         <Box sx={{display: 'flex', alignItems: 'baseline'}}>
           <Autocomplete
+            id="autocomplete"
             sx={{flex: 1, ml: theme.spacing(1)}}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             multiple
@@ -164,6 +165,7 @@ function NewPostDialog(props: NewPostDialogProps) {
                 label={t<string>('homePage.SendTo')}
                 placeholder=""
                 onKeyUp={handleSearch}
+                id="new-post-dialog-recipients"
               />
             )}
           />
@@ -178,6 +180,7 @@ function NewPostDialog(props: NewPostDialogProps) {
             label={t<string>('homePage.SelectValue')}
             onChange={handleCompanyValueChange}
             sx={{width: 300, mr: theme.spacing(1)}}
+            id="new-post-dialog-company-value"
           >
             {companyValues.map((value) => (
               <MenuItem key={value} value={value}>
@@ -195,6 +198,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           onKeyPress={handleAmountKeyPress}
           value={amount}
           placeholder={t<string>('homePage.AddCoins')}
+          id="new-post-dialog-amount"
         />
 
         <StyledTextareaAutosize
@@ -202,6 +206,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           key="message-field"
           aria-label={t<string>('homePage.WriteMessage')}
           placeholder={t<string>('homePage.WriteMessage')}
+          id="new-post-dialog-message"
         />
       </DialogContent>
       <DialogActions sx={{mt: 1, mb: 1, mr: 2, ml: 2}}>

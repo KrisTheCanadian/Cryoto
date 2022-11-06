@@ -34,7 +34,7 @@ function RightBar(props: Props) {
     overFlowAnchor: 'none',
   };
   return (
-    <Box p={2} sx={rightBarStyle}>
+    <Box id="rightBar" p={2} sx={rightBarStyle}>
       {children}
     </Box>
   );

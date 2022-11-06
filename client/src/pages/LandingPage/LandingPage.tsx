@@ -97,7 +97,11 @@ function LandingPage() {
         </Stack>
       </Stack>
       <Stack sx={mainTextGroupStyle}>
-        <Typography variant="h2" sx={mainTextIndividualStyle}>
+        <Typography
+          id="landingPageWelcome"
+          variant="h2"
+          sx={mainTextIndividualStyle}
+        >
           {t('landingPage.LandingPage1')}
         </Typography>
         <Typography

@@ -87,7 +87,7 @@ stages:
               && export CYPRESS_CLIENT_SECRET=$(CYPRESS_CLIENT_SECRET)
               && export CYPRESS_PASSWORD=$(CYPRESS_PASSWORD)
               && export CYPRESS_SCOPE=$(CYPRESS_SCOPE)
-              && yarn --cwd ./client cypress run
+              && yarn --cwd ./client cypress run --config baseUrl="http://localhost:5173" --browser chrome
             displayName: Cypress Test
 
           - task: PublishBuildArtifacts@1

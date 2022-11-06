@@ -110,7 +110,9 @@ function Posts() {
 
   return (
     <>
-      <NewPost addPost={addPost} />
+      {status === 'success' && accounts && (
+        <NewPost addPost={addPost} name={accounts[0].name} />
+      )}
       {status === 'error' && (
         <Alert severity="error">{t('errors.BackendError')}</Alert>
       )}

@@ -1,5 +1,6 @@
+/* eslint-disable id-length */
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
+
 import {
   Card,
   Avatar,
@@ -19,12 +20,20 @@ import {NewPostDialog} from './components';
 
 interface NewPostProps {
   addPost: (post: IPost) => void;
+  name: string | undefined;
 }
 
 function NewPost(props: NewPostProps) {
   const {addPost} = props;
   const theme = useTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // get initials from name
+  const initials = props.name
+    ?.split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase();
 
   function handleDialogOpen() {
     setDialogOpen(true);
@@ -53,10 +62,11 @@ function NewPost(props: NewPostProps) {
                 sx={{bgcolor: colors.deepPurple[500], mr: theme.spacing(1)}}
                 aria-label="recipe"
               >
-                GK
+                {initials}
               </Avatar>
               <RoundedInput>
                 <StyledInput
+                  id="new-post-input"
                   onClick={handleDialogOpen}
                   placeholder={t('homePage.NewPost')}
                 />

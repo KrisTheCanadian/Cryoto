@@ -48,7 +48,11 @@ function ProfileContent() {
       {userProfileData ? (
         <ProfileData userProfileData={userProfileData} />
       ) : (
-        <Button variant="secondary" onClick={RequestProfileData}>
+        <Button
+          id="RequestProfile"
+          variant="secondary"
+          onClick={RequestProfileData}
+        >
           {request}
         </Button>
       )}

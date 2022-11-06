@@ -31,6 +31,7 @@ function NavBar() {
   const toggleColorMode = colorMode.toggleColorMode;
 
   const MainNavigationBar = styled(Toolbar)(({theme}) => ({
+    id: 'main-navigation-bar',
     background: theme.interface.main,
     display: 'flex',
     justifyContent: 'space-between',

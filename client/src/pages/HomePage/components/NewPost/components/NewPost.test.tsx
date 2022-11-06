@@ -9,7 +9,7 @@ describe('Search functionality', () => {
     await act(async () => {
       render(
         <MockAppProviders>
-          <NewPost addPost={jest.fn()} />
+          <NewPost name="Test Name" addPost={jest.fn()} />
         </MockAppProviders>,
       );
     });

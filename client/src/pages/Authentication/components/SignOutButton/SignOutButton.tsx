@@ -12,6 +12,7 @@ function SignOutButton() {
   const signOut = 'Sign out';
   return (
     <Button
+      id="signOutButton"
       variant="secondary"
       className="ml-auto"
       onClick={() => handleLogout(instance)}
