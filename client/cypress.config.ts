@@ -1,4 +1,5 @@
 import {defineConfig} from 'cypress';
+import codeCoverageTask from '@cypress/code-coverage/task';
 
 export default defineConfig({
   retries: {
@@ -9,15 +10,11 @@ export default defineConfig({
     // Default is 0
     openMode: 0,
   },
-  reporter: 'junit',
-  reporterOptions: {
-    mochaFile: 'cypress/results/test-output-[hash].xml',
-    toConsole: true,
-    attachments: true,
-  },
   e2e: {
     setupNodeEvents(on, config) {
-      // runs before all tests in the project
+      codeCoverageTask(on, config);
+
+      return config;
     },
     experimentalModifyObstructiveThirdPartyCode: true,
     experimentalSessionAndOrigin: true,

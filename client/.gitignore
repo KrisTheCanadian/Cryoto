@@ -28,3 +28,9 @@ coverage
 junit.xml
 
 .env
+
+cypress/screenshots
+cypress/downloads
+cypress/videos
+cypressCoverage
+.nyc_output
