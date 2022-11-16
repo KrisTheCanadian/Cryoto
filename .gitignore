@@ -2,3 +2,6 @@
 API/appsettings.Development.json
 
 API/appsettings.json
+
+# Python virtual environment
+venv

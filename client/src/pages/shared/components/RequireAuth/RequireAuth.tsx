@@ -1,36 +1,31 @@
-/* eslint-disable no-nested-ternary */
 import {useIsAuthenticated, useMsal} from '@azure/msal-react';
-import {Outlet} from 'react-router-dom';
-import {Alert} from '@mui/material';
-import PageFrame from '@shared/components/PageFrame';
-import {MiddleColumn} from '@shared/components/MiddleColumn';
+import {Outlet, useNavigate, Navigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
+import {useEffect} from 'react';
 
 import Role from '../../../roles';
+import {routeHome} from '../../../routes';
 
 function RequireAuth(allowedRoles: Role[]) {
   const {t} = useTranslation();
   const {accounts} = useMsal();
   const isAuthenticated = useIsAuthenticated();
   const userRoles: Role[] = filterRoles(accounts[0]?.idTokenClaims?.roles);
+  const navigate = useNavigate();
 
-  return isAuthenticated ? (
-    hasPermission(userRoles, allowedRoles) ? (
-      <Outlet />
-    ) : (
-      <PageFrame>
-        <MiddleColumn>
-          <Alert severity="error">{t('errors.PermissionError')}</Alert>
-        </MiddleColumn>
-      </PageFrame>
-    )
-  ) : (
-    <PageFrame>
-      <MiddleColumn>
-        <Alert severity="error">{t('errors.AuthenticationError')}</Alert>
-      </MiddleColumn>
-    </PageFrame>
-  );
+  useEffect(() => {
+    if (isAuthenticated && !hasPermission(userRoles, allowedRoles)) {
+      navigate(routeHome, {
+        state: {error: t('errors.PermissionError')},
+      });
+    }
+  }, [allowedRoles, isAuthenticated, navigate, t, userRoles]);
+
+  if (isAuthenticated && hasPermission(userRoles, allowedRoles)) {
+    return <Outlet />;
+  } else {
+    return <Navigate to={routeHome} />;
+  }
 }
 
 function hasPermission(userRoles: Role[], allowedRoles: Role[]) {

@@ -46,30 +46,18 @@ describe('Authentication', () => {
     // check if we can access the routes
     // check wallet
     cy.visit('/wallet');
-    cy.get('.MuiAlert-message')
-      .should('exist')
-      .should('be.visible')
-      .should('contain', 'Please log in to view this page');
+    cy.get('#sign-in-button').should('exist');
     // check orders
     cy.visit('/orders');
-    cy.get('.MuiAlert-message')
-      .should('exist')
-      .should('be.visible')
-      .should('contain', 'Please log in to view this page');
+    cy.get('#sign-in-button').should('exist');
 
     // check homepage
     cy.visit('/');
-    cy.get('#landingPageWelcome')
-      .should('exist')
-      .should('be.visible')
-      .should('contain', 'Get Rewarded');
+    cy.get('#sign-in-button').should('exist');
 
     // check marketplace
     cy.visit('/market');
-    cy.get('.MuiAlert-message')
-      .should('exist')
-      .should('be.visible')
-      .should('contain', 'Please log in to view this page');
+    cy.get('#sign-in-button').should('exist');
   });
 });
 

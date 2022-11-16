@@ -16,6 +16,7 @@ import {
 import AlertContext from '@shared/hooks/Alerts/AlertContext';
 import {useTranslation} from 'react-i18next';
 import IPages from 'data/api/types/IPages';
+import {useLocation} from 'react-router-dom';
 
 import {getNextPage} from '../../data/api/requests/posts';
 import {LandingPage} from '../LandingPage';
@@ -33,6 +34,16 @@ function updateFirstPage(post: IPost) {
 
 function HomePage() {
   const rightBarContent = 'Right bar content';
+  const dispatch = useContext(AlertContext);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state !== null) {
+      const err = location.state.error;
+      dispatch.error(err);
+    }
+  }, [dispatch, location.state]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <UnauthenticatedTemplate>

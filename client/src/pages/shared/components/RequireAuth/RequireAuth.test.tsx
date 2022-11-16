@@ -48,7 +48,6 @@ describe('Authentication and Permission tests', () => {
     },
   };
   const PermissionError = 'You do not have permission to access this page.';
-  const AuthenticationError = 'Please log in to view this page.';
   const SignIn = 'Sign In';
 
   beforeEach(() => {
@@ -88,7 +87,7 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should ensure the marketplace page is protected', async () => {
@@ -100,7 +99,7 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should ensure the profile page is protected', async () => {
@@ -112,7 +111,7 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should ensure the orders page is protected', async () => {
@@ -124,7 +123,7 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should ensure the settings page is protected', async () => {
@@ -136,10 +135,18 @@ describe('Authentication and Permission tests', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.queryByText(AuthenticationError)).toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
   it('should display a permission error if a regular user tries to access the style guide', async () => {
+    const intersectionObserverMock = () => ({
+      observe: () => null,
+      unobserve: (el: any) => null,
+    });
+    window.IntersectionObserver = jest
+      .fn()
+      .mockImplementation(intersectionObserverMock);
+
     await act(async () => {
       render(
         <MsalProvider instance={pca}>
@@ -152,7 +159,7 @@ describe('Authentication and Permission tests', () => {
       );
     });
 
-    expect(screen.queryByText(AuthenticationError)).not.toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).not.toBeInTheDocument();
     expect(screen.queryByText(PermissionError)).toBeInTheDocument();
   });
 
@@ -169,7 +176,7 @@ describe('Authentication and Permission tests', () => {
       );
     });
 
-    expect(screen.queryByText(AuthenticationError)).not.toBeInTheDocument();
+    expect(screen.queryByText(SignIn)).not.toBeInTheDocument();
     expect(screen.queryByText(PermissionError)).not.toBeInTheDocument();
     expect(screen.queryByText('Wallet Route')).toBeInTheDocument();
   });
