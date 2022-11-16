@@ -7,12 +7,15 @@ using API.Services.Interfaces;
 using Azure.Identity;
 using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 var azureCredentialOptions = new DefaultAzureCredentialOptions
 {
     ExcludeEnvironmentCredential = true,
@@ -118,7 +121,7 @@ configuration.AddAzureKeyVault(
 builder.Services.AddHostedService<CryotoBackgroundService>();
 builder.Services.AddAzureClients(factoryBuilder =>
 {
-    factoryBuilder.AddClient<QueueClient, QueueClientOptions>((options)=>
+    factoryBuilder.AddClient<QueueClient, QueueClientOptions>((_) =>
     {
         var queueName = configuration.GetSection("queueName").Value;
         var queueConnectionString = configuration.GetSection("queueConnectionString").Value;
@@ -126,6 +129,9 @@ builder.Services.AddAzureClients(factoryBuilder =>
     });
 });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddControllers().AddNewtonsoftJson(options=>
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
 var app = builder.Build();
 
@@ -146,6 +152,9 @@ app.UseSwaggerUI(options =>
     options.OAuthUseBasicAuthenticationWithAccessCodeGrant();
 });
 
+var option = new RewriteOptions();
+option.AddRedirect("^$", "swagger");
+app.UseRewriter(option);
 
 app.UseHttpsRedirection();
 

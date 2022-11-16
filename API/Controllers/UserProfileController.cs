@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using API.Models.WorkDay;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 
 namespace API.Controllers;
 
@@ -12,12 +14,17 @@ public class UserProfileController : ControllerBase
 {
     private readonly IUserProfileService _userProfileService;
     private readonly ICryptoService _cryptoService;
+    private readonly ClaimsIdentity? _identity;
+    private readonly string _oId;
 
 
-    public UserProfileController(IUserProfileService userProfileService, ICryptoService cryptoService)
+    public UserProfileController(IUserProfileService userProfileService, ICryptoService cryptoService,
+        IHttpContextAccessor contextAccessor)
     {
         _userProfileService = userProfileService;
         _cryptoService = cryptoService;
+        _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
     [HttpGet]
@@ -47,24 +54,16 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<UserWorkdayModel>> GetUserProfile([FromHeader] string authorization)
+    public async Task<ActionResult<UserProfileModel>> GetUserProfile()
     {
-        var userWorkday = _userProfileService.GetUserWorkday().Result;
-        var userDetails = _userProfileService.GetUserProfileDetails(authorization);
-        var user = await _userProfileService.GetUserProfileService(userDetails.OId);
-        if (user != null)
-        {
-            userWorkday!.UserProfile = user;
-            return Ok(userWorkday);
-        }
-        else
-        {
-            if (!await _userProfileService.AddUserProfileService(userDetails))
-                return BadRequest("Could not create a new account");
-            if (!await _cryptoService.CreateUserWallets(userDetails.OId))
-                return BadRequest("Could not create user wallets");
-            userWorkday!.UserProfile = userDetails;
-            return Ok(userWorkday);
-        }
+        var userProfileModel = await _userProfileService.GetUserProfileService(_oId);
+        if (userProfileModel != null) return Ok(userProfileModel);
+
+        userProfileModel = await _userProfileService.AddUserProfileService(_identity);
+        if (userProfileModel == null)
+            return BadRequest("Could not create a new account");
+        if (!await _cryptoService.CreateUserWallets(_oId))
+            return BadRequest("Could not create user wallets");
+        return Ok(userProfileModel);
     }
 }

@@ -16,12 +16,15 @@ public class PostsController : ControllerBase
 {
     private readonly ICryptoService _cryptoService;
     private readonly IPostService _postService;
+    private readonly string _actorId;
 
 
-    public PostsController(IPostService postService, ICryptoService cryptoService)
+    public PostsController(IPostService postService, ICryptoService cryptoService, IHttpContextAccessor contextAccessor)
     {
         _postService = postService;
         _cryptoService = cryptoService;
+        var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
     [HttpGet]
@@ -49,11 +52,7 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PostModel>> Create(PostCreateModel postCreateModel)
     {
-        // get ActorID
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
-
-        var postModel = new PostModel(postCreateModel, actorId);
+        var postModel = new PostModel(postCreateModel, _actorId);
         var created = await _postService.CreateAsync(postModel);
         if (!created)
             return BadRequest("Could not create the post");
@@ -62,20 +61,20 @@ public class PostsController : ControllerBase
         if (amount == 0) return Ok(createdPostModel);
 
 
-        var actorBalance = await _cryptoService.GetTokenBalanceAsync(actorId, "toAward");
+        var actorBalance = await _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
         if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);
             return BadRequest("Your balance is not enough");
         }
 
-        var oIdsList = new List<string> { actorId };
+        var oIdsList = new List<string> { _actorId };
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
         {
             oIdsList.Add(recipientProfile.OId);
-            await _cryptoService.SendTokens(amount, actorId, recipientProfile.OId);
+            await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
             await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
-            await _cryptoService.UpdateTokenBalance(-amount, actorId, "toAward");
+            await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);
@@ -90,13 +89,9 @@ public class PostsController : ControllerBase
         var existingPost = await _postService.GetByIdAsync(postUpdateModel.Id);
         if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
 
-        // get ActorID
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
-
-        var postModel = new PostModel(postUpdateModel, actorId);
+        var postModel = new PostModel(postUpdateModel, _actorId);
         var updated = await _postService.UpdateAsync(postModel);
-        if (!updated) return BadRequest("Could not upddate the post");
+        if (!updated) return BadRequest("Could not update the post");
         var updatedPostModel = await _postService.GetByIdAsync(postModel.Id);
 
         return Ok(updatedPostModel);

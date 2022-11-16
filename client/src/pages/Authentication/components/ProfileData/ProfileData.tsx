@@ -7,7 +7,6 @@ function ProfileData(props: any) {
   const name = 'Name: ';
   const email = 'Email: ';
   const id = 'Id: ';
-  const workerID = 'WorkerID: ';
   const company = 'Company: ';
   const supervisoryOrganization = 'Department: ';
   const managerReference = 'Manager: ';
@@ -15,21 +14,17 @@ function ProfileData(props: any) {
   const countryReference = 'CountryReference: ';
   const mobile = 'Phone Number: ';
   const fax = 'Fax: ';
-  const localReference = 'Language: ';
 
   return (
     <div id="profile-div">
       <p>
-        <strong>{name} </strong> {props.userProfileData.userProfile.name}
+        <strong>{name} </strong> {props.userProfileData.name}
       </p>
       <p>
-        <strong>{email} </strong> {props.userProfileData.userProfile.email}
+        <strong>{email} </strong> {props.userProfileData.email}
       </p>
       <p>
-        <strong>{id} </strong> {props.userProfileData.userProfile.oId}
-      </p>
-      <p>
-        <strong>{workerID} </strong> {props.userProfileData.workerID}
+        <strong>{id} </strong> {props.userProfileData.oId}
       </p>
       <p>
         <strong>{company} </strong> {props.userProfileData.company}
@@ -54,10 +49,6 @@ function ProfileData(props: any) {
       </p>
       <p>
         <strong>{fax} </strong> {props.userProfileData.fax}
-      </p>
-      <p>
-        <strong>{localReference} </strong>{' '}
-        {props.userProfileData.localReference}
       </p>
     </div>
   );

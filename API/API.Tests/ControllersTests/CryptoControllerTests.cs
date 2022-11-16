@@ -6,6 +6,7 @@ using API.Models.WorkDay;
 using API.Services.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
@@ -19,9 +20,9 @@ public class CryptoControllerTests
 
     public CryptoControllerTests()
     {
-        var userProfileService = A.Fake<IUserProfileService>();
         _cryptoService = A.Fake<ICryptoService>();
-        _controller = new CryptoController(_cryptoService, userProfileService);
+        var contextAccessor = A.Fake<IHttpContextAccessor>();
+        _controller = new CryptoController(_cryptoService, contextAccessor);
     }
 
     [Fact]
@@ -41,22 +42,22 @@ public class CryptoControllerTests
             .Returns(true);
 
         //Act
-        var actionResult = await _controller.PostTransaction("", amount, receiverOId);
+        var actionResult = await _controller.PostTransaction(amount, receiverOId);
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult!.Value as RpcTransactionResult;
 
         //Assert
-        A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._,  A<string>._))
+        A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
             .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._,A<string>._))
+        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._, A<string>._))
             .MustHaveHappenedTwiceExactly();
-        
+
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType<OkObjectResult>();
         objectResultValue?.result.Should().Be(rpcTransactionResult.Result.result);
         objectResultValue?.error.Should().BeNull();
     }
-    
+
     [Fact]
     public async void CryptoController_PostTransaction_ReturnsBadRequest()
     {
@@ -69,33 +70,33 @@ public class CryptoControllerTests
             .Returns(rpcTransactionResultError);
 
         //Act
-        var actionResult = await _controller.PostTransaction("", amount, receiverOId);
+        var actionResult = await _controller.PostTransaction(amount, receiverOId);
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value;
 
         //Assert
         A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
             .MustHaveHappenedOnceExactly();
-        
+
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType<BadRequestObjectResult>();
         objectResultValue.Should().BeOfType<RpcTransactionResult.Error>();
     }
-    
+
     [Fact]
     public async void CryptoController_PurchaseTransaction_ReturnsOK()
     {
         //Arrange
         var rpcTransactionResult = GetRpcTransactionResultSuccessful();
         var amount = A.Dummy<double>();
-        
+
         A.CallTo(() => _cryptoService.CreatePurchase(A<double>._, A<string>._))
-           .Returns(rpcTransactionResult);
+            .Returns(rpcTransactionResult);
         A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._, "toSpend"))
             .Returns(true);
-        
+
         //Act
-        var actionResult = await _controller.PurchaseTransaction("",amount);
+        var actionResult = await _controller.PurchaseTransaction(amount);
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult!.Value as RpcTransactionResult;
 
@@ -103,27 +104,27 @@ public class CryptoControllerTests
         //Assert
         A.CallTo(() => _cryptoService.CreatePurchase(A<double>._, A<string>._))
             .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._,"toSpend"))
+        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._, "toSpend"))
             .MustHaveHappenedOnceExactly();
-        
+
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType<OkObjectResult>();
         objectResultValue?.result.Should().Be(rpcTransactionResult.Result.result);
         objectResultValue?.error.Should().BeNull();
     }
-    
+
     [Fact]
     public async void CryptoController_PurchaseTransaction_ReturnsBadRequest()
     {
         //Arrange
         var rpcTransactionResultError = GetRpcTransactionResultError();
         var amount = A.Dummy<double>();
-        
+
         A.CallTo(() => _cryptoService.CreatePurchase(A<double>._, A<string>._))
             .Returns(rpcTransactionResultError);
 
         //Act
-        var actionResult = await _controller.PurchaseTransaction("",amount);
+        var actionResult = await _controller.PurchaseTransaction(amount);
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value;
 
@@ -147,7 +148,7 @@ public class CryptoControllerTests
         A.CallTo(() => _cryptoService.GetTokenBalanceAsync(oId, "toAward")).Returns(balance);
 
         //Act
-        var actionResult = await _controller.GetTokenBalance("", "toAward");
+        var actionResult = await _controller.GetTokenBalance("toAward");
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value;
 
@@ -157,7 +158,7 @@ public class CryptoControllerTests
         objectResultValue.Should().BeOfType<double>();
         objectResultValue.Should().Be(balance);
     }
-    
+
     private Task<List<UserProfileModel>> GetUserProfileModelList()
     {
         var roles1 = new[] { "roles1" };

@@ -16,13 +16,15 @@ public class UserProfileControllerTests
 {
     private readonly IUserProfileService _userProfileService;
     private readonly ICryptoService _cryptoService;
+    private readonly IHttpContextAccessor _contextAccessor;
     private readonly UserProfileController _controller;
 
     public UserProfileControllerTests()
     {
         _cryptoService = A.Fake<ICryptoService>();
         _userProfileService = A.Fake<IUserProfileService>();
-        _controller = new UserProfileController(_userProfileService, _cryptoService);
+        _contextAccessor = A.Fake<IHttpContextAccessor>();
+        _controller = new UserProfileController(_userProfileService, _cryptoService, _contextAccessor);
     }
 
     [Fact]
@@ -48,7 +50,7 @@ public class UserProfileControllerTests
     [Fact]
     public async void UserProfileController_GetUserProfile_ReturnOK()
     {
-        var userProfileController = new UserProfileController(_userProfileService, _cryptoService)
+        var userProfileController = new UserProfileController(_userProfileService, _cryptoService, _contextAccessor)
         {
             ControllerContext = new ControllerContext
             {
@@ -67,21 +69,17 @@ public class UserProfileControllerTests
 
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
-        var userWorkdayModel = GetUserWorkdayModel();
-        A.CallTo(() => _userProfileService.GetUserWorkday())!.Returns(userWorkdayModel);
-        A.CallTo(() => _userProfileService.GetUserProfileDetails(A<string>._)).Returns(userProfileModel);
         A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._)).Returns(userProfileModel);
 
-
         //Act
-        var actionResult = await _controller.GetUserProfile("authorization");
+        var actionResult = await _controller.GetUserProfile();
         var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as UserWorkdayModel;
+        var objectResultValue = objectResult?.Value as UserProfileModel;
 
         //Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue?.UserProfile?.OId.Should().Be(userProfileModel.OId);
+        objectResultValue?.OId.Should().Be(userProfileModel.OId);
     }
 
 
@@ -90,25 +88,22 @@ public class UserProfileControllerTests
     {
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
-        var userWorkdayModel = GetUserWorkdayModel();
-        A.CallTo(() => _userProfileService.GetUserWorkday())!.Returns(userWorkdayModel);
-        A.CallTo(() => _userProfileService.GetUserProfileDetails(A<string>._)).Returns(userProfileModel);
         A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._))!.Returns(
             Task.FromResult<UserProfileModel>(null!));
-        A.CallTo(() => _userProfileService.AddUserProfileService(userProfileModel)).Returns(true);
-        A.CallTo(() => _cryptoService.CreateUserWallets(userProfileModel.OId)).Returns(true);
+        A.CallTo(() => _userProfileService.AddUserProfileService(A<ClaimsIdentity>._)).Returns(userProfileModel);
+        A.CallTo(() => _cryptoService.CreateUserWallets(A<string>._)).Returns(true);
 
 
         //Act
-        var actionResult = await _controller.GetUserProfile("authorization");
+        var actionResult = await _controller.GetUserProfile();
         var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as UserWorkdayModel;
+        var objectResultValue = objectResult?.Value as UserProfileModel;
 
         //Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue?.UserProfile?.OId.Should().Be(userProfileModel.OId);
-        A.CallTo(() => _userProfileService.AddUserProfileService(userProfileModel)).MustHaveHappened();
+        objectResultValue?.OId.Should().Be(userProfileModel.OId);
+        A.CallTo(() => _userProfileService.AddUserProfileService(A<ClaimsIdentity>._)).MustHaveHappened();
     }
 
 
@@ -122,28 +117,5 @@ public class UserProfileControllerTests
             new("oid2", "name2", "email2", "en2", roles2)
         };
         return Task.FromResult(userProfileModelList);
-    }
-
-    private Task<UserWorkdayModel> GetUserWorkdayModel()
-    {
-        UserWorkdayModel userWorkdayModel = new UserWorkdayModel()
-        {
-            WorkerId = "d62c93f6-a9f6-468d-84b9-0493e487fc20",
-            PreferredNameData = "Corissa Coronas",
-            FirstName = "null",
-            LastName = "null",
-            Company = "Vidoo",
-            SupervisoryOrganization = "Product Management",
-            ManagerReference = "Corissa Coronas",
-            CountryReference = "TH",
-            CountryReferenceTwoLetter = "Marketing",
-            PostalCode = "27120",
-            PrimaryWorkTelephone = "(761) 4904571",
-            Fax = "+86-153-402-8259",
-            Mobile = "+382 (624) 518-5936",
-            LocalReference = "Estonian",
-            UserProfile = null
-        };
-        return Task.FromResult(userWorkdayModel);
     }
 }

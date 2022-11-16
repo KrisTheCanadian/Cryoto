@@ -13,67 +13,57 @@ namespace API.Controllers;
 public class CryptoController : ControllerBase
 {
     private readonly ICryptoService _cryptoService;
-    private readonly IUserProfileService _userProfileService;
+    private readonly string _oId;
 
 
-    public CryptoController(ICryptoService cryptoService, IUserProfileService userProfileService)
+    public CryptoController(ICryptoService cryptoService, IHttpContextAccessor contextAccessor)
     {
         _cryptoService = cryptoService;
-        _userProfileService = userProfileService;
+        var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _oId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
     [HttpPost]
-    public async Task<ActionResult<RpcTransactionResult>> PostTransaction([FromHeader] string authorization,
-        double amount, string receiverOId)
+    public async Task<ActionResult<RpcTransactionResult>> PostTransaction(double amount, string receiverOId)
     {
-        var userDetails = _userProfileService.GetUserProfileDetails(authorization);
-        var senderOId = userDetails.OId;
-
-        var rpcTransactionResult = await _cryptoService.SendTokens(amount, senderOId, receiverOId);
+        var rpcTransactionResult = await _cryptoService.SendTokens(amount, _oId, receiverOId);
         if (rpcTransactionResult?.error != null)
             return BadRequest(rpcTransactionResult.error);
-        
+
         await _cryptoService.UpdateTokenBalance((amount), receiverOId, "toSpend");
-        await _cryptoService.UpdateTokenBalance((-amount), senderOId, "toAward");
-        _cryptoService.QueueTokenUpdate(new List<string> { senderOId, receiverOId });
+        await _cryptoService.UpdateTokenBalance((-amount), _oId, "toAward");
+        _cryptoService.QueueTokenUpdate(new List<string> { _oId, receiverOId });
 
         return Ok(rpcTransactionResult);
     }
-    
+
     [HttpPost]
-    public async Task<ActionResult<RpcTransactionResult>> PurchaseTransaction([FromHeader] string authorization, double amount)
+    public async Task<ActionResult<RpcTransactionResult>> PurchaseTransaction(double amount)
     {
-        var userDetails = _userProfileService.GetUserProfileDetails(authorization);
-        var userOId = userDetails.OId;
-        
-        var rpcTransactionResult = await _cryptoService.CreatePurchase(amount, userOId);
+        var rpcTransactionResult = await _cryptoService.CreatePurchase(amount, _oId);
         if (rpcTransactionResult.error != null)
             return BadRequest(rpcTransactionResult.error);
-        await _cryptoService.UpdateTokenBalance((-amount), userOId, "toSpend");
+        await _cryptoService.UpdateTokenBalance((-amount), _oId, "toSpend");
 
-        _cryptoService.QueueTokenUpdate(new List<string> { userOId });
+        _cryptoService.QueueTokenUpdate(new List<string> { _oId });
         return Ok(rpcTransactionResult);
     }
-    
+
     [HttpPost]
-    public async Task<ActionResult<RpcTransactionResult>> PostTokens( double amount, string walletType)
+    public async Task<ActionResult<RpcTransactionResult>> PostTokens(double amount, string walletType)
     {
-        var identity = HttpContext.User.Identity as ClaimsIdentity;
-        var userOId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
-        
-        var rpcTransactionResult = await _cryptoService.AddTokensAsync(amount, userOId, walletType);
+        var rpcTransactionResult = await _cryptoService.AddTokensAsync(amount, _oId, walletType);
         if (rpcTransactionResult.error != null)
             return BadRequest(rpcTransactionResult.error);
-        await _cryptoService.UpdateTokenBalance(amount, userOId, walletType);
+        await _cryptoService.UpdateTokenBalance(amount, _oId, walletType);
 
-        _cryptoService.QueueTokenUpdate(new List<string> { userOId });
+        _cryptoService.QueueTokenUpdate(new List<string> { _oId });
         return Ok(rpcTransactionResult);
     }
 
     [HttpGet]
-    public async Task<ActionResult<double>> GetTokenBalance([FromHeader] string authorization, string walletType)
+    public async Task<ActionResult<double>> GetTokenBalance(string walletType)
     {
-        var userDetails = _userProfileService.GetUserProfileDetails(authorization);
-        return Ok(await _cryptoService.GetTokenBalanceAsync(userDetails.OId, walletType));
+        return Ok(await _cryptoService.GetTokenBalanceAsync(_oId, walletType));
     }
 }

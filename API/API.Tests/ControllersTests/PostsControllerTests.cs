@@ -18,13 +18,15 @@ public class PostsControllerTests
 {
     private readonly IPostService _postService;
     private readonly ICryptoService _cryptoService;
+    private readonly IHttpContextAccessor _contextAccessor;
     private readonly PostsController _controller;
 
     public PostsControllerTests()
     {
         _cryptoService = A.Fake<ICryptoService>();
         _postService = A.Fake<IPostService>();
-        _controller = new PostsController(_postService, _cryptoService);
+        _contextAccessor = A.Fake<IHttpContextAccessor>();
+        _controller = new PostsController(_postService, _cryptoService, _contextAccessor);
     }
 
     private List<PostModel> GetFakePosts()
@@ -71,7 +73,7 @@ public class PostsControllerTests
 
     private PostsController GetControllerWithIodContext(string iod)
     {
-        var mockController = new PostsController(_postService, _cryptoService)
+        var mockController = new PostsController(_postService, _cryptoService, _contextAccessor)
         {
             ControllerContext = new ControllerContext
             {
@@ -177,11 +179,11 @@ public class PostsControllerTests
     {
         // Arrange
         var post = GetFakePost();
-        var balance = post.Coins*10000;
+        var balance = post.Coins * 10000;
 
         A.CallTo(() => _postService.CreateAsync(A<PostModel>.Ignored)).Returns(true);
         A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
-        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>._,A<string>._)).Returns(balance);
+        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>._, A<string>._)).Returns(balance);
 
         var postCreateModel = new PostCreateModel(post.Message, post.Recipients, post.Tags, post.CreatedDate,
             post.PostType, post.IsTransactable, post.Coins);
@@ -212,7 +214,7 @@ public class PostsControllerTests
         var post = GetFakePost();
         var updatedPost = new PostModel(post.Id, "New Message", post.Recipients, post.Tags, post.CreatedDate,
             post.PostType, post.IsTransactable, 100000);
-        
+
         A.CallTo(() => _postService.UpdateAsync(A<PostModel>.Ignored)).Returns(true);
         A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
         A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(updatedPost);
@@ -304,4 +306,3 @@ public class PostsControllerTests
         objectResult.Should().BeOfType(typeof(ConflictObjectResult));
     }
 }
-
