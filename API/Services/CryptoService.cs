@@ -37,7 +37,7 @@ public class CryptoService : ICryptoService
         var encryptedWallet = await _context.GetWalletModelByPublicKeyAsync(publicKey);
         return _solanaService.DecryptWallet(encryptedWallet!.Wallet, encryptedWallet.OId);
     }
-    
+
     public Wallet GetOwnerWallet()
     {
         return _solanaService.GetWallet(_configuration["OwnerWallet-Mnemonics"],
@@ -49,7 +49,7 @@ public class CryptoService : ICryptoService
         var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
         return _solanaService.DecryptWallet(walletModel.Wallet, oid);
     }
-    
+
     public async Task<PublicKey> GetPublicKeyByOIdAsync(string oid, string walletType)
     {
         var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
@@ -90,7 +90,7 @@ public class CryptoService : ICryptoService
 
         return rpcTransactionResult;
     }
-    
+
     public async Task<RpcTransactionResult> CreatePurchase(double amount, string userOId)
     {
         var userWallet = await GetWalletByOIdAsync(userOId, "toSpend");
@@ -98,7 +98,8 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = ownerWallet.Account.PublicKey;
         return _solanaService.SendTokens(amount, userWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-    }    
+    }
+
     public async Task<RpcTransactionResult> AddTokensAsync(double amount, string userOId, string walletType)
     {
         var userWallet = await GetWalletByOIdAsync(userOId, walletType);
@@ -124,7 +125,7 @@ public class CryptoService : ICryptoService
 
     public async Task<bool> UpdateTokenBalance(double amount, string oid, string walletType)
     {
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+        var walletModel = await _context.GetWalletModelByOIdAsTrackingAsync(oid, walletType);
         walletModel.TokenBalance += amount;
         await _context.UpdateWalletModelAsync(walletModel);
         return await _context.SaveChangesAsync() > 0;
@@ -132,7 +133,7 @@ public class CryptoService : ICryptoService
 
     public async Task<bool> UpdateSolanaTokenBalance(double tokenBalance, string oid, string walletType)
     {
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+        var walletModel = await _context.GetWalletModelByOIdAsTrackingAsync(oid, walletType);
         walletModel.TokenBalance = tokenBalance;
         await _context.UpdateWalletModelAsync(walletModel);
         return await _context.SaveChangesAsync() > 0;

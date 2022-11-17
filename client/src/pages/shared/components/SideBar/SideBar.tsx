@@ -104,16 +104,6 @@ function SideBar() {
               <ListItemText primary={t('layout.Wallet')} />
             </ListItemButton>
 
-            <ListItemButton
-              component={NavLink}
-              to={routeAuthentication}
-              selected={location.pathname === routeAuthentication}
-            >
-              <ListItemIcon>
-                <Login />
-              </ListItemIcon>
-              <ListItemText primary="Authentication" />
-            </ListItemButton>
             <ListItemButton onClick={() => handleLogout(instance)}>
               <ListItemIcon>
                 <Logout />

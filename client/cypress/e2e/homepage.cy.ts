@@ -12,7 +12,6 @@ describe('HomePage', () => {
     cy.get('[href="/market"]').should('contain', 'Marketplace');
     cy.get('[href="/orders"]').should('contain', 'My Orders');
     cy.get('[href="/wallet"]').should('contain', 'Wallet');
-    cy.get('[href="/authentication"]').should('contain', 'Authentication');
 
     //
     // checking right sidebar

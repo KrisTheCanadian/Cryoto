@@ -23,9 +23,14 @@ public class WalletRepository : IWalletRepository
 
     public async Task<WalletModel> GetWalletModelByOIdAsync(string oid, string walletType)
     {
+        return (await Context.Wallets.AsNoTracking()
+            .FirstOrDefaultAsync(walletModel => walletModel.OId == oid && walletModel.WalletType == walletType))!;
+    }
+
+    public async Task<WalletModel> GetWalletModelByOIdAsTrackingAsync(string oid, string walletType)
+    {
         return (await Context.Wallets
-            .Where(walletModel => walletModel.OId == oid && walletModel.WalletType == walletType).AsNoTracking()
-            .FirstOrDefaultAsync())!;
+            .FirstOrDefaultAsync(walletModel => walletModel.OId == oid && walletModel.WalletType == walletType))!;
     }
 
     public async Task<WalletModel?> GetWalletModelByPublicKeyAsync(string publicKey)

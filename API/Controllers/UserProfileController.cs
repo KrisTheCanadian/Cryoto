@@ -64,6 +64,13 @@ public class UserProfileController : ControllerBase
             return BadRequest("Could not create a new account");
         if (!await _cryptoService.CreateUserWallets(_oId))
             return BadRequest("Could not create user wallets");
+
+        await _cryptoService.AddTokensAsync(100, _oId, "toAward");
+        await _cryptoService.UpdateTokenBalance(100, _oId, "toAward");
+        await _cryptoService.AddTokensAsync(100, _oId, "toSpend");
+        await _cryptoService.UpdateTokenBalance(100, _oId, "toSpend");
+        _cryptoService.QueueTokenUpdate(new List<string> { _oId, _oId });
+
         return Ok(userProfileModel);
     }
 }

@@ -89,7 +89,7 @@ function HomePage() {
   return (
     <>
       <UnauthenticatedTemplate>
-        <LandingPage />
+        <LandingPage isRedirecting={false} />
       </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
         <PageFrame>

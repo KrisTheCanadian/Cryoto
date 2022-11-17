@@ -9,6 +9,9 @@ import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {act, render, screen} from '@testing-library/react';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';
+import {FullWidthColumn} from '@shared/components/FullWidthColumn';
+
+import {LandingPage} from '../LandingPage';
 
 import Authentication from './AuthenticationPage';
 
@@ -59,30 +62,14 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-it('rendering authentication page should render a sign in button', async () => {
-  await act(async () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <ThemeContextProvider>
-          <I18nextProvider i18n={i18n}>
-            <Authentication />
-          </I18nextProvider>
-        </ThemeContextProvider>
-      </MemoryRouter>,
-    );
-  });
-
-  expect(screen.getByText('Sign In')).toBeInTheDocument();
-});
-
-it('rendering authentication page while authenticated should render the sign out button', async () => {
+it('rendering authentication page should render a Backdrop', async () => {
   await act(async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <MsalProvider instance={pca}>
           <ThemeContextProvider>
             <I18nextProvider i18n={i18n}>
-              <Authentication />
+              <LandingPage isRedirecting />
             </I18nextProvider>
           </ThemeContextProvider>
         </MsalProvider>
@@ -90,5 +77,23 @@ it('rendering authentication page while authenticated should render the sign out
     );
   });
 
-  expect(screen.getByText('Sign out')).toBeInTheDocument();
+  expect(screen.getByTestId('Backdrop')).toBeInTheDocument();
+});
+
+it('rendering authentication page while authenticated should render the CircularProgress spinner', async () => {
+  await act(async () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <MsalProvider instance={pca}>
+          <ThemeContextProvider>
+            <I18nextProvider i18n={i18n}>
+              <LandingPage isRedirecting />
+            </I18nextProvider>
+          </ThemeContextProvider>
+        </MsalProvider>
+      </MemoryRouter>,
+    );
+  });
+
+  expect(screen.getByTestId('CircularProgress')).toBeInTheDocument();
 });

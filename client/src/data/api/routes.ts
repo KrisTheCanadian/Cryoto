@@ -2,6 +2,12 @@
 export const apiEndpoint =
   process.env.VITE_API_BASE_URL || 'https://localhost:7175/';
 
+export const clientEndpoint =
+  process.env.VITE_CLIENT_BASE_URL || 'http://localhost:5173/';
+
+// Authentication
+export const clientEndpointAuth = `${clientEndpoint}authentication`;
+
 // Posts
 export const apiRoutePosts = `${apiEndpoint}posts`;
 // Post Feed

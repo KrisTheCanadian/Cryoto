@@ -1,25 +1,44 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable promise/catch-or-return */
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
-import PageFrame from '@shared/components/PageFrame';
-import {
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-} from '@azure/msal-react';
+import {useMsal} from '@azure/msal-react';
+import {useEffect, useState} from 'react';
+import {getUserProfile} from '@shared/hooks/getUserProfile';
+import {useNavigate} from 'react-router-dom';
+import {InteractionStatus} from '@azure/msal-browser';
 
-import {SignInButton, SignOutButton, ProfileContent} from './components';
+import {LandingPage} from '../LandingPage';
+
+import {getAccessToken} from '@/data/api/helpers';
 
 function Authentication() {
+  const [userProfileData, setUserProfileData] = useState();
+  const {inProgress} = useMsal();
+
+  const loadUserProfile = async () => {
+    if (inProgress === InteractionStatus.None) {
+      const accessToken = await getAccessToken();
+      getUserProfile(accessToken).then((response: any) =>
+        setUserProfileData(response),
+      );
+    }
+  };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    loadUserProfile();
+  }, [inProgress]);
+
+  useEffect(() => {
+    if (userProfileData) navigate('/');
+  }, [userProfileData]);
   return (
-    <PageFrame>
+    <>
       <FullWidthColumn>
-        <UnauthenticatedTemplate>
-          <SignInButton />
-        </UnauthenticatedTemplate>
-        <AuthenticatedTemplate>
-          <SignOutButton />
-          <ProfileContent />
-        </AuthenticatedTemplate>
+        <LandingPage isRedirecting />
       </FullWidthColumn>
-    </PageFrame>
+    </>
   );
 }
 

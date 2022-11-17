@@ -14,7 +14,7 @@ it('Landing page renders', async () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <I18nextProvider i18n={i18n}>
-          <LandingPage />
+          <LandingPage isRedirecting={false} />
         </I18nextProvider>
       </MemoryRouter>,
     );
