@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import path from 'path';
 import dns from 'dns';
 
@@ -21,8 +20,15 @@ export default defineConfig({
     EnvironmentPlugin('all'),
   ],
   resolve: {
-    alias: {
-      '@shared': path.resolve(__dirname, './src/pages/shared'),
-    },
+    alias: [
+      {
+        find: '@shared',
+        replacement: path.resolve(__dirname, 'src/pages/shared'),
+      },
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, 'src'),
+      },
+    ],
   },
 });

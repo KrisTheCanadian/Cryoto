@@ -7,9 +7,10 @@ import {
 } from '@azure/msal-browser';
 import {MsalProvider} from '@azure/msal-react';
 import {MemoryRouter} from 'react-router-dom';
-import App from 'App';
+import App from 'src/App';
 import {I18nextProvider} from 'react-i18next';
-import i18n from 'i18n/i18n';
+
+import i18n from '@/i18n/i18n';
 
 const TEST_CONFIG = {
   MSAL_CLIENT_ID: '0813e1d1-ad72-46a9-8665-399bba48c201',

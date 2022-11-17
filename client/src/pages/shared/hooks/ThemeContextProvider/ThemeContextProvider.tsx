@@ -1,7 +1,7 @@
 import {createTheme, PaletteMode, ThemeProvider} from '@mui/material';
 import {createContext, ReactNode, useContext, useMemo, useState} from 'react';
 
-import getDesignTokens from '../../../../theme';
+import getDesignTokens from '@/theme';
 
 interface ThemeContextState {
   // set the type of state you want to handle with context e.g.
@@ -58,7 +58,7 @@ function ThemeContextProvider(props: ThemeContextProviderProps) {
 function useThemeModeContext() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useCount must be used within a CountProvider');
+    throw new Error('useThemeModeContext must be used within a CountProvider');
   }
   return context;
 }

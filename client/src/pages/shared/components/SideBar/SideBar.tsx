@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {
   Box,
@@ -22,7 +21,7 @@ import {
   routeMarket,
   routeOrders,
   routeWallet,
-} from '../../../routes';
+} from '@/pages/routes';
 
 function handleLogout(instance: IPublicClientApplication) {
   instance.logoutRedirect();

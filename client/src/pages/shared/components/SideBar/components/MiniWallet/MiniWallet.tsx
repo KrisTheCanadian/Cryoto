@@ -14,7 +14,7 @@ import {
   CardContent,
 } from '@mui/material';
 
-import {loginRequest} from '../../../../../Authentication/authConfig';
+import {loginRequest} from '@/pages/Authentication/authConfig';
 
 function MiniWallet() {
   const theme = useTheme();

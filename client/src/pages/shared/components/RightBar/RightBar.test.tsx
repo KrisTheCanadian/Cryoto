@@ -1,13 +1,14 @@
 /* eslint-disable react/no-children-prop */
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {render, screen} from '@testing-library/react';
-import i18n from 'i18n/i18n';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {MemoryRouter} from 'react-router-dom';
 
 import RightBar from './RightBar';
+
+import i18n from '@/i18n/i18n';
 
 it('Render Right Bar', async () => {
   const children = 'children';

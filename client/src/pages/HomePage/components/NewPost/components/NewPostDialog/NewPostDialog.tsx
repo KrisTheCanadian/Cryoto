@@ -17,18 +17,17 @@ import {
 } from '@mui/material';
 import {t} from 'i18next';
 import {useState} from 'react';
-import {NewPostType} from 'data/api/types/NewPost';
-import {useMsal} from '@azure/msal-react';
-import IPost from 'data/api/types/IPost';
-import IUser from 'data/api/types/IUser';
 
-import {searchUsers} from '../../../../../../data/api/requests/users';
-import {createPost} from '../../../../../../data/api/requests/posts';
+import {useMutationCreatePost} from './hooks/useMutationCreatePost';
+
+import {searchUsers} from '@/data/api/requests/users';
+import PostType from '@/data/api/enums/PostTypes';
+import {NewPostType} from '@/data/api/types/NewPost';
+import IUser from '@/data/api/types/IUser';
 
 interface NewPostDialogProps {
   dialogOpen: boolean;
   setDialogOpen: (dialogOpen: boolean) => void;
-  addPost: (post: IPost) => void;
 }
 
 interface Recipient {
@@ -49,7 +48,7 @@ const StyledTextareaAutosize = styled(TextareaAutosize)(({theme}) => ({
 }));
 
 function NewPostDialog(props: NewPostDialogProps) {
-  const {dialogOpen, setDialogOpen, addPost} = props;
+  const {dialogOpen, setDialogOpen} = props;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   // form values
@@ -59,24 +58,27 @@ function NewPostDialog(props: NewPostDialogProps) {
   const [companyValue, setCompanyValue] = useState<string>('');
   const [message, setMessage] = useState<string>('');
 
-  const {instance, accounts} = useMsal();
+  const mutation = useMutationCreatePost(recipients);
   const handleSubmit = () => {
     const coins = parseInt(amount, 10) ? parseInt(amount, 10) : 0;
 
     const postData = {
+      // tempRecipients are added for preemptive rendering
       recipients: recipients.map((recipient) => recipient.id),
+      tempRecipients: recipients.map((recipient) => {
+        return {
+          name: recipient.name,
+          id: recipient.id,
+        };
+      }),
       tags: [companyValue],
       message,
       coins,
       isTransactable: true,
-      postType: 'Kudos',
+      postType: PostType.Kudos,
       createdDate: new Date(),
     } as NewPostType;
-    createPost(postData, instance, accounts)
-      .then((res) => {
-        addPost(res);
-      })
-      .catch((err) => {});
+    mutation.mutate(postData);
     setDialogOpen(false);
   };
 
@@ -88,16 +90,14 @@ function NewPostDialog(props: NewPostDialogProps) {
     setRecipients(value);
   };
   const handleSearch = (event: any) => {
-    searchUsers(event.target.value, accounts, instance)
+    searchUsers(event.target.value)
       .then((res) => {
         const users = res.map((user: IUser) => {
           return {name: user.name, id: user.oId} as Recipient;
         });
         setusers(users);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => {});
   };
   const handleAmountChange = (event: any) => {
     const inputAmount = event.target.value;

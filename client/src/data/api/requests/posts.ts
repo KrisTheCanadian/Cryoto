@@ -1,10 +1,6 @@
-/* eslint-disable @shopify/strict-component-boundaries */
-/* eslint-disable @typescript-eslint/naming-convention */
-import {AccountInfo, IPublicClientApplication} from '@azure/msal-browser';
-import {useMsal} from '@azure/msal-react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 
-import {loginRequest} from '../../../pages/Authentication/authConfig';
+import {getAccessToken, getUserId} from '../helpers';
 import {
   apiEndpoint,
   apiRoutePostsCreatePost,
@@ -14,19 +10,10 @@ import IPage from '../types/IPage';
 import IPost from '../types/IPost';
 import {NewPostType} from '../types/NewPost';
 
-export async function getNextPage(
-  page: number,
-  pageSize: number,
-  accounts: AccountInfo[],
-  instance: IPublicClientApplication,
-): Promise<IPage> {
-  const userId = accounts[0].homeAccountId;
-
+async function getNextPage(page: number, pageSize: number): Promise<IPage> {
+  const userId = await getUserId();
   // get access token
-  const res = await instance.acquireTokenSilent({
-    account: accounts[0],
-    scopes: loginRequest.scopes,
-  });
+  const accessToken = await getAccessToken();
 
   // decode access token to grab user id
   // in the future, this should be available in the auth context or data store
@@ -34,29 +21,22 @@ export async function getNextPage(
   const response = await axios.get<IPage>(url, {
     // add CORS headers to request
     headers: {
-      Authorization: `Bearer ${res.accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
       'Access-Control-Allow-Origin': `${apiEndpoint}`,
     },
   });
   return response.data;
 }
-export async function createPost(
-  post: NewPostType,
-  instance: IPublicClientApplication,
-  accounts: AccountInfo[],
-): Promise<IPost> {
-  const res = await instance.acquireTokenSilent({
-    account: accounts[0],
-    scopes: loginRequest.scopes,
-  });
-  const response = await axios.post(
+async function createPost(post: NewPostType): Promise<IPost | AxiosError> {
+  const accessToken = await getAccessToken();
+  const response = await axios.post<IPost>(
     apiRoutePostsCreatePost,
     JSON.stringify(post),
     {
       // add CORS headers to request
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${res.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
         'Access-Control-Allow-Origin': `${apiEndpoint}`,
       },
     },
@@ -64,3 +44,5 @@ export async function createPost(
 
   return response.data;
 }
+
+export {getNextPage, createPost};

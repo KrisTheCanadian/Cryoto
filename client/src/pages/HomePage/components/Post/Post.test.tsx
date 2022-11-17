@@ -1,11 +1,12 @@
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {render, screen} from '@testing-library/react';
-import i18n from 'i18n/i18n';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';
 
 import Post from './Post';
+
+import i18n from '@/i18n/i18n';
 
 it('should render Posts', async () => {
   interface PostProps {

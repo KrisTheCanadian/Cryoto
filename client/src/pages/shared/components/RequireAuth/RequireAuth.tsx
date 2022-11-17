@@ -3,8 +3,8 @@ import {Outlet, useNavigate, Navigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useEffect} from 'react';
 
-import Role from '../../../roles';
-import {routeHome} from '../../../routes';
+import Role from '@/pages/roles';
+import {routeHome} from '@/pages/routes';
 
 function RequireAuth(allowedRoles: Role[]) {
   const {t} = useTranslation();

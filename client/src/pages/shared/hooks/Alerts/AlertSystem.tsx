@@ -1,8 +1,8 @@
 import {Alert, Slide, SlideProps, Snackbar} from '@mui/material';
 import {useContext, useEffect, useState} from 'react';
 
-import AlertContext from './AlertContext';
 import {AlertType} from './AlertType';
+import {AlertContext} from './AlertContext';
 
 const AlertSystem = () => {
   const alertContext = useContext(AlertContext);
@@ -21,6 +21,7 @@ const AlertSystem = () => {
     event?: React.SyntheticEvent | Event,
     reason?: string,
   ) => {
+    alertContext.clear();
     if (reason === 'clickaway') {
       return;
     }
@@ -30,6 +31,7 @@ const AlertSystem = () => {
   if (alertContext.alertType !== AlertType.NONE) {
     return (
       <Snackbar
+        anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
         open={open}
         autoHideDuration={3000}
         onClose={handleClose}

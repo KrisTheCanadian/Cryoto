@@ -1,4 +1,4 @@
-import {createContext, useMemo, useState} from 'react';
+import {createContext, useContext, useMemo, useState} from 'react';
 
 import {AlertType} from './AlertType';
 
@@ -60,5 +60,12 @@ const AlertContext = createContext({
   clear: () => {},
 });
 
-export {AlertProvider};
-export default AlertContext;
+function useAlertContext() {
+  const context = useContext(AlertContext);
+  if (context === undefined) {
+    throw new Error('useAlertContext must be used within a AlertProvider');
+  }
+  return context;
+}
+
+export {AlertProvider, useAlertContext, AlertContext};

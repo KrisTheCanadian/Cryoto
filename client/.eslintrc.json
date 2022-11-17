@@ -5,7 +5,9 @@
     "plugin:@shopify/prettier"
   ],
   "rules": {
-    "react/react-in-jsx-scope": 0
+    "react/react-in-jsx-scope": 0,
+    "@typescript-eslint/naming-convention": 0,
+    "no-process-env": 0
   },
   "env": {
     "node": true

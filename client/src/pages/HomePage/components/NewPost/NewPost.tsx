@@ -12,19 +12,16 @@ import {
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {RoundedInput} from '@shared/components/interface-elements/RoundedInput';
-import IPost from 'data/api/types/IPost';
 import {t} from 'i18next';
 import {useState} from 'react';
 
 import {NewPostDialog} from './components';
 
 interface NewPostProps {
-  addPost: (post: IPost) => void;
   name: string | undefined;
 }
 
 function NewPost(props: NewPostProps) {
-  const {addPost} = props;
   const theme = useTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -49,11 +46,7 @@ function NewPost(props: NewPostProps) {
 
   return (
     <>
-      <NewPostDialog
-        dialogOpen={dialogOpen}
-        setDialogOpen={setDialogOpen}
-        addPost={addPost}
-      />
+      <NewPostDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
       <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
         <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>
           <CardContent>

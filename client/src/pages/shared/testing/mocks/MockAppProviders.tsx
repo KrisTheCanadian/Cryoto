@@ -1,12 +1,12 @@
 import {createTheme} from '@mui/material/styles';
-import getDesignTokens from 'theme';
 import {ReactNode} from 'react';
 import {BrowserRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {AlertProvider} from '@shared/hooks/Alerts/AlertContext';
 
-import i18n from '../../../../i18n/i18n';
+import i18n from '@/i18n/i18n';
+import getDesignTokens from '@/theme';
 
 const theme = createTheme(getDesignTokens('light'));
 
