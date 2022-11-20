@@ -13,6 +13,15 @@ declare module '@mui/material/styles' {
       medium: number;
       large: number;
     };
+    border: {
+      default: string;
+    };
+    padding: {
+      default: string;
+    };
+    margin: {
+      default: number;
+    };
   }
   // allow configuration using `createTheme`
   interface ThemeOptions {
@@ -26,6 +35,15 @@ declare module '@mui/material/styles' {
       default?: number;
       medium?: number;
       large?: number;
+    };
+    border?: {
+      default?: string;
+    };
+    padding?: {
+      default?: string;
+    };
+    margin?: {
+      default?: number;
     };
   }
 }
@@ -62,15 +80,33 @@ const getDesignTokens = (mode: PaletteMode) =>
       ...(mode === 'light'
         ? {
             main: '#FFFFFF',
-            contrastMain: colors.grey[200],
+            contrastMain: '#F8FAFB',
             offBackground: '#FFFFFF',
           }
         : {main: '#242424', contrastMain: '#3a3a3a', offBackground: '#2c2c2c'}),
     },
     borderRadius: {
-      default: 4,
+      default: 2,
       medium: 8,
       large: 16,
+    },
+    border: {
+      mode,
+      ...(mode === 'light'
+        ? {
+            default: '3px solid #F2F2F2',
+          }
+        : {
+            default: '3px solid #484848',
+          }),
+    },
+    padding: {
+      // padding for content, eg. posts or settings
+      default: '16px 24px 16px 24px',
+    },
+    margin: {
+      // margin between content, eg. between posts
+      default: 2,
     },
     palette: {
       primary: {
@@ -81,6 +117,9 @@ const getDesignTokens = (mode: PaletteMode) =>
       ...(mode === 'light'
         ? {
             // palette values for light mode
+            background: {
+              default: '#F8FAFB',
+            },
           }
         : {
             // palette values for dark mode

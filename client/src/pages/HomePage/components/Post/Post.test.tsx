@@ -44,7 +44,6 @@ it('should render Posts', async () => {
   });
 
   expect(screen.getByText(postProps.firstName)).toBeInTheDocument();
-  expect(screen.getByText(postProps.date)).toBeInTheDocument();
   expect(screen.getByText(postProps.recipient)).toBeInTheDocument();
   expect(screen.getByText(postProps.message)).toBeInTheDocument();
 });

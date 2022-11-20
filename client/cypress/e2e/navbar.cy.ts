@@ -23,7 +23,7 @@ describe('Navbar', () => {
     cy.get('[data-testid="dark-mode-toggle"]').click({force: true});
 
     // check if darkmode is off
-    cy.get('body').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+    cy.get('body').should('have.css', 'background-color', 'rgb(248, 250, 251)');
   });
 
   it('Test profile button', () => {

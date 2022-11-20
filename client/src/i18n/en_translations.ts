@@ -29,6 +29,8 @@ export const englishTranslations = {
     AddCoins: 'Add coins',
     SelectValue: 'Select value',
     Post: 'Post',
+    React: 'React',
+    Recognized: ' recognized ',
   },
   values: {
     ClientsAndValues: 'Clients & Values',

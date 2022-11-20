@@ -1,73 +1,64 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {useTheme} from '@mui/material/styles';
-import {Box, IconButton} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {ReactNode} from 'react';
+import {useTranslation} from 'react-i18next';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 
-interface EmojiContainerProps {
-  children: ReactNode;
-}
-
-const emojiContainerStyles = {
-  display: 'flex',
-  flexDirection: 'row',
-  '&:hover': {
-    '& .emojiContainer': {
-      marginLeft: '2px',
-    },
-  },
-};
-
-function EmojiContainer(props: EmojiContainerProps) {
-  const theme = useTheme();
-  const emojiStyles = {
-    background: theme.interface.main,
-    border: '1px solid',
-    borderColor: theme.palette.divider,
-    borderRadius: '50%',
-    height: ' 35px',
-    transition: 'all 0.3s ease',
-    fontSize: '20px',
-    width: '35px',
-    display: 'flex',
-    flexDirection: 'row',
-    cursor: 'pointer',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: '-5px',
-    '&:first-of-type': {
-      marginLeft: '0px',
-    },
-    '&:last-of-type': {
-      marginRight: theme.spacing(1),
-    },
-  };
-  return (
-    <Box className="emojiContainer" sx={emojiStyles}>
-      {props.children}
-    </Box>
-  );
-}
-
 function LikeButtons() {
+  const theme = useTheme();
+  const {t} = useTranslation();
+
   const likes = 6;
+  interface EmojiContainerProps {
+    emoji: ReactNode;
+    text: string;
+  }
+
+  const EmojiContainerStyles = {
+    background: theme.interface.contrastMain,
+    border: theme.border.default,
+    borderRadius: '25%/50%',
+    display: 'flex',
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    alignItems: 'center',
+    height: '30px',
+    marginRight: theme.spacing(0.5),
+  };
+
+  const EmojiStyles = {
+    fontSize: '20px',
+    marginRight: '5px',
+  };
+
+  const EmojiContainer = (props: EmojiContainerProps) => {
+    return (
+      <Box sx={EmojiContainerStyles}>
+        <Box sx={EmojiStyles}>{props.emoji}</Box>
+        <Typography
+          sx={{fontWeight: theme.typography.fontWeightMedium}}
+          variant="body1"
+        >
+          {props.text}
+        </Typography>
+      </Box>
+    );
+  };
+
   return (
     <Box sx={{display: 'flex', alignItems: 'center'}}>
-      <IconButton aria-label="add to favorites">
-        <AddReactionIcon />
-      </IconButton>
-      <Box sx={emojiContainerStyles}>
-        <EmojiContainer>
-          <>❤️</>
-        </EmojiContainer>
-        <EmojiContainer>
-          <>👏</>
-        </EmojiContainer>
-        <EmojiContainer>
-          <>🎉</>
-        </EmojiContainer>
+      <Box sx={EmojiContainerStyles} style={{borderRadius: '15%/50%'}}>
+        <AddReactionIcon style={{marginRight: '5px'}} />
+        <Typography
+          sx={{fontWeight: theme.typography.fontWeightMedium}}
+          variant="body1"
+        >
+          {t('homePage.React')}
+        </Typography>
       </Box>
-      {likes}
+      <EmojiContainer emoji={<>❤️</>} text={likes.toString()} />
+      <EmojiContainer emoji={<>👏</>} text={likes.toString()} />
+      <EmojiContainer emoji={<>🎉</>} text={likes.toString()} />
     </Box>
   );
 }

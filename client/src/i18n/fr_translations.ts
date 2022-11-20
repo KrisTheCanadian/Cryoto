@@ -31,6 +31,8 @@ export const frenchTranslations = {
     AddCoins: 'Ajouter des pièces',
     SelectValue: 'Sélectionnez la valeur',
     Post: 'Poster',
+    React: 'Réagir',
+    Recognized: ' a reconnu ',
   },
   values: {
     ClientsAndValues: 'Clients & Valeurs',

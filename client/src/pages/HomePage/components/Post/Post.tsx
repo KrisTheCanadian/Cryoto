@@ -1,19 +1,9 @@
-import {
-  Card,
-  CardHeader,
-  Avatar,
-  IconButton,
-  CardMedia,
-  CardContent,
-  Typography,
-  CardActions,
-  Box,
-  colors,
-  Chip,
-} from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {Avatar, Typography, Box, colors, Chip, Stack} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
+import TollIcon from '@mui/icons-material/Toll';
 import {t} from 'i18next';
+import moment from 'moment';
+import {useTranslation} from 'react-i18next';
 
 import {LikeButtons} from '../LikeButtons';
 
@@ -32,6 +22,8 @@ interface PostProps {
 
 function Post(props: PostProps) {
   const theme = useTheme();
+  const {t} = useTranslation();
+
   const {
     firstName,
     recipient,
@@ -45,59 +37,76 @@ function Post(props: PostProps) {
   if (loading) {
     return <LoadingPostSkeleton />;
   }
-  return (
-    <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-      <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>
-        <CardHeader
-          avatar={
-            <Avatar sx={{bgcolor: colors.red[500]}} aria-label="recipe">
-              {firstName[0]}
-            </Avatar>
-          }
-          action={
-            <IconButton aria-label="settings">
-              <MoreVertIcon />
-            </IconButton>
-          }
-          title={
-            <>
-              <b>{firstName}</b>
-              {' gave '} <b>{recipient}</b>
-              {` ${coinsGiven}`}
-              {' coins'}
-            </>
-          }
-          subheader={date}
-        />
-        {imageURL && (
-          <CardMedia
-            component="img"
-            height="194"
-            image={imageURL}
-            alt="Card Media"
-          />
-        )}
 
-        <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {message}
-          </Typography>
-          <Box sx={{marginTop: theme.spacing(1)}}>
-            {tags?.map((tag) => (
+  const ChipStyles = {
+    backgroundColor: theme.interface.contrastMain,
+    border: theme.border.default,
+    fontSize: '1rem',
+    fontWeight: theme.typography.fontWeightMedium,
+    marginRight: theme.spacing(1),
+  };
+
+  const timeAgo = moment.utc(date).local().startOf('seconds').fromNow();
+
+  return (
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
+      <Box
+        sx={{
+          maxWidth: 600,
+          mb: theme.margin.default,
+          flex: 1,
+          border: theme.border.default,
+          backgroundColor: theme.interface.main,
+          padding: theme.padding.default,
+          borderRadius: theme.borderRadius.default,
+        }}
+      >
+        <Stack direction="row">
+          <Avatar
+            sx={{bgcolor: colors.red[500], width: '55px', height: '55px'}}
+            aria-label="recipe"
+          >
+            {firstName[0]}
+          </Avatar>
+          <Stack sx={{ml: 2}}>
+            <Typography variant="body1">
+              <b>{firstName}</b>
+              {t('homePage.Recognized')}
+              <b>{recipient}</b>
+            </Typography>
+            <Box sx={{display: 'flex', alignItems: 'center'}}>
               <Chip
-                clickable
-                key={tag}
-                label={t<string>(`values.${tag}`)}
-                sx={{marginRight: theme.spacing(1)}}
+                sx={ChipStyles}
+                icon={<TollIcon style={{fill: theme.palette.text.primary}} />}
+                key={coinsGiven}
+                label={coinsGiven.toString()}
               />
-            ))}
-          </Box>
-        </CardContent>
-        <CardActions disableSpacing>
-          <LikeButtons />
-        </CardActions>
-        <Box />
-      </Card>
+              {tags?.map((tag) => (
+                <Chip sx={ChipStyles} clickable key={tag} label={tag} />
+              ))}
+            </Box>
+            <Typography
+              variant="body2"
+              sx={{color: theme.palette.text.disabled}}
+            >
+              {timeAgo}
+            </Typography>
+          </Stack>
+        </Stack>
+        <Typography
+          variant="body1"
+          sx={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}
+        >
+          {message}{' '}
+        </Typography>
+        <LikeButtons />
+      </Box>
     </Box>
   );
 }

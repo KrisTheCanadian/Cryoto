@@ -27,27 +27,20 @@ describe('HomePage', () => {
     // a post should exist
     cy.get('#Feed > :nth-child(1)').should('exist');
 
-    // a post should have a title
-    cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardHeader-root').should(
+    // a post should have a header (profile picture, name, date, etc.)
+    cy.get(
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root',
+    ).should('exist');
+
+    // a post should have a body
+    cy.get('#Feed > :nth-child(2) > .MuiBox-root > .MuiTypography-root').should(
       'exist',
     );
 
-    // a post should have a body
-    cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardContent-root > .MuiTypography-root',
-    ).should('exist');
-    // a post should have chips
-    cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardContent-root > .MuiBox-root',
-    ).should('exist');
-    // a post should contain actions
-    cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root').should(
+    // a post should have a react section
+    cy.get('#Feed > :nth-child(2) > .MuiBox-root > .MuiBox-root').should(
       'exist',
     );
-    // a post should contain three dots menu
-    cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardHeader-root > .MuiCardHeader-action > .MuiButtonBase-root > [data-testid="MoreVertIcon"]',
-    ).should('exist');
 
     //
     // checking specific post -> data might have to be changed if database changes (make sure you're using the same data as the cypress test)
@@ -55,35 +48,35 @@ describe('HomePage', () => {
 
     // check author in title
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardHeader-root > .MuiCardHeader-content > .MuiCardHeader-title > :nth-child(1)',
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > .MuiTypography-root',
     ).should('contain', 'William Mcclure');
 
     // check recipient in title
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardHeader-root > .MuiCardHeader-content > .MuiCardHeader-title > :nth-child(2)',
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > .MuiTypography-root',
     ).should('contain', 'Sherry Villanueva');
 
-    // check coins in title
+    // check coins in header
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardHeader-root > .MuiCardHeader-content > .MuiCardHeader-title',
-    ).should('contain', '39 coins');
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > :nth-child(2) > :nth-child(1) > .MuiChip-label',
+    ).should('contain', '39');
 
     // check tags in chips
     // check tag 1
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardContent-root > .MuiBox-root > :nth-child(1) > .MuiChip-label',
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > :nth-child(2) > :nth-child(2) > .MuiChip-label',
     ).should('contain', 'student');
     // check tag 2
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardContent-root > .MuiBox-root > :nth-child(2) > .MuiChip-label',
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > :nth-child(2) > :nth-child(3) > .MuiChip-label',
     ).should('contain', 'need');
     // check tag 3
     cy.get(
-      ':nth-child(2) > .MuiPaper-root > .MuiCardContent-root > .MuiBox-root > :nth-child(3) > .MuiChip-label',
+      '#Feed > :nth-child(2) > .MuiBox-root > .css-m69qwo-MuiStack-root > .css-4xxiys-MuiStack-root > :nth-child(2) > :nth-child(4) > .MuiChip-label',
     ).should('contain', 'rock');
 
     // check likes
-    cy.get(':nth-child(2) > .MuiPaper-root > .MuiCardActions-root').should(
+    cy.get('#Feed > :nth-child(2) > .MuiBox-root > .MuiBox-root').should(
       'contain',
       '6',
     );
