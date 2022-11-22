@@ -18,6 +18,7 @@ public class PostsControllerTests
 {
     private readonly IPostService _postService;
     private readonly ICryptoService _cryptoService;
+    private readonly ITransactionService _transactionService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly PostsController _controller;
 
@@ -25,8 +26,9 @@ public class PostsControllerTests
     {
         _cryptoService = A.Fake<ICryptoService>();
         _postService = A.Fake<IPostService>();
+        _transactionService = A.Fake<ITransactionService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new PostsController(_postService, _cryptoService, _contextAccessor);
+        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor);
     }
 
     private List<PostModel> GetFakePosts()
@@ -73,7 +75,7 @@ public class PostsControllerTests
 
     private PostsController GetControllerWithIodContext(string iod)
     {
-        var mockController = new PostsController(_postService, _cryptoService, _contextAccessor)
+        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor)
         {
             ControllerContext = new ControllerContext
             {

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import PostType from '../enums/PostTypes';
 
 import IUser from './IUser';

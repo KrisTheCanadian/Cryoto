@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import axios from 'axios';
 
 import {getAccessToken} from '../helpers';

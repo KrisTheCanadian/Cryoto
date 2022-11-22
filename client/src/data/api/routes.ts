@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 export const apiEndpoint =
   process.env.VITE_API_BASE_URL || 'https://localhost:7175/';
 
@@ -28,3 +27,8 @@ export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
 // Crypto
 export const apiRouteCrypto = `${apiEndpoint}Crypto`;
 export const apiRouteCryptoGetTokenBalance = `${apiRouteCrypto}/GetTokenBalance`;
+
+// Transactions
+export const apiRouteTransactions = `${apiEndpoint}Transaction`;
+export const apiRouteTransactionsGetTransactionsBySenderOId = `${apiRouteTransactions}/GetTransactionsBySenderOId`;
+export const apiRouteTransactionsGetTransactionsByReceiverOId = `${apiRouteTransactions}/GetTransactionsByReceiverOId`;

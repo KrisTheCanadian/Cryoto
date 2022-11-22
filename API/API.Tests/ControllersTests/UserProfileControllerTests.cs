@@ -16,6 +16,7 @@ public class UserProfileControllerTests
 {
     private readonly IUserProfileService _userProfileService;
     private readonly ICryptoService _cryptoService;
+    private readonly ITransactionService _transactionService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly UserProfileController _controller;
 
@@ -23,8 +24,9 @@ public class UserProfileControllerTests
     {
         _cryptoService = A.Fake<ICryptoService>();
         _userProfileService = A.Fake<IUserProfileService>();
+        _transactionService = A.Fake<ITransactionService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new UserProfileController(_userProfileService, _cryptoService, _contextAccessor);
+        _controller = new UserProfileController(_userProfileService, _cryptoService, _transactionService, _contextAccessor);
     }
 
     [Fact]
@@ -50,7 +52,7 @@ public class UserProfileControllerTests
     [Fact]
     public async void UserProfileController_GetUserProfile_ReturnOK()
     {
-        var userProfileController = new UserProfileController(_userProfileService, _cryptoService, _contextAccessor)
+        var userProfileController = new UserProfileController(_userProfileService, _cryptoService, _transactionService, _contextAccessor)
         {
             ControllerContext = new ControllerContext
             {

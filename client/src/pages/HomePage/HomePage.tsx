@@ -33,7 +33,7 @@ function HomePage() {
       const err = location.state.error;
       dispatchAlert.error(err);
     }
-  },[dispatchAlert, location.state]);
+  }, [dispatchAlert, location.state]);
   const [postsPerLoad, setPostsPerLoad] = useState(10);
   const loader = useRef();
   const {t} = useTranslation();

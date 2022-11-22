@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using API.Models;
 using API.Models.Posts;
+using API.Models.Transactions;
 using API.Models.WorkDay;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -17,5 +18,6 @@ public class DataContext : DbContext, IDataContext
 
     public virtual DbSet<UserProfileModel> UserProfiles { get; set; } = null!;
     public virtual DbSet<WalletModel> Wallets { get; set; } = null!;
+    public virtual DbSet<TransactionModel> Transactions { get; set; } = null!;
     public DbSet<PostModel> Posts { get; set; } = null!;
 }

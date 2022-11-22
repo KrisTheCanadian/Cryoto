@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Security.Claims;
+using API.Models.Transactions;
 using API.Models.Posts;
 using API.Services.Interfaces;
 using API.Utils;
@@ -16,13 +17,15 @@ public class PostsController : ControllerBase
 {
     private readonly ICryptoService _cryptoService;
     private readonly IPostService _postService;
+    private readonly ITransactionService _transactionService;
     private readonly string _actorId;
 
 
-    public PostsController(IPostService postService, ICryptoService cryptoService, IHttpContextAccessor contextAccessor)
+    public PostsController(IPostService postService, ICryptoService cryptoService, ITransactionService transactionService, IHttpContextAccessor contextAccessor)
     {
         _postService = postService;
         _cryptoService = cryptoService;
+        _transactionService = transactionService;
         var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
@@ -53,6 +56,8 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PostModel>> Create(PostCreateModel postCreateModel)
     {
         var postModel = new PostModel(postCreateModel, _actorId);
+        if (postModel.Recipients.Contains(_actorId))
+            return BadRequest("Could not create the post");
         var created = await _postService.CreateAsync(postModel);
         if (!created)
             return BadRequest("Could not create the post");
@@ -75,11 +80,12 @@ public class PostsController : ControllerBase
             await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
             await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
             await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
+            await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend", _actorId,
+                "toAward", amount, "Recognition", postCreateModel.CreatedDate));
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);
-
-
+        
         return Ok(createdPostModel);
     }
 
@@ -101,7 +107,7 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PostModel>> Delete(string guid)
     {
         var existingPost = await _postService.GetByIdAsync(guid);
-        if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
+        if (existingPost == null) return Conflict("Cannot delete the post because it does not exist.");
 
         await _postService.DeleteAsync(existingPost);
 

@@ -30,7 +30,7 @@ const getUserId = async () => {
   const activeAccount = msalInstance.getActiveAccount();
   const accounts = msalInstance.getAllAccounts();
 
-  return activeAccount?.homeAccountId || accounts[0].homeAccountId;
+  return activeAccount?.idTokenClaims?.oid || accounts[0].idTokenClaims?.oid;
 };
 
 export {getAccessToken, getUserId};

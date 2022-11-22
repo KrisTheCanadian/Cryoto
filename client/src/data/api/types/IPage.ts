@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import IPost from './IPost';
 
 interface IPage {

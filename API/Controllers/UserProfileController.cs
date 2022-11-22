@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using API.Models.Transactions;
 using API.Models.WorkDay;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -15,15 +16,17 @@ public class UserProfileController : ControllerBase
     private readonly IUserProfileService _userProfileService;
     private readonly ICryptoService _cryptoService;
     private readonly ClaimsIdentity? _identity;
+    private readonly ITransactionService _transactionService;
     private readonly string _oId;
 
 
-    public UserProfileController(IUserProfileService userProfileService, ICryptoService cryptoService,
+    public UserProfileController(IUserProfileService userProfileService, ICryptoService cryptoService, ITransactionService transactionService,
         IHttpContextAccessor contextAccessor)
     {
         _userProfileService = userProfileService;
         _cryptoService = cryptoService;
         _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _transactionService = transactionService;
         _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
@@ -70,6 +73,11 @@ public class UserProfileController : ControllerBase
         await _cryptoService.AddTokensAsync(100, _oId, "toSpend");
         await _cryptoService.UpdateTokenBalance(100, _oId, "toSpend");
         _cryptoService.QueueTokenUpdate(new List<string> { _oId, _oId });
+
+        await _transactionService.AddTransactionAsync(new TransactionModel(_oId, "toSpend", "master",
+            "master", 100, "Welcome Transfer", DateTimeOffset.UtcNow));
+        await _transactionService.AddTransactionAsync(new TransactionModel(_oId, "toAward", "master",
+            "master", 100, "Welcome Transfer", DateTimeOffset.UtcNow));
 
         return Ok(userProfileModel);
     }

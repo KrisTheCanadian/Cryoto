@@ -10,9 +10,9 @@ public class WalletModel
 {
     public WalletModel(string publicKey, string wallet, string oId, string walletType, double tokenBalance)
     {
-        this.PublicKey = publicKey;
-        this.Wallet = wallet;
-        this.OId = oId;
+        PublicKey = publicKey;
+        Wallet = wallet;
+        OId = oId;
         WalletType = walletType;
         TokenBalance = tokenBalance;
     }
