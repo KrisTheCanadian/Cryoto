@@ -9,6 +9,7 @@ import {InteractionStatus} from '@azure/msal-browser';
 
 import {LandingPage} from '../LandingPage';
 
+import {routeHome} from '@/pages/routes';
 import {getAccessToken} from '@/data/api/helpers';
 
 function Authentication() {
@@ -31,7 +32,7 @@ function Authentication() {
   }, [inProgress]);
 
   useEffect(() => {
-    if (userProfileData) navigate('/');
+    if (userProfileData) navigate(routeHome);
   }, [userProfileData]);
   return (
     <>

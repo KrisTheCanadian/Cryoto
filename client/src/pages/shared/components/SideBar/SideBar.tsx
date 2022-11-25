@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {NavLink, useLocation} from 'react-router-dom';
-import {Home, Wallet, Login, Logout} from '@mui/icons-material';
+import {Home, Wallet, Logout} from '@mui/icons-material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
@@ -16,12 +16,7 @@ import {useMsal} from '@azure/msal-react';
 import {IPublicClientApplication} from '@azure/msal-browser';
 import {MiniWallet} from '@shared/components/SideBar/components/MiniWallet';
 
-import {
-  routeAuthentication,
-  routeMarket,
-  routeOrders,
-  routeWallet,
-} from '@/pages/routes';
+import {routeHome, routeMarket, routeOrders, routeWallet} from '@/pages/routes';
 
 function handleLogout(instance: IPublicClientApplication) {
   instance.logoutRedirect();
@@ -62,8 +57,8 @@ function SideBar() {
           <List>
             <ListItemButton
               component={NavLink}
-              to="/"
-              selected={location.pathname === '/'}
+              to={routeHome}
+              selected={location.pathname === routeHome}
             >
               <ListItemIcon>
                 <Home />

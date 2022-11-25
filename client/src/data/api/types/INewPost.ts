@@ -1,6 +1,6 @@
-import PostType from '../enums/PostTypes';
+import {PostType} from '../enums';
 
-interface NewPostType {
+interface INewPost {
   message: string;
   recipients: string[];
   tags: string[];
@@ -11,4 +11,4 @@ interface NewPostType {
   tempRecipients: {name: string; id: string}[];
 }
 
-export type {NewPostType};
+export type {INewPost};

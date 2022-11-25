@@ -28,9 +28,12 @@ export const englishTranslations = {
     WriteMessage: 'Write a message',
     AddCoins: 'Add coins',
     SelectValue: 'Select value',
+    MustSelectValue: 'Please select a company value',
+    MustSelectRecipient: 'Please select at least one recipient',
     Post: 'Post',
     React: 'React',
     Recognized: ' recognized ',
+    UploadImageMessage: 'Drop image here',
   },
   values: {
     ClientsAndValues: 'Clients & Values',

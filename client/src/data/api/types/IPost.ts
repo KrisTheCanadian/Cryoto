@@ -1,4 +1,4 @@
-import PostType from '../enums/PostTypes';
+import {PostType} from '../enums';
 
 import IUser from './IUser';
 

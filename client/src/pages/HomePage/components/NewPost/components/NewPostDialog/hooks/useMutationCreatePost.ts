@@ -2,7 +2,7 @@ import {useMutation, useQueryClient} from 'react-query';
 import {useMsal} from '@azure/msal-react';
 import {useAlertContext} from '@shared/hooks/Alerts';
 
-import {NewPostType} from '@/data/api/types/NewPost';
+import {INewPost} from '@/data/api/types/INewPost';
 import IPost from '@/data/api/types/IPost';
 import IPages from '@/data/api/types/IPages';
 import {createPost} from '@/data/api/requests/posts';
@@ -19,9 +19,9 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
   const queryClient = useQueryClient();
   const dispatchAlert = useAlertContext();
 
-  const mutation = useMutation((post: NewPostType) => createPost(post), {
+  const mutation = useMutation((post: INewPost) => createPost(post), {
     // When mutate is called:
-    onMutate: async (post: NewPostType) => {
+    onMutate: async (post: INewPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries(postsQuery);

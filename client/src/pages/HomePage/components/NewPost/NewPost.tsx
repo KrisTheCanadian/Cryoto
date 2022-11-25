@@ -1,5 +1,4 @@
 /* eslint-disable id-length */
-/* eslint-disable @typescript-eslint/naming-convention */
 
 import {
   Card,
@@ -46,7 +45,9 @@ function NewPost(props: NewPostProps) {
 
   return (
     <>
-      <NewPostDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+      {dialogOpen && (
+        <NewPostDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+      )}
       <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
         <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>
           <CardContent>

@@ -30,9 +30,13 @@ export const frenchTranslations = {
     WriteMessage: 'Écrire un message',
     AddCoins: 'Ajouter des pièces',
     SelectValue: 'Sélectionnez la valeur',
+    MustSelectValue: "S'il vous plaît sélectionnez une valeur",
+    MustSelectRecipient:
+      "S'il vous plaît sélectionnez au moins un destinataire",
     Post: 'Poster',
     React: 'Réagir',
     Recognized: ' a reconnu ',
+    UploadImageMessage: 'Déposez l’image ici',
   },
   values: {
     ClientsAndValues: 'Clients & Valeurs',

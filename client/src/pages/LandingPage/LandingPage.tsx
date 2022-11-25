@@ -12,7 +12,8 @@ import {useTheme} from '@mui/material/styles';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
 import {useTranslation} from 'react-i18next';
 
-import {SignInButton} from '../Authentication/components/SignInButton';
+// eslint-disable-next-line @shopify/strict-component-boundaries
+import {SignInButton} from '../Authentication/components';
 
 interface InfographicProps {
   image: string;

@@ -14,6 +14,7 @@ import {MsalProvider} from '@azure/msal-react';
 
 import i18n from './i18n/i18n';
 import App from './App';
+
 import {StyleGuide} from '@/pages/StyleGuide';
 
 const TEST_CONFIG = {
@@ -65,7 +66,7 @@ describe('Authentication and Permission tests', () => {
 
   const PermissionError = 'You do not have permission to access this page.';
 
-const SignIn = 'Sign In';
+  const SignIn = 'Sign In';
 
   it('should load Main Page at /', async () => {
     const intersectionObserverMock = () => ({

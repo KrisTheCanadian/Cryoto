@@ -8,7 +8,7 @@ import {
 } from '../routes';
 import IPage from '../types/IPage';
 import IPost from '../types/IPost';
-import {NewPostType} from '../types/NewPost';
+import {INewPost} from '../types/INewPost';
 
 async function getNextPage(page: number, pageSize: number): Promise<IPage> {
   const userId = await getUserId();
@@ -27,7 +27,7 @@ async function getNextPage(page: number, pageSize: number): Promise<IPage> {
   });
   return response.data;
 }
-async function createPost(post: NewPostType): Promise<IPost | AxiosError> {
+async function createPost(post: INewPost): Promise<IPost | AxiosError> {
   const accessToken = await getAccessToken();
   const response = await axios.post<IPost>(
     apiRoutePostsCreatePost,

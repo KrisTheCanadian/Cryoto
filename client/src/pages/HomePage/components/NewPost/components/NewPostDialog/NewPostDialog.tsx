@@ -1,14 +1,16 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {useTheme} from '@mui/material/styles';
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
+  useTheme,
   Autocomplete,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useMediaQuery,
   Box,
+  Collapse,
+  Fade,
   FormControl,
   MenuItem,
   styled,
@@ -16,14 +18,15 @@ import {
   TextField,
 } from '@mui/material';
 import {t} from 'i18next';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {useMsal} from '@azure/msal-react';
 
 import {useMutationCreatePost} from './hooks/useMutationCreatePost';
+import {ImageUploader} from './components';
 
 import {searchUsers} from '@/data/api/requests/users';
-import PostType from '@/data/api/enums/PostTypes';
-import {NewPostType} from '@/data/api/types/NewPost';
-import IUser from '@/data/api/types/IUser';
+import {INewPost, IUser} from '@/data/api/types';
+import {PostType} from '@/data/api/enums';
 
 interface NewPostDialogProps {
   dialogOpen: boolean;
@@ -33,6 +36,10 @@ interface NewPostDialogProps {
 interface Recipient {
   name: string;
   id: string;
+}
+interface FormValidation {
+  recipients: boolean;
+  companyValue: boolean;
 }
 
 const StyledTextareaAutosize = styled(TextareaAutosize)(({theme}) => ({
@@ -48,7 +55,13 @@ const StyledTextareaAutosize = styled(TextareaAutosize)(({theme}) => ({
 }));
 
 function NewPostDialog(props: NewPostDialogProps) {
+  const {accounts} = useMsal();
   const {dialogOpen, setDialogOpen} = props;
+  const [formValidity, setFormValidity] = useState<FormValidation>({
+    recipients: true,
+    companyValue: true,
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   // form values
@@ -57,9 +70,21 @@ function NewPostDialog(props: NewPostDialogProps) {
   const [users, setusers] = useState<Recipient[]>([]);
   const [companyValue, setCompanyValue] = useState<string>('');
   const [message, setMessage] = useState<string>('');
+  const [imageUploaderOpen, setImageUploaderOpen] = useState<boolean>(false);
 
   const mutation = useMutationCreatePost(recipients);
+
+  const validateForm = () => {
+    setFormValidity({
+      recipients: recipients.length > 0,
+      companyValue: companyValue.length > 0,
+    });
+
+    return recipients.length > 0 && companyValue.length > 0;
+  };
   const handleSubmit = () => {
+    setFormSubmitted(true);
+    if (!validateForm()) return;
     const coins = parseInt(amount, 10) ? parseInt(amount, 10) : 0;
 
     const postData = {
@@ -77,7 +102,7 @@ function NewPostDialog(props: NewPostDialogProps) {
       isTransactable: true,
       postType: PostType.Kudos,
       createdDate: new Date(),
-    } as NewPostType;
+    } as INewPost;
     mutation.mutate(postData);
     setDialogOpen(false);
   };
@@ -90,11 +115,19 @@ function NewPostDialog(props: NewPostDialogProps) {
     setRecipients(value);
   };
   const handleSearch = (event: any) => {
+    if (event.target.value.length === 0) {
+      setusers([]);
+      return;
+    }
     searchUsers(event.target.value)
       .then((res) => {
-        const users = res.map((user: IUser) => {
-          return {name: user.name, id: user.oId} as Recipient;
-        });
+        const users = res
+          .map((user: IUser) => {
+            return {name: user.name, id: user.oId} as Recipient;
+          })
+          .filter((user) => {
+            return user.name !== accounts[0].name;
+          });
         setusers(users);
       })
       .catch((err) => {});
@@ -115,9 +148,18 @@ function NewPostDialog(props: NewPostDialogProps) {
   const handleCompanyValueChange = (event: any) => {
     setCompanyValue(event.target.value);
   };
+  useEffect(() => {
+    if (formSubmitted) {
+      validateForm();
+    }
+  }, [recipients, companyValue]);
+
   const handleMessageChange = (event: any) => {
     const newValue = event.target.value;
     setMessage(newValue);
+  };
+  const handleDropZoneClick = () => {
+    setImageUploaderOpen(true);
   };
 
   const companyValues = [
@@ -161,6 +203,11 @@ function NewPostDialog(props: NewPostDialogProps) {
             renderInput={(params) => (
               <TextField
                 {...params}
+                error={!formValidity.recipients}
+                helperText={
+                  !formValidity.recipients &&
+                  t<string>('homePage.MustSelectRecipient')
+                }
                 variant="standard"
                 label={t<string>('homePage.SendTo')}
                 placeholder=""
@@ -175,12 +222,17 @@ function NewPostDialog(props: NewPostDialogProps) {
         <Box sx={{pt: theme.spacing(1)}} />
         <FormControl>
           <TextField
+            error={!formValidity.companyValue}
             select
             value={companyValue}
             label={t<string>('homePage.SelectValue')}
             onChange={handleCompanyValueChange}
             sx={{width: 300, mr: theme.spacing(1)}}
             id="new-post-dialog-company-value"
+            helperText={
+              !formValidity.companyValue &&
+              t<string>('homePage.MustSelectValue')
+            }
           >
             {companyValues.map((value) => (
               <MenuItem key={value} value={value}>
@@ -208,8 +260,30 @@ function NewPostDialog(props: NewPostDialogProps) {
           placeholder={t<string>('homePage.WriteMessage')}
           id="new-post-dialog-message"
         />
+        <Collapse in={imageUploaderOpen} unmountOnExit>
+          <Fade
+            in={imageUploaderOpen}
+            style={{transitionDelay: imageUploaderOpen ? '200ms' : '0ms'}}
+          >
+            <Box>
+              <ImageUploader setFileUploadOpen={setImageUploaderOpen} />
+            </Box>
+          </Fade>
+        </Collapse>
       </DialogContent>
-      <DialogActions sx={{mt: 1, mb: 1, mr: 2, ml: 2}}>
+      <DialogActions
+        sx={{mt: 1, mb: 1, mr: 2, ml: 2, justifyContent: 'space-between'}}
+      >
+        {/* <IconButton
+          sx={{visibility: 'hidden'}}
+          onClick={handleDropZoneClick}
+          data-testid="remove-image-button"
+          disabled={imageUploaderOpen}
+        >
+          <PhotoIcon />
+        </IconButton> */}
+        <Box />
+
         <Button color="primary" variant="contained" onClick={handleSubmit}>
           {t<string>('homePage.Post')}
         </Button>
