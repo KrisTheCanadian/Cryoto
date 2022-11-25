@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using API.Models.WorkDay;
 
-namespace API.Models;
+namespace API.Models.Users;
 
 [ExcludeFromCodeCoverage]
 public class WalletModel

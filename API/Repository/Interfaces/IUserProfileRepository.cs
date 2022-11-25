@@ -1,4 +1,4 @@
-﻿using API.Models.WorkDay;
+﻿using API.Models.Users;
 
 namespace API.Repository.Interfaces;
 

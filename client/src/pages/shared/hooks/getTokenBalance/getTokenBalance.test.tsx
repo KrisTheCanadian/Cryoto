@@ -1,14 +1,18 @@
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+
 import getTokenBalance from './getTokenBalance';
 
-const TokenValue = Math.floor(1000000 * Math.random());
+import {apiRouteCryptoGetTokenBalance} from '@/data/api/routes';
 
-global.fetch = jest.fn((url: URL, init: RequestInit) =>
-  Promise.resolve({
-    text: () => Promise.resolve(TokenValue),
-  }),
-) as jest.Mock;
+const TokenValue = Math.floor(1000000 * Math.random());
+const mock = new MockAdapter(axios);
 
 it('Get wallet balance functionality', async () => {
+  const data = {response: TokenValue};
+  mock.onGet(apiRouteCryptoGetTokenBalance).reply(200, data);
+
   const value = await getTokenBalance('toSpend', '');
-  expect(value).toEqual(TokenValue);
+
+  expect(value).toEqual(data);
 });

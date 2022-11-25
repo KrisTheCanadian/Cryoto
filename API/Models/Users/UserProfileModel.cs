@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
-namespace API.Models.WorkDay;
+namespace API.Models.Users;
 
 [ExcludeFromCodeCoverage]
 public class UserProfileModel

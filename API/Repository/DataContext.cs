@@ -2,7 +2,7 @@
 using API.Models;
 using API.Models.Posts;
 using API.Models.Transactions;
-using API.Models.WorkDay;
+using API.Models.Users;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

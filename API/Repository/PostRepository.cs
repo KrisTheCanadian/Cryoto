@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using API.Models.Posts;
-using API.Models.WorkDay;
+using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Utils;
 using Microsoft.EntityFrameworkCore;

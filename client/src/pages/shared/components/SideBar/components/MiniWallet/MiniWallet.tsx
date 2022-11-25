@@ -1,5 +1,6 @@
-/* eslint-disable promise/no-nesting */
-/* eslint-disable promise/catch-or-return */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @shopify/jsx-no-complex-expressions */
+
 import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
 import {useMsal, useIsAuthenticated} from '@azure/msal-react';
@@ -12,48 +13,42 @@ import {
   Typography,
   Card,
   CardContent,
+  Backdrop,
+  CircularProgress,
 } from '@mui/material';
+import {InteractionStatus} from '@azure/msal-browser';
 
 import {loginRequest} from '@/pages/Authentication/authConfig';
+import {getAccessToken} from '@/data/api/helpers';
 
 function MiniWallet() {
   const theme = useTheme();
   const isAuthenticated = useIsAuthenticated();
-  const {instance, accounts} = useMsal();
+  const {instance, accounts, inProgress} = useMsal();
   const [toSpendCoins, setToSpendCoins] = useState('-');
   const [toAwardCoins, setToAwardCoins] = useState('-');
   const {t} = useTranslation();
 
+  const loadToAwardCoins = async () => {
+    if (inProgress === InteractionStatus.None) {
+      const accessToken = await getAccessToken();
+      getTokenBalance('toAward', accessToken)
+        .then((response: any) => setToAwardCoins(response))
+        .catch(() => setToAwardCoins('-'));
+    }
+  };
+  const loadToSpendCoins = async () => {
+    const accessToken = await getAccessToken();
+
+    getTokenBalance('toSpend', accessToken)
+      .then((response: any) => setToSpendCoins(response))
+      .catch(() => setToSpendCoins('-'));
+  };
+
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    const request = {
-      ...loginRequest,
-      account: accounts[0],
-    };
-
-    // Silently acquires an access token which is then attached to a request for Microsoft Graph data
-    instance
-      .acquireTokenSilent(request)
-      .then((response) => {
-        getTokenBalance('toSpend', response.accessToken)
-          .then((response: any) => setToSpendCoins(response))
-          .catch(() => setToSpendCoins('-'));
-        getTokenBalance('toAward', response.accessToken)
-          .then((response: any) => setToAwardCoins(response))
-          .catch(() => setToAwardCoins('-'));
-      })
-      .catch(() => {
-        instance.acquireTokenPopup(request).then((response) => {
-          getTokenBalance('toSpend', response.accessToken)
-            .then((response: any) => setToSpendCoins(response))
-            .catch(() => setToSpendCoins('-'));
-          getTokenBalance('toAward', response.accessToken)
-            .then((response: any) => setToAwardCoins(response))
-            .catch(() => setToAwardCoins('-'));
-        });
-      });
-  }, [accounts, instance, isAuthenticated]);
+    if (isAuthenticated && toAwardCoins === '-') loadToAwardCoins();
+    if (toAwardCoins !== '-') loadToSpendCoins();
+  }, [inProgress, isAuthenticated, toAwardCoins]);
 
   const subtitleStyle: {[key: string]: 'h7' | number} = {
     variant: 'h7',
@@ -90,11 +85,19 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary={toSpendCoins}
-              primaryTypographyProps={amountStyle}
-            />
+            {toSpendCoins === '-' ? (
+              <CircularProgress
+                data-testid="spendCircularProgress"
+                size="2rem"
+              />
+            ) : (
+              <ListItemText
+                primary={toSpendCoins}
+                primaryTypographyProps={amountStyle}
+              />
+            )}
           </ListItem>
+
           <ListItem>
             <ListItemText
               primary={t('layout.ToAward')}
@@ -102,10 +105,17 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            <ListItemText
-              primary={toAwardCoins}
-              primaryTypographyProps={amountStyle}
-            />
+            {toAwardCoins === '-' ? (
+              <CircularProgress
+                data-testid="awardCircularProgress"
+                size="2rem"
+              />
+            ) : (
+              <ListItemText
+                primary={toAwardCoins}
+                primaryTypographyProps={amountStyle}
+              />
+            )}
           </ListItem>
         </List>
       </CardContent>

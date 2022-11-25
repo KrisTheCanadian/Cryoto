@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import {apiRouteCryptoGetTokenBalance} from '../../../../data/api/routes';
 
 async function getTokenBalance(walletType = 'toSpend', accessToken: any) {
@@ -6,13 +8,15 @@ async function getTokenBalance(walletType = 'toSpend', accessToken: any) {
 
   headers.append('Authorization', bearer);
 
-  const options = {
-    method: 'GET',
-    headers,
-  };
-  return fetch(
-    `${apiRouteCryptoGetTokenBalance}?walletType=${walletType}`,
-    options,
-  ).then((response) => response.text());
+  // convert fetch to axios for consistency
+  const res = await axios.get(apiRouteCryptoGetTokenBalance, {
+    params: {
+      walletType,
+    },
+    headers: {
+      Authorization: bearer,
+    },
+  });
+  return res.data;
 }
 export default getTokenBalance;

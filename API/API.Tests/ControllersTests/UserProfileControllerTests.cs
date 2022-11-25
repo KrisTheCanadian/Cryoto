@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
-using API.Models.WorkDay;
+using API.Models.Users;
 using API.Services.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
@@ -15,18 +15,14 @@ namespace API.Tests.ControllersTests;
 public class UserProfileControllerTests
 {
     private readonly IUserProfileService _userProfileService;
-    private readonly ICryptoService _cryptoService;
-    private readonly ITransactionService _transactionService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly UserProfileController _controller;
 
     public UserProfileControllerTests()
     {
-        _cryptoService = A.Fake<ICryptoService>();
         _userProfileService = A.Fake<IUserProfileService>();
-        _transactionService = A.Fake<ITransactionService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new UserProfileController(_userProfileService, _cryptoService, _transactionService, _contextAccessor);
+        _controller = new UserProfileController(_userProfileService, _contextAccessor);
     }
 
     [Fact]
@@ -52,7 +48,7 @@ public class UserProfileControllerTests
     [Fact]
     public async void UserProfileController_GetUserProfile_ReturnOK()
     {
-        var userProfileController = new UserProfileController(_userProfileService, _cryptoService, _transactionService, _contextAccessor)
+        var userProfileController = new UserProfileController(_userProfileService, _contextAccessor)
         {
             ControllerContext = new ControllerContext
             {
@@ -71,7 +67,7 @@ public class UserProfileControllerTests
 
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
-        A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._)).Returns(userProfileModel);
+        A.CallTo(() => _userProfileService.GetOrAddUserProfileService(A<string>._,A<ClaimsIdentity>._)).Returns(userProfileModel);
 
         //Act
         var actionResult = await _controller.GetUserProfile();
@@ -90,10 +86,7 @@ public class UserProfileControllerTests
     {
         //Arrange
         var userProfileModel = GetUserProfileModelList().Result[0];
-        A.CallTo(() => _userProfileService.GetUserProfileService(A<string>._))!.Returns(
-            Task.FromResult<UserProfileModel>(null!));
-        A.CallTo(() => _userProfileService.AddUserProfileService(A<ClaimsIdentity>._)).Returns(userProfileModel);
-        A.CallTo(() => _cryptoService.CreateUserWallets(A<string>._)).Returns(true);
+        A.CallTo(() => _userProfileService.GetOrAddUserProfileService(A<string>._,A<ClaimsIdentity>._)).Returns(userProfileModel);
 
 
         //Act
@@ -105,7 +98,7 @@ public class UserProfileControllerTests
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
         objectResultValue?.OId.Should().Be(userProfileModel.OId);
-        A.CallTo(() => _userProfileService.AddUserProfileService(A<ClaimsIdentity>._)).MustHaveHappened();
+        A.CallTo(() => _userProfileService.GetOrAddUserProfileService(A<string>._,A<ClaimsIdentity>._)).MustHaveHappened();
     }
 
 

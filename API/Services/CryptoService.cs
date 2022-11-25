@@ -1,4 +1,5 @@
-﻿using API.Crypto.Services.Interfaces;
+﻿using System.Security.Claims;
+using API.Crypto.Services.Interfaces;
 using API.Crypto.Solana.SolanaObjects;
 using API.Models;
 using API.Repository.Interfaces;
@@ -6,6 +7,8 @@ using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using Solnet.Wallet;
 using System.Text.Json;
+using API.Models.Transactions;
+using API.Models.Users;
 
 
 namespace API.Services;
@@ -14,66 +17,66 @@ public class CryptoService : ICryptoService
 {
     private readonly IWalletRepository _context;
     private readonly ISolanaService _solanaService;
+    private readonly IUserProfileService _userProfileService;
     private readonly IConfiguration _configuration;
     private readonly QueueClient _queueClient;
+    private readonly ITransactionService _transactionService;
+
 
 
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
-        QueueClient queueClient)
+        QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService)
     {
         _context = context;
         _solanaService = solanaService;
         _configuration = configuration;
         _queueClient = queueClient;
+        _userProfileService = userProfileService;
+        _transactionService = transactionService;
     }
 
-    public async Task<List<WalletModel>> GetWalletsList()
-    {
-        return await _context.GetWalletsModelListAsync();
-    }
-
-    public async Task<Wallet> GetWalletByPublicKey(string publicKey)
-    {
-        var encryptedWallet = await _context.GetWalletModelByPublicKeyAsync(publicKey);
-        return _solanaService.DecryptWallet(encryptedWallet!.Wallet, encryptedWallet.OId);
-    }
-
-    public Wallet GetOwnerWallet()
+    private Wallet GetOwnerWallet()
     {
         return _solanaService.GetWallet(_configuration["OwnerWallet-Mnemonics"],
             _configuration["OwnerWallet-Passphrase"]);
     }
 
-    public async Task<Wallet> GetWalletByOIdAsync(string oid, string walletType)
+    private async Task<Wallet> GetWalletByOIdAsync(string oid, string walletType)
     {
         var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        return _solanaService.DecryptWallet(walletModel.Wallet, oid);
+        return _solanaService.DecryptWallet(walletModel!.Wallet, oid);
     }
 
-    public async Task<PublicKey> GetPublicKeyByOIdAsync(string oid, string walletType)
-    {
+    private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
+    {   // Return wallet if it is already exist.
         var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        return _solanaService.GetPublicKeyFromString(walletModel.PublicKey);
+        if (walletModel !=null)
+            return walletModel;
+        
+        // Creat new wallet if it does not exist.
+        var wallet = _solanaService.CreateWallet();
+        var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
+        var walletPublicKey = wallet.Account.PublicKey;
+        walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
+        
+        if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
+        
+        await AddTokensAsync(100, oid, walletType);
+        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+            "master", 100, "Welcome Transfer", DateTimeOffset.UtcNow));
+
+        QueueTokenUpdate(new List<string> { oid, oid });
+        return walletModel;
+
     }
-
-    public async Task<bool> CreateUserWallets(string oid)
-    {
-        var toSpendWallet = _solanaService.CreateWallet();
-        var toAwardWallet = _solanaService.CreateWallet();
-
-        var toSpendWalletEncrypted = _solanaService.EncryptWallet(toSpendWallet, oid);
-        var toAwardWalletEncrypted = _solanaService.EncryptWallet(toAwardWallet, oid);
-
-        var toSpendWalletPublicKey = toSpendWallet.Account.PublicKey;
-        var toAward = toAwardWallet.Account.PublicKey;
-
-        var toSpendWalletModel = new WalletModel(toSpendWalletPublicKey, toSpendWalletEncrypted, oid, "toSpend", 0);
-        var toAwardWalletModel = new WalletModel(toAward, toAwardWalletEncrypted, oid, "toAward", 0);
-
-        return await _context.AddWalletModelAsync(toSpendWalletModel) > 0 &&
-               await _context.AddWalletModelAsync(toAwardWalletModel) > 0;
+    
+    public async Task<double> GetTokenBalanceAsync(string oid, string walletType, ClaimsIdentity? user = null)
+    {   // Create userProfile if it has not been created before.
+        await _userProfileService.GetOrAddUserProfileService(oid,user);
+        
+        var walletModel = await GetOrCreateUserWallet(oid, walletType);
+        return walletModel?.TokenBalance ?? 0;
     }
-
     public async Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId)
     {
         var senderWallet = await GetWalletByOIdAsync(senderOId, "toAward");
@@ -107,12 +110,6 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = userWallet.Account.PublicKey;
         return _solanaService.SendTokens(amount, ownerWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-    }
-
-    public async Task<double> GetTokenBalanceAsync(string oid, string walletType)
-    {
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        return walletModel.TokenBalance;
     }
 
     public async Task<double> GetSolanaTokenBalanceAsync(string oid, string walletType)

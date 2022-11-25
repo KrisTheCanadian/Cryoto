@@ -85,7 +85,7 @@ describe("Sidebar's Mini Wallet tests", () => {
     expect(screen.getByText(TO_AWARD_LABEL)).toBeInTheDocument();
   });
 
-  it("Mini wallet should show '-' for amounts when user is not logged in", () => {
+  it('Mini wallet should show the spinner for amounts when user is not logged in', () => {
     act(() => {
       render(
         <MockAppProviders>
@@ -96,7 +96,8 @@ describe("Sidebar's Mini Wallet tests", () => {
       );
     });
     expect(screen.queryByText(MY_BALANCE)).toBeInTheDocument();
-    expect(screen.getAllByText('-')[0]).toBeInTheDocument();
+    expect(screen.getByTestId('spendCircularProgress')).toBeInTheDocument();
+    expect(screen.getByTestId('awardCircularProgress')).toBeInTheDocument();
   });
 
   it('Mini wallet should not be rendered when user at /wallet', () => {

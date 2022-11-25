@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using API.Controllers;
-using API.Models.WorkDay;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;

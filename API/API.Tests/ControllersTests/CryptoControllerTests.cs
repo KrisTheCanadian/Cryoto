@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Crypto.Solana.SolanaObjects;
-using API.Models.WorkDay;
+using API.Models.Users;
 using API.Services.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
@@ -145,7 +146,7 @@ public class CryptoControllerTests
         var userProfileModelList = GetUserProfileModelList();
         var oId = userProfileModelList.Result[0].OId;
         var balance = A.Dummy<double>();
-        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(oId, "toAward")).Returns(balance);
+        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(oId, "toAward",A<ClaimsIdentity>._)).Returns(balance);
 
         //Act
         var actionResult = await _controller.GetTokenBalance("toAward");

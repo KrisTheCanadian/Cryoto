@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using API.Models.WorkDay;
+using API.Models.Users;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using NinjaNye.SearchExtensions;
@@ -40,6 +40,7 @@ public class UserProfileRepository : IUserProfileRepository
 
     public async Task<int> AddUserProfileAsync(UserProfileModel userProfile)
     {
+        if (await GetUserProfileAsync(userProfile.OId) != null) return 1;
         await Context.UserProfiles.AddAsync(userProfile);
         return await Context.SaveChangesAsync();
     }

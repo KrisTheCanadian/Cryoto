@@ -13,14 +13,15 @@ namespace API.Controllers;
 public class CryptoController : ControllerBase
 {
     private readonly ICryptoService _cryptoService;
+    private readonly ClaimsIdentity? _identity;
     private readonly string _oId;
 
 
     public CryptoController(ICryptoService cryptoService, IHttpContextAccessor contextAccessor)
     {
         _cryptoService = cryptoService;
-        var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
-        _oId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
+        _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
     [HttpPost]
@@ -64,6 +65,6 @@ public class CryptoController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<double>> GetTokenBalance(string walletType)
     {
-        return Ok(await _cryptoService.GetTokenBalanceAsync(_oId, walletType));
+        return Ok(await _cryptoService.GetTokenBalanceAsync(_oId, walletType, _identity));
     }
 }

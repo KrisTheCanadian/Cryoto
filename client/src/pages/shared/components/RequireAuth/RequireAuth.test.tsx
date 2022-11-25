@@ -139,31 +139,6 @@ describe('Authentication and Permission tests', () => {
     expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
-  it('should display a permission error if a regular user tries to access the style guide', async () => {
-    const intersectionObserverMock = () => ({
-      observe: () => null,
-      unobserve: (el: any) => null,
-    });
-    window.IntersectionObserver = jest
-      .fn()
-      .mockImplementation(intersectionObserverMock);
-
-    await act(async () => {
-      render(
-        <MsalProvider instance={pca}>
-          <MemoryRouter initialEntries={['/style-guide']}>
-            <I18nextProvider i18n={i18n}>
-              <App />
-            </I18nextProvider>
-          </MemoryRouter>
-        </MsalProvider>,
-      );
-    });
-
-    expect(screen.queryByText(SignIn)).not.toBeInTheDocument();
-    expect(screen.queryByText(PermissionError)).toBeInTheDocument();
-  });
-
   it('should display the wallet route if a signed in regular user tries to access it', async () => {
     await act(async () => {
       render(

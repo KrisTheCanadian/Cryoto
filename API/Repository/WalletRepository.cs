@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using API.Models;
+using API.Models.Users;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,7 @@ public class WalletRepository : IWalletRepository
         return await Context.Wallets.AsNoTracking().ToListAsync();
     }
 
-    public async Task<WalletModel> GetWalletModelByOIdAsync(string oid, string walletType)
+    public async Task<WalletModel?> GetWalletModelByOIdAsync(string oid, string walletType)
     {
         return (await Context.Wallets.AsNoTracking()
             .FirstOrDefaultAsync(walletModel => walletModel.OId == oid && walletModel.WalletType == walletType))!;

@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using API.Models.WorkDay;
+using API.Models.Users;
 
 namespace API.Models.Posts;
 
