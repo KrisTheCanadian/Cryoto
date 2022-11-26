@@ -154,6 +154,5 @@ describe('Authentication and Permission tests', () => {
 
     expect(screen.queryByText(SignIn)).not.toBeInTheDocument();
     expect(screen.queryByText(PermissionError)).not.toBeInTheDocument();
-    expect(screen.queryByText('Wallet Route')).toBeInTheDocument();
   });
 });

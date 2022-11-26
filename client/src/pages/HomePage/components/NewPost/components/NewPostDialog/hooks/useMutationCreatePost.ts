@@ -8,6 +8,7 @@ import IPages from '@/data/api/types/IPages';
 import {createPost} from '@/data/api/requests/posts';
 
 const postsQuery = ['posts-query'];
+const transactionsQuery = ['transactions'];
 
 interface Recipient {
   name: string;
@@ -78,6 +79,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
     // Always refetch after error or success:
     onSettled: () => {
       queryClient.invalidateQueries(postsQuery);
+      queryClient.invalidateQueries(transactionsQuery);
     },
   });
   return mutation;

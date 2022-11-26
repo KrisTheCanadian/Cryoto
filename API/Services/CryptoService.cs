@@ -120,12 +120,23 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = receiverWallet.Account.PublicKey;
         var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-        if (rpcTransactionResult.error != null)
+        if(rpcTransactionResult.error != null)
         {
             await UpdateTokenBalance((-amount), senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
         }
 
+        return rpcTransactionResult;
+    }
+    
+    public async Task<RpcTransactionResult> SelfTransferTokens(double amount, string userOId)
+    {
+        var senderWallet = await GetWalletByOIdAsync(userOId, "toSpend");
+        var receiverWallet = await GetWalletByOIdAsync(userOId, "toAward");
+        var ownerWallet = GetOwnerWallet();
+        var receiverPublicKey = receiverWallet.Account.PublicKey;
+        var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
+            _configuration["tokenAddress"]);
         return rpcTransactionResult;
     }
 

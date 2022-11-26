@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Crypto.Solana.SolanaObjects;
+using API.Models.Transactions;
 using API.Models.Users;
 using API.Services.Interfaces;
 using FakeItEasy;
@@ -17,13 +18,15 @@ public class CryptoControllerTests
 {
     private readonly ICryptoService _cryptoService;
     private readonly CryptoController _controller;
+    private readonly ITransactionService _transactionService;
 
 
     public CryptoControllerTests()
     {
         _cryptoService = A.Fake<ICryptoService>();
+        _transactionService = A.Fake<ITransactionService>();
         var contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new CryptoController(_cryptoService, contextAccessor);
+        _controller = new CryptoController(_cryptoService, _transactionService, contextAccessor);
     }
 
     [Fact]
@@ -77,6 +80,64 @@ public class CryptoControllerTests
 
         //Assert
         A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
+            .MustHaveHappenedOnceExactly();
+
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType<BadRequestObjectResult>();
+        objectResultValue.Should().BeOfType<RpcTransactionResult.Error>();
+    }
+    
+    [Fact]
+    public async void CryptoController_SelfTransferTokens_ReturnsOK()
+    {
+        //Arrange
+        var rpcTransactionResult = GetRpcTransactionResultSuccessful();
+        var userProfileModelList = GetUserProfileModelList();
+        var senderOId = userProfileModelList.Result[0].OId;
+        var receiverOId = userProfileModelList.Result[0].OId;
+        var amount = A.Dummy<double>();
+        A.CallTo(() => _cryptoService.SelfTransferTokens(amount, A<string>._))
+            .Returns(rpcTransactionResult);
+        A.CallTo(() => _cryptoService.UpdateTokenBalance((-amount), senderOId, "toSpend"))
+            .Returns(true);
+        A.CallTo(() => _cryptoService.UpdateTokenBalance(amount, receiverOId, "toAward"))
+            .Returns(true);
+
+        //Act
+        var actionResult = await _controller.SelfTransferTokens(amount);
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult!.Value as RpcTransactionResult;
+
+        //Assert
+        A.CallTo(() => _cryptoService.SelfTransferTokens(A<double>._, A<string>._))
+            .MustHaveHappenedOnceExactly();
+        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._, A<string>._))
+            .MustHaveHappenedTwiceExactly();
+        A.CallTo(() => _transactionService.AddTransactionAsync(A<TransactionModel>._))
+            .MustHaveHappenedTwiceExactly();
+
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType<OkObjectResult>();
+        objectResultValue?.result.Should().Be(rpcTransactionResult.Result.result);
+        objectResultValue?.error.Should().BeNull();
+    }
+    
+    [Fact]
+    public async void CryptoController_SelfTransferTokens_ReturnsBadRequest()
+    {
+        //Arrange
+        var rpcTransactionResult = GetRpcTransactionResultError();
+        var amount = A.Dummy<double>();
+        A.CallTo(() => _cryptoService.SelfTransferTokens(amount, A<string>._))
+            .Returns(rpcTransactionResult);
+
+        //Act
+        var actionResult = await _controller.SelfTransferTokens(amount);
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult!.Value;
+
+        //Assert
+        A.CallTo(() => _cryptoService.SelfTransferTokens(A<double>._, A<string>._))
             .MustHaveHappenedOnceExactly();
 
         objectResult.Should().NotBeNull();

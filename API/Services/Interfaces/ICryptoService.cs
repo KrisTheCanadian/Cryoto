@@ -8,6 +8,7 @@ namespace API.Services.Interfaces;
 public interface ICryptoService
 {
     public Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId);
+    public Task<RpcTransactionResult> SelfTransferTokens(double amount, string userOId);
     public Task<RpcTransactionResult> CreatePurchase(double amount, string userOId);
     public  Task<RpcTransactionResult> AddTokensAsync(double amount, string userOId, string walletType);
     public Task<double> GetTokenBalanceAsync(string oid, string walletType, ClaimsIdentity? user= null );

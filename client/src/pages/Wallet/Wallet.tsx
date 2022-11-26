@@ -1,16 +1,17 @@
+/* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import PageFrame from '@shared/components/PageFrame';
 import {useEffect} from 'react';
-import {useQuery} from 'react-query';
+import {useMutation, useQuery, useQueryClient} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
 
 import getTransactions from '@/data/api/requests/transactions';
 import ITransaction from '@/data/api/types/ITransaction';
+import {selfTransferTokens} from '@/data/api/requests/crypto';
 
 function Wallet() {
-  const rightBarContent = 'Wallet Route';
   const dispatchAlert = useAlertContext();
-
+  const queryClient = useQueryClient();
   const {data, status} = useQuery<ITransaction[]>(
     'transactions',
     getTransactions,
@@ -22,6 +23,18 @@ function Wallet() {
     }
   }, [dispatchAlert, status]);
 
+  const {mutate} = useMutation((amount: number) => selfTransferTokens(amount), {
+    onSuccess: () => {
+      dispatchAlert.success('Tokens transferred successfully');
+    },
+    onError: () => {
+      dispatchAlert.error('Error transferring tokens');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['transactions']);
+    },
+  });
+
   return (
     <PageFrame>
       <FullWidthColumn>
@@ -29,7 +42,6 @@ function Wallet() {
           // eslint-disable-next-line @shopify/jsx-prefer-fragment-wrappers
           <div>
             {data.map((t) => (
-              // eslint-disable-next-line @shopify/jsx-no-hardcoded-content
               <p key={t.id}>
                 {t.description} : {t.tokenAmount} coins at {t.timestamp} from
                 wallet: {t.walletType}
@@ -37,7 +49,6 @@ function Wallet() {
             ))}
           </div>
         )}
-        {rightBarContent}
       </FullWidthColumn>
     </PageFrame>
   );

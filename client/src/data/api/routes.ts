@@ -27,6 +27,7 @@ export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
 // Crypto
 export const apiRouteCrypto = `${apiEndpoint}Crypto`;
 export const apiRouteCryptoGetTokenBalance = `${apiRouteCrypto}/GetTokenBalance`;
+export const apiRouteCryptoSelfTransferTokens = `${apiRouteCrypto}/SelfTransferTokens`;
 
 // Transactions
 export const apiRouteTransactions = `${apiEndpoint}Transaction`;
