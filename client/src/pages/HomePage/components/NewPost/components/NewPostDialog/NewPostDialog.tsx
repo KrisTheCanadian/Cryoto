@@ -19,6 +19,11 @@ import {
 } from '@mui/material';
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
+import {useQueryClient} from 'react-query';
+import {
+  toAwardQuery,
+  toSpendQuery,
+} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
 import {useMsal} from '@azure/msal-react';
 
 import {useMutationCreatePost} from './hooks/useMutationCreatePost';
@@ -72,6 +77,8 @@ function NewPostDialog(props: NewPostDialogProps) {
   const [message, setMessage] = useState<string>('');
   const [imageUploaderOpen, setImageUploaderOpen] = useState<boolean>(false);
 
+  const queryClient = useQueryClient();
+
   const mutation = useMutationCreatePost(recipients);
 
   const validateForm = () => {
@@ -103,7 +110,13 @@ function NewPostDialog(props: NewPostDialogProps) {
       postType: PostType.Kudos,
       createdDate: new Date(),
     } as INewPost;
-    mutation.mutate(postData);
+
+    mutation.mutate(postData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(toAwardQuery);
+        queryClient.invalidateQueries(toSpendQuery);
+      },
+    });
     setDialogOpen(false);
   };
 

@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next';
 import {useEffect} from 'react';
 
 import Role from '@/pages/roles';
-import {routeHome} from '@/pages/routes';
+import {routeHome, routeLandingPage} from '@/pages/routes';
 
 function RequireAuth(allowedRoles: Role[]) {
   const {t} = useTranslation();
@@ -24,7 +24,7 @@ function RequireAuth(allowedRoles: Role[]) {
   if (isAuthenticated && hasPermission(userRoles, allowedRoles)) {
     return <Outlet />;
   } else {
-    return <Navigate to={routeHome} />;
+    return <Navigate to={routeLandingPage} />;
   }
 }
 

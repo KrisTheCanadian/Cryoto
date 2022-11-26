@@ -1,5 +1,6 @@
 using API.Crypto.Services;
 using API.Crypto.Services.Interfaces;
+using API.Hub;
 using API.Repository;
 using API.Repository.Interfaces;
 using API.Services;
@@ -47,8 +48,10 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
     {
         policy
+            .AllowAnyMethod()
             .WithOrigins(configuration.GetSection("AllowedOrigins").Value.Split(";").ToArray())
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
@@ -59,6 +62,8 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseNpgsql(configuration.GetConnectionString("PostgresConnection"));
 });
+
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<IUserProfileService, UserProfileService>();
@@ -72,6 +77,9 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
 builder.Services.AddScoped<ISolanaService, SolanaService>();
 builder.Services.AddScoped<ICryptoService, CryptoService>();
+
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -157,12 +165,14 @@ app.UseSwaggerUI(options =>
 
 var option = new RewriteOptions();
 option.AddRedirect("^$", "swagger");
+
 app.UseRewriter(option);
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHub<NotificationsHub>("/hub/notifications");
 app.UseCors();
 app.MapControllers();
 

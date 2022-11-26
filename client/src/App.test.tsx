@@ -3,7 +3,6 @@ import {act} from 'react-dom/test-utils';
 import {MemoryRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
 import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
-import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {
   AccountInfo,
   Configuration,
@@ -14,8 +13,6 @@ import {MsalProvider} from '@azure/msal-react';
 
 import i18n from './i18n/i18n';
 import App from './App';
-
-import {StyleGuide} from '@/pages/StyleGuide';
 
 const TEST_CONFIG = {
   MSAL_CLIENT_ID: '0813e1d1-ad72-46a9-8665-399bba48c201',

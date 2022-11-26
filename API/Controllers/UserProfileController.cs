@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using API.Models.Transactions;
 using API.Models.Users;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

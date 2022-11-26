@@ -1,5 +1,8 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable @shopify/strict-component-boundaries */
 /* eslint-disable no-negated-condition */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
+import {useMsal} from '@azure/msal-react';
 import {
   Typography,
   Button,
@@ -9,11 +12,12 @@ import {
   CircularProgress,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
+import {getUserProfile} from '@shared/hooks/getUserProfile';
+import {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 
-// eslint-disable-next-line @shopify/strict-component-boundaries
-import {SignInButton} from '../Authentication/components';
+import {SignInButton} from '../Authentication/components/SignInButton';
+import {routeHome} from '../routes';
 
 interface InfographicProps {
   image: string;
@@ -33,10 +37,20 @@ function Infographic({image, imgAlt, text}: InfographicProps) {
 }
 
 function LandingPage({isRedirecting}: {isRedirecting: boolean}) {
-  const {colorMode} = useThemeModeContext();
+  const {accounts} = useMsal();
   const companyName = 'Cryoto';
   const theme = useTheme();
   const {t} = useTranslation();
+
+  // if user is already logged in, redirect to home page
+  useEffect(() => {
+    if (accounts[0]) {
+      // creates the user in the database if it doesn't exist
+      getUserProfile().then(() => {
+        window.location.href = routeHome;
+      });
+    }
+  }, [accounts]);
 
   const headerStyle = {
     color: 'text.primary',

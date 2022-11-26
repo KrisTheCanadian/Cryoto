@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using API.Controllers;
 using API.Models.Posts;
+using API.Services;
 using API.Services.Interfaces;
 using API.Utils;
 using FakeItEasy;
@@ -21,6 +22,8 @@ public class PostsControllerTests
     private readonly ITransactionService _transactionService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly PostsController _controller;
+    private readonly INotificationService _notificationService;
+    private readonly IUserProfileService _userProfileService;
 
     public PostsControllerTests()
     {
@@ -28,7 +31,9 @@ public class PostsControllerTests
         _postService = A.Fake<IPostService>();
         _transactionService = A.Fake<ITransactionService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor);
+        _notificationService = A.Fake<INotificationService>();
+        _userProfileService = A.Fake<IUserProfileService>();
+        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService);
     }
 
     private List<PostModel> GetFakePosts()
@@ -75,7 +80,7 @@ public class PostsControllerTests
 
     private PostsController GetControllerWithIodContext(string iod)
     {
-        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor)
+        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService)
         {
             ControllerContext = new ControllerContext
             {

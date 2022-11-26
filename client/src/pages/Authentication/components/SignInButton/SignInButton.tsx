@@ -13,7 +13,6 @@ async function handleLogin(
   if (inProgress === InteractionStatus.None) {
     await instance.loginRedirect(loginRequest);
   }
-  // await instance.loginRedirect(loginRequest);
 }
 
 function SignInButton() {

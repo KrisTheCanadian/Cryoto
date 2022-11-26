@@ -14,6 +14,7 @@ public class UserProfileModel
         Email = email;
         Language = language;
         Roles = roles;
+        EmailNotifications = true;
     }
 
     [Key] public string OId { get; set; }
@@ -21,6 +22,8 @@ public class UserProfileModel
     public string Email { get; set; }
     public string Language { get; set; }
     public string[] Roles { get; set; }
+    public bool EmailNotifications { get; set; }
+
     public string? Company { get; set; }
     public string? SupervisoryOrganization { get; set; }
     public string? ManagerReference { get; set; }
@@ -31,5 +34,7 @@ public class UserProfileModel
     public string? PrimaryWorkTelephone { get; set; }
     public string? Fax { get; set; }
     public string? Mobile { get; set; }
+    
+    
     [NotMapped]public ICollection<WalletModel> Wallets { get; set; } = null!;
 }

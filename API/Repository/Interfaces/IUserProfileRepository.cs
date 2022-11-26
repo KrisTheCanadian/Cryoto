@@ -10,5 +10,5 @@ public interface IUserProfileRepository
     public Task<List<UserProfileModel>> GetSearchResultAsync(string keywords);
     public Task<UserProfileModel?> GetUserProfileAsync(string oid);
     public Task<int> AddUserProfileAsync(UserProfileModel user);
-    Task<UserProfileModel?> GetUserById(string userId);
+    Task<UserProfileModel?> GetUserByIdAsync(string userId);
 }

@@ -14,6 +14,7 @@ const getAccessToken = async () => {
      * User is not signed in. Throw error or wait for user to login.
      * Do not attempt to log a user in outside of the context of MsalProvider
      */
+    return null;
   }
   const request = {
     scopes: loginRequest.scopes,

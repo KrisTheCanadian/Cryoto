@@ -2,7 +2,10 @@ import axios from 'axios';
 
 import {apiRouteUserProfileGetUserProfile} from '../../../../data/api/routes';
 
-async function getUserProfile(accessToken: any) {
+import {getAccessToken} from '@/data/api/helpers';
+
+async function getUserProfile() {
+  const accessToken = await getAccessToken();
   const headers = new Headers();
   const bearer = `Bearer ${accessToken}`;
 

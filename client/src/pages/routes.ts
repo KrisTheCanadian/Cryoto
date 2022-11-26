@@ -1,4 +1,5 @@
 export const routeHome = '/';
+export const routeLandingPage = '/welcome';
 export const routeWallet = '/wallet';
 export const routeMarket = '/market';
 export const routeProfile = '/profile';

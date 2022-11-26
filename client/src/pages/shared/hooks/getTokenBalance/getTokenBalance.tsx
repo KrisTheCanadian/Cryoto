@@ -2,7 +2,13 @@ import axios from 'axios';
 
 import {apiRouteCryptoGetTokenBalance} from '../../../../data/api/routes';
 
-async function getTokenBalance(walletType = 'toSpend', accessToken: any) {
+import {getAccessToken} from '@/data/api/helpers';
+
+async function getTokenBalance(walletType = 'toSpend') {
+  const accessToken = await getAccessToken();
+  if (accessToken == null) {
+    return null;
+  }
   const headers = new Headers();
   const bearer = `Bearer ${accessToken}`;
 

@@ -10,6 +10,7 @@ import {
 } from '@azure/msal-browser';
 import {MemoryRouter} from 'react-router-dom';
 import {MockAppProviders} from '@shared/testing/mocks';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
 import SideBar from '../../SideBar';
 
@@ -49,6 +50,15 @@ const MY_BALANCE = 'My Balance';
 const TO_SPEND_LABEL = 'To Spend';
 const TO_AWARD_LABEL = 'To Award';
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
+    },
+  },
+});
+
 describe("Sidebar's Mini Wallet tests", () => {
   let pca: IPublicClientApplication;
   let getAllAccountsSpy: jest.SpyInstance;
@@ -72,11 +82,13 @@ describe("Sidebar's Mini Wallet tests", () => {
     act(() => {
       render(
         <MsalProvider instance={pca}>
-          <MockAppProviders>
-            <I18nextProvider i18n={i18n}>
-              <MiniWallet />
-            </I18nextProvider>
-          </MockAppProviders>
+          <QueryClientProvider client={queryClient}>
+            <MockAppProviders>
+              <I18nextProvider i18n={i18n}>
+                <MiniWallet />
+              </I18nextProvider>
+            </MockAppProviders>
+          </QueryClientProvider>
         </MsalProvider>,
       );
     });
@@ -85,29 +97,16 @@ describe("Sidebar's Mini Wallet tests", () => {
     expect(screen.getByText(TO_AWARD_LABEL)).toBeInTheDocument();
   });
 
-  it('Mini wallet should show the spinner for amounts when user is not logged in', () => {
-    act(() => {
-      render(
-        <MockAppProviders>
-          <I18nextProvider i18n={i18n}>
-            <MiniWallet />
-          </I18nextProvider>
-        </MockAppProviders>,
-      );
-    });
-    expect(screen.queryByText(MY_BALANCE)).toBeInTheDocument();
-    expect(screen.getByTestId('spendCircularProgress')).toBeInTheDocument();
-    expect(screen.getByTestId('awardCircularProgress')).toBeInTheDocument();
-  });
-
   it('Mini wallet should not be rendered when user at /wallet', () => {
     act(() => {
       render(
-        <MemoryRouter initialEntries={['/wallet']}>
-          <I18nextProvider i18n={i18n}>
-            <SideBar />
-          </I18nextProvider>
-        </MemoryRouter>,
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/wallet']}>
+            <I18nextProvider i18n={i18n}>
+              <SideBar />
+            </I18nextProvider>
+          </MemoryRouter>
+        </QueryClientProvider>,
       );
     });
     expect(screen.queryByText(MY_BALANCE)).not.toBeInTheDocument();

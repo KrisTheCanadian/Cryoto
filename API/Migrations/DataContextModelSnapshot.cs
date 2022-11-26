@@ -22,6 +22,42 @@ namespace API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("API.Models.Notifications.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReceiverId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Seen")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("API.Models.Posts.PostModel", b =>
                 {
                     b.Property<string>("Id")
@@ -97,34 +133,7 @@ namespace API.Migrations
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("API.Models.WalletModel", b =>
-                {
-                    b.Property<string>("PublicKey")
-                        .HasColumnType("text");
-
-                    b.Property<string>("OId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("TokenBalance")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Wallet")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("WalletType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("PublicKey");
-
-                    b.HasIndex("OId");
-
-                    b.ToTable("Wallets");
-                });
-
-            modelBuilder.Entity("API.Models.WorkDay.UserProfileModel", b =>
+            modelBuilder.Entity("API.Models.Users.UserProfileModel", b =>
                 {
                     b.Property<string>("OId")
                         .HasColumnType("text");
@@ -144,6 +153,9 @@ namespace API.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("EmailNotifications")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Fax")
                         .HasColumnType("text");
@@ -180,9 +192,36 @@ namespace API.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("API.Models.WalletModel", b =>
+            modelBuilder.Entity("API.Models.Users.WalletModel", b =>
                 {
-                    b.HasOne("API.Models.WorkDay.UserProfileModel", "UserProfileModel")
+                    b.Property<string>("PublicKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("TokenBalance")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Wallet")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WalletType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PublicKey");
+
+                    b.HasIndex("OId");
+
+                    b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("API.Models.Users.WalletModel", b =>
+                {
+                    b.HasOne("API.Models.Users.UserProfileModel", "UserProfileModel")
                         .WithMany()
                         .HasForeignKey("OId")
                         .OnDelete(DeleteBehavior.Cascade)

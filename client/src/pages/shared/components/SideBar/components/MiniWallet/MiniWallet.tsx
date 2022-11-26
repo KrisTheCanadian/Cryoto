@@ -1,9 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 
 import {useTranslation} from 'react-i18next';
-import {useEffect, useState} from 'react';
-import {useMsal, useIsAuthenticated} from '@azure/msal-react';
+import {useMsal} from '@azure/msal-react';
 import {useTheme} from '@mui/material/styles';
 import {getTokenBalance} from '@shared/hooks/getTokenBalance';
 import {
@@ -13,42 +11,38 @@ import {
   Typography,
   Card,
   CardContent,
-  Backdrop,
   CircularProgress,
 } from '@mui/material';
 import {InteractionStatus} from '@azure/msal-browser';
+import {useQuery} from 'react-query';
 
-import {loginRequest} from '@/pages/Authentication/authConfig';
-import {getAccessToken} from '@/data/api/helpers';
+export const toSpendQuery = 'tospend';
+export const toAwardQuery = 'toaward';
 
 function MiniWallet() {
   const theme = useTheme();
-  const isAuthenticated = useIsAuthenticated();
-  const {instance, accounts, inProgress} = useMsal();
-  const [toSpendCoins, setToSpendCoins] = useState('-');
-  const [toAwardCoins, setToAwardCoins] = useState('-');
+  const {inProgress} = useMsal();
   const {t} = useTranslation();
 
   const loadToAwardCoins = async () => {
     if (inProgress === InteractionStatus.None) {
-      const accessToken = await getAccessToken();
-      getTokenBalance('toAward', accessToken)
-        .then((response: any) => setToAwardCoins(response))
-        .catch(() => setToAwardCoins('-'));
+      return getTokenBalance('toAward');
     }
   };
-  const loadToSpendCoins = async () => {
-    const accessToken = await getAccessToken();
 
-    getTokenBalance('toSpend', accessToken)
-      .then((response: any) => setToSpendCoins(response))
-      .catch(() => setToSpendCoins('-'));
+  const {data: toAwardCoins, status: awardStatus} = useQuery(
+    toAwardQuery,
+    loadToAwardCoins,
+  );
+
+  const loadToSpendCoins = async () => {
+    return getTokenBalance('toSpend');
   };
 
-  useEffect(() => {
-    if (isAuthenticated && toAwardCoins === '-') loadToAwardCoins();
-    if (toAwardCoins !== '-') loadToSpendCoins();
-  }, [inProgress, isAuthenticated, toAwardCoins]);
+  const {data: toSpendCoins, status: spendStatus} = useQuery(
+    toSpendQuery,
+    loadToSpendCoins,
+  );
 
   const subtitleStyle: {[key: string]: 'h7' | number} = {
     variant: 'h7',
@@ -85,7 +79,7 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            {toSpendCoins === '-' ? (
+            {spendStatus === 'loading' ? (
               <CircularProgress
                 data-testid="spendCircularProgress"
                 size="2rem"
@@ -105,7 +99,7 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            {toAwardCoins === '-' ? (
+            {awardStatus === 'loading' ? (
               <CircularProgress
                 data-testid="awardCircularProgress"
                 size="2rem"

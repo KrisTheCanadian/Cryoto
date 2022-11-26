@@ -7,7 +7,8 @@
     }
   },
   "ConnectionStrings": {
-    "PostgresConnection": "Username=postgres;Password=postgres;Server=localhost;Database=postgres"
+    "PostgresConnection": "Username=postgres;Password=postgres;Server=localhost;Database=postgres",
+    "CryotoCommunicationsServiceConnectionString": "endpoint=https://cryotocommunicationservices.communication.azure.com/;accesskey=base64key"
   },
   "AllowedHosts": "*",
   "AllowedOrigins": "http://localhost:5173;https://cryotoclient.azurewebsites.net;https://cryotoclientprod.azurewebsites.net;https://cryotoclienttesting.azurewebsites.net",

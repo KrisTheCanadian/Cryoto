@@ -1,7 +1,6 @@
 import {Avatar, Typography, Box, colors, Chip, Stack} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import TollIcon from '@mui/icons-material/Toll';
-import {t} from 'i18next';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 
@@ -103,7 +102,7 @@ function Post(props: PostProps) {
           variant="body1"
           sx={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}
         >
-          {message}{' '}
+          {message}
         </Typography>
         <LikeButtons />
       </Box>

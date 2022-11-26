@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/strict-component-boundaries */
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import {Search} from '@mui/icons-material';
@@ -15,10 +16,12 @@ import {useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
+import {AuthenticatedTemplate} from '@azure/msal-react';
 
 import {RoundedInput} from '../interface-elements/RoundedInput';
 
 import {ProfileMenu} from './components';
+import Notifications from './components/Notifications';
 
 function NavBar() {
   const {colorMode} = useThemeModeContext();
@@ -113,6 +116,7 @@ function NavBar() {
       inputFieldRef.current?.focus();
     }, 1);
   }
+
   function closeSearch() {
     setOpen(false);
   }
@@ -128,55 +132,62 @@ function NavBar() {
   const sampleSearchResults = "I'm a search result";
 
   return (
-    <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
-      <MainNavigationBar>
-        <Link to="/" style={{textDecoration: 'none'}}>
-          <Typography
-            id="companyName"
-            variant="h6"
-            sx={{color: theme.palette.text.primary}}
-          >
-            {companyName}
-          </Typography>
-        </Link>
-        <Box sx={searchBoxStyle} data-testid="searchBox">
-          <RoundedInput>
-            <Search
-              sx={{color: theme.palette.action.active, ml: theme.spacing(0.5)}}
-            />
-            <InputBase
-              placeholder={t('layout.Search')}
-              inputRef={inputFieldRef}
-              onBlur={closeSearch}
-              onFocus={openSearch}
-              sx={{width: '100%', ml: theme.spacing(0.5)}}
-            />
-          </RoundedInput>
+    <AuthenticatedTemplate>
+      <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
+        <MainNavigationBar>
+          <Link to="/" style={{textDecoration: 'none'}}>
+            <Typography
+              id="companyName"
+              variant="h6"
+              sx={{color: theme.palette.text.primary}}
+            >
+              {companyName}
+            </Typography>
+          </Link>
+          <Box sx={searchBoxStyle} data-testid="searchBox">
+            <RoundedInput>
+              <Search
+                sx={{
+                  color: theme.palette.action.active,
+                  ml: theme.spacing(0.5),
+                }}
+              />
+              <InputBase
+                id="searchInput"
+                placeholder={t('layout.Search')}
+                inputRef={inputFieldRef}
+                onBlur={closeSearch}
+                onFocus={openSearch}
+                sx={{width: '100%', ml: theme.spacing(0.5)}}
+              />
+            </RoundedInput>
 
-          <Box sx={searchResultsStyle} data-testid="search-results">
-            {sampleSearchResults}
+            <Box sx={searchResultsStyle} data-testid="search-results">
+              {sampleSearchResults}
+            </Box>
           </Box>
-        </Box>
-        <RightNavBarSection>
-          <IconButton
-            aria-label={t('layout.search')}
-            size="large"
-            sx={searchButtonStyle}
-            onClick={openSearch}
-          >
-            <Search sx={searchButtonStyle} />
-          </IconButton>
-          <IconButton
-            sx={{}}
-            onClick={toggleColorMode}
-            data-testid="dark-mode-toggle"
-          >
-            {brightnessIcon()}
-          </IconButton>
-          <ProfileMenu />
-        </RightNavBarSection>
-      </MainNavigationBar>
-    </AppBar>
+          <RightNavBarSection>
+            <IconButton
+              aria-label={t('layout.search')}
+              size="large"
+              sx={searchButtonStyle}
+              onClick={openSearch}
+            >
+              <Search sx={searchButtonStyle} />
+            </IconButton>
+            <IconButton
+              sx={{py: 1}}
+              onClick={toggleColorMode}
+              data-testid="dark-mode-toggle"
+            >
+              {brightnessIcon()}
+            </IconButton>
+            <Notifications />
+            <ProfileMenu />
+          </RightNavBarSection>
+        </MainNavigationBar>
+      </AppBar>
+    </AuthenticatedTemplate>
   );
 }
 export default NavBar;

@@ -17,6 +17,7 @@
     "@azure/msal-react": "^1.4.8",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@microsoft/signalr": "^7.0.0",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.4.1",
     "@mui/styles": "^5.10.7",

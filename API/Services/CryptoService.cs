@@ -1,12 +1,12 @@
 ﻿using System.Security.Claims;
 using API.Crypto.Services.Interfaces;
 using API.Crypto.Solana.SolanaObjects;
-using API.Models;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using Solnet.Wallet;
 using System.Text.Json;
+using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Users;
 
@@ -21,11 +21,13 @@ public class CryptoService : ICryptoService
     private readonly IConfiguration _configuration;
     private readonly QueueClient _queueClient;
     private readonly ITransactionService _transactionService;
+    private readonly INotificationService _notificationService;
 
 
 
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
-        QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService)
+        QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService, 
+        INotificationService notificationService)
     {
         _context = context;
         _solanaService = solanaService;
@@ -33,6 +35,7 @@ public class CryptoService : ICryptoService
         _queueClient = queueClient;
         _userProfileService = userProfileService;
         _transactionService = transactionService;
+        _notificationService = notificationService;
     }
 
     private Wallet GetOwnerWallet()
@@ -61,10 +64,42 @@ public class CryptoService : ICryptoService
         
         if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
         
+        
+        
         await AddTokensAsync(100, oid, walletType);
         await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
             "master", 100, "Welcome Transfer", DateTimeOffset.UtcNow));
+        
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+        
+        // quick fix for double notification
+        // get notifications of user and check if it's empty
+        using (var mutex = new Mutex(false, "NotificationMutex"))
+        {
+            try
+            {
+                mutex.WaitOne();
+                var notifications = await _notificationService.GetUserNotificationsAsync(oid);
+                if (userProfileModel != null && !notifications.Any())
+                {
+                    var messageHtml = "<h1>Welcome to the team!</h1> <p>Hi " + userProfileModel.Name +
+                                      ",</p> <p>Thank you for joining our team. We are excited to have you on board!</p> <p>Best regards,</p> <p>Cryoto Team</p>";
+                    await _notificationService.SendEmailAsync(userProfileModel.Email, "Welcome to the Cryoto!",
+                        messageHtml, true);
+                    await _notificationService.SendNotificationAsync(new Notification("System", oid,
+                        "Welcome to the team!", "Kudos", 100));
+                }
 
+                mutex.ReleaseMutex();
+            }
+            catch (Exception)
+            {
+                // making sure mutex is released in case of exception
+                mutex.ReleaseMutex();
+            }
+        }
+
+        
         QueueTokenUpdate(new List<string> { oid, oid });
         return walletModel;
 
@@ -72,7 +107,7 @@ public class CryptoService : ICryptoService
     
     public async Task<double> GetTokenBalanceAsync(string oid, string walletType, ClaimsIdentity? user = null)
     {   // Create userProfile if it has not been created before.
-        await _userProfileService.GetOrAddUserProfileService(oid,user);
+        await _userProfileService.GetOrAddUserProfileService(oid, user);
         
         var walletModel = await GetOrCreateUserWallet(oid, walletType);
         return walletModel?.TokenBalance ?? 0;

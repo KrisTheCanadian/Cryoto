@@ -26,6 +26,11 @@ describe('Navbar', () => {
     cy.get('body').should('have.css', 'background-color', 'rgb(248, 250, 251)');
   });
 
+  it('Test Notifications', () => {
+    cy.visit('/');
+    cy.get('[data-testid="NotificationsNoneIcon"]').should('exist');
+  });
+
   it('Test profile button', () => {
     cy.visit('/');
     cy.get('[data-testid="AccountCircleIcon"]').should('exist');

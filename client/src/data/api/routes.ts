@@ -32,3 +32,10 @@ export const apiRouteCryptoGetTokenBalance = `${apiRouteCrypto}/GetTokenBalance`
 export const apiRouteTransactions = `${apiEndpoint}Transaction`;
 export const apiRouteTransactionsGetTransactionsBySenderOId = `${apiRouteTransactions}/GetTransactionsBySenderOId`;
 export const apiRouteTransactionsGetTransactionsByReceiverOId = `${apiRouteTransactions}/GetTransactionsByReceiverOId`;
+
+// Notifications
+
+export const apiRouteNotifications = `${apiEndpoint}Notification`;
+export const apiRouteNotificationsGetNotifications = `${apiRouteNotifications}/GetNotifications`;
+export const apiRouteNotificationsReadNotification = `${apiRouteNotifications}/ReadNotification`;
+export const apiRouteNotificationsGetNotificationsPaginated = `${apiRouteNotifications}/GetNotificationsPaginated`;

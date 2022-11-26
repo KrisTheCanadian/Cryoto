@@ -9,11 +9,8 @@ import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {act, render, screen} from '@testing-library/react';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';
-import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 
 import {LandingPage} from '../LandingPage';
-
-import Authentication from './AuthenticationPage';
 
 import i18n from '@/i18n/i18n';
 
@@ -78,22 +75,4 @@ it('rendering authentication page should render a Backdrop', async () => {
   });
 
   expect(screen.getByTestId('Backdrop')).toBeInTheDocument();
-});
-
-it('rendering authentication page while authenticated should render the CircularProgress spinner', async () => {
-  await act(async () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <MsalProvider instance={pca}>
-          <ThemeContextProvider>
-            <I18nextProvider i18n={i18n}>
-              <LandingPage isRedirecting />
-            </I18nextProvider>
-          </ThemeContextProvider>
-        </MsalProvider>
-      </MemoryRouter>,
-    );
-  });
-
-  expect(screen.getByTestId('CircularProgress')).toBeInTheDocument();
 });

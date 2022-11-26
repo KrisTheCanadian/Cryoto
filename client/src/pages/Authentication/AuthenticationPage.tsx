@@ -18,10 +18,7 @@ function Authentication() {
 
   const loadUserProfile = async () => {
     if (inProgress === InteractionStatus.None) {
-      const accessToken = await getAccessToken();
-      getUserProfile(accessToken).then((response: any) =>
-        setUserProfileData(response),
-      );
+      getUserProfile().then((response: any) => setUserProfileData(response));
     }
   };
 

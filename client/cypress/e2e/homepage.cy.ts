@@ -14,12 +14,6 @@ describe('HomePage', () => {
     cy.get('[href="/wallet"]').should('contain', 'Wallet');
 
     //
-    // checking right sidebar
-    //
-    cy.get('#rightBar').should('exist');
-    cy.get('#rightBar').should('contain', 'Right bar content');
-
-    //
     // check feed
     //
     cy.get('#Feed').should('exist');

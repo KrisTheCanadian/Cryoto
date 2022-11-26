@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import {useTheme} from '@mui/material/styles';
 import {Box} from '@mui/material';
 import {ReactNode} from 'react';

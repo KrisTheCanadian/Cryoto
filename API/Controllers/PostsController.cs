@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Security.Claims;
+using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Posts;
 using API.Services.Interfaces;
@@ -7,6 +8,7 @@ using API.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers;
 
@@ -19,15 +21,19 @@ public class PostsController : ControllerBase
     private readonly IPostService _postService;
     private readonly ITransactionService _transactionService;
     private readonly string _actorId;
+    private readonly INotificationService _notificationService;
+    private readonly IUserProfileService _userProfileService;
 
 
-    public PostsController(IPostService postService, ICryptoService cryptoService, ITransactionService transactionService, IHttpContextAccessor contextAccessor)
+    public PostsController(IPostService postService, ICryptoService cryptoService, ITransactionService transactionService, IHttpContextAccessor contextAccessor, INotificationService notificationService, IUserProfileService userProfileService)
     {
         _postService = postService;
         _cryptoService = cryptoService;
         _transactionService = transactionService;
         var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
+        _notificationService = notificationService;
+        _userProfileService = userProfileService;
     }
 
     [HttpGet]
@@ -82,6 +88,21 @@ public class PostsController : ControllerBase
             await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
             await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend", _actorId,
                 "toAward", amount, "Recognition", postCreateModel.CreatedDate));
+            
+            var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
+            
+            await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId, postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
+           
+            var senderName = "a Team Member";
+           
+            if (actorProfile != null) { senderName = actorProfile.Name; }
+            
+            
+            var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
+            var htmlContent = "<h1>You have been awarded " + amount + " tokens" + " by " + senderName + "!</h1>" +
+                              "<h3>" + postCreateModel.Message + "</h3>";
+                
+            await _notificationService.SendEmailAsync(recipientProfile.Email, subject, htmlContent, true);
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);

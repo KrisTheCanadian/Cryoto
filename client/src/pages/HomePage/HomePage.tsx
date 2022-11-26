@@ -6,22 +6,19 @@ import PageFrame from '@shared/components/PageFrame';
 import {RightBar} from '@shared/components/RightBar';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useInfiniteQuery} from 'react-query';
-import {
-  useMsal,
-  AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-} from '@azure/msal-react';
+import {useMsal, AuthenticatedTemplate} from '@azure/msal-react';
 import {useAlertContext} from '@shared/hooks/Alerts/AlertContext';
 import {useTranslation} from 'react-i18next';
 import {useLocation} from 'react-router-dom';
 
 import {getNextPage} from '../../data/api/requests/posts';
-import {LandingPage} from '../LandingPage';
 
 import {NewPost, Post} from './components';
 
 import IPost from '@/data/api/types/IPost';
 import IPage from '@/data/api/types/IPage';
+
+export const postsQuery = ['posts-query'];
 
 function HomePage() {
   const {accounts} = useMsal();
@@ -37,7 +34,6 @@ function HomePage() {
   const [postsPerLoad, setPostsPerLoad] = useState(10);
   const loader = useRef();
   const {t} = useTranslation();
-  const postsQuery = ['posts-query'];
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useInfiniteQuery<IPage, Error>(
@@ -74,23 +70,23 @@ function HomePage() {
     };
   }, [loader, handleObserver, hasNextPage]);
 
-  const rightBarContent = 'Right bar content';
-
   useEffect(() => {
-    if (status === 'success' && !isFetchingNextPage && !hasNextPage) {
+    if (
+      accounts &&
+      status === 'success' &&
+      !isFetchingNextPage &&
+      !hasNextPage
+    ) {
       dispatchAlert.info(t('errors.NoMorePosts'));
       return;
     }
-    if (status === 'error') {
+    if (accounts && status === 'error') {
       dispatchAlert.error(t('errors.BackendError'));
     }
-  }, [isFetchingNextPage, hasNextPage, dispatchAlert, status, t]);
+  }, [isFetchingNextPage, hasNextPage, dispatchAlert, status, t, accounts]);
 
   return (
     <>
-      <UnauthenticatedTemplate>
-        <LandingPage isRedirecting={false} />
-      </UnauthenticatedTemplate>
       <AuthenticatedTemplate>
         <PageFrame>
           <MiddleColumn>
@@ -118,13 +114,17 @@ function HomePage() {
               data?.pages.map((page) =>
                 page.data.map((post: IPost) => (
                   <Post
-                    key={post.id}
-                    firstName={post.authorProfile.name}
-                    recipient={post.recipientProfiles[0].name}
-                    coinsGiven={post.coins}
-                    tags={post.tags}
-                    message={post.message}
-                    date={post.createdDate}
+                    key={post?.id}
+                    firstName={
+                      post?.authorProfile?.name || 'Deleted Cryoto User'
+                    }
+                    recipient={
+                      post?.recipientProfiles[0]?.name || 'Deleted Cryoto User'
+                    }
+                    coinsGiven={post?.coins}
+                    tags={post?.tags}
+                    message={post?.message}
+                    date={post?.createdDate}
                     loading={false}
                   />
                 )),
@@ -150,7 +150,9 @@ function HomePage() {
                 ),
               )}
           </MiddleColumn>
-          <RightBar>{rightBarContent}</RightBar>
+          <RightBar>
+            <></>
+          </RightBar>
         </PageFrame>
       </AuthenticatedTemplate>
     </>

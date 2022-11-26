@@ -11,7 +11,7 @@ it('getUserProfile should be successful', async () => {
   mock.onGet(apiRouteUserProfileGetUserProfile).reply(200, data);
 
   const accessToken = 'accessToken';
-  const res = await getUserProfile(accessToken);
+  const res = await getUserProfile();
 
   expect(res).toEqual(data);
 });
