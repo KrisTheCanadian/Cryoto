@@ -6,6 +6,7 @@ using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using Solnet.Wallet;
 using System.Text.Json;
+using Solnet.Rpc;
 using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Users;
@@ -186,5 +187,18 @@ public class CryptoService : ICryptoService
     {
         var message = JsonSerializer.Serialize(oIdsList);
         await _queueClient.SendMessageAsync(message, TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(-1));
+    }
+    
+    public async void QueueSolUpdate(List<string> oIdsList)
+    {
+        var message = JsonSerializer.Serialize(oIdsList);
+        await _queueClient.SendMessageAsync(message, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
+    }
+    
+    public double GetSolBalance()
+    {
+        var publicKey = "HgRdHMtBLZRfLjbjyq8d38LFx3fC2DbVgzjUbKx4VQ4Y";
+        IRpcClient RpcClient = ClientFactory.GetClient(Cluster.DevNet);
+        return Convert.ToDouble(RpcClient.GetBalance(publicKey).Result.Value)/1000000000;
     }
 }

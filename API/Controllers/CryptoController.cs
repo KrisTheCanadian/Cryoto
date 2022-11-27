@@ -86,4 +86,16 @@ public class CryptoController : ControllerBase
     {
         return Ok(await _cryptoService.GetTokenBalanceAsync(_oId, walletType, _identity));
     }
+
+    [HttpGet]
+    public ActionResult<double> GetSolBalance()
+    {
+        return Ok(_cryptoService.GetSolBalance());
+    }
+    
+    [HttpGet]
+    public void InitiateSOLBalanceCheck()
+    {
+        _cryptoService.QueueSolUpdate(new List<string> { "CheckBalanceMessage" });
+    }
 }

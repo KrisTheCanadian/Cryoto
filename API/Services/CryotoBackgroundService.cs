@@ -36,10 +36,22 @@ public class CryotoBackgroundService : BackgroundService
                         {
                             if (oid.index == 0)
                             {
-                                var senderTokenBalance =
-                                    await cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toAward");
-                                await cryptoService.UpdateSolanaTokenBalance(senderTokenBalance, oid.value,
-                                    "toAward");
+                                if (oid.value == "CheckBalanceMessage")
+                                {
+                                    var SolBalance = cryptoService.GetSolBalance();
+                                    if (SolBalance < 0.09)
+                                    {
+                                        //Notify admins on low balance
+                                    }
+                                    cryptoService.QueueSolUpdate(new List<string> { "CheckBalanceMessage" });
+                                }
+                                else
+                                {
+                                    var senderTokenBalance =
+                                        await cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toAward");
+                                    await cryptoService.UpdateSolanaTokenBalance(senderTokenBalance, oid.value,
+                                        "toAward");
+                                }
                             }
                             else
                             {
