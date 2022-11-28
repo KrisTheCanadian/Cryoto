@@ -59,4 +59,33 @@ export const englishTranslations = {
     CelebrateAlt: 'Celebrate',
     RewardsAlt: 'Rewards',
   },
+  wallet: {
+    toSpend: 'To Spend',
+    toAward: 'To Award',
+    Transfer: 'Transfer',
+    selfTransferDialog: {
+      TransferCoins: 'Transfer Coins',
+      From: 'From',
+      To: 'To',
+      CoinAmount: 'Amount of Coins',
+      TransferMessage:
+        'Transfer {{coins}} coin(s) from your <italic>To Spend Wallet</italic> into your <italic>To Award Wallet</italic>',
+      TransferErrorMessage: 'Please enter an amount',
+    },
+    transactionTable: {
+      TransactionHistory: 'Transaction History',
+      Transaction: 'Transaction',
+      Date: 'Date',
+      Wallet: 'Wallet',
+      Amount: 'Amount',
+      RowsPage: 'Rows per page',
+      Of: 'of',
+      Recognition: 'Recognition',
+      SelfTransfer: 'Self Transfer',
+      WelcomeTransfer: 'Welcome Transfer',
+    },
+    creditCard: {
+      Balance: 'Balance',
+    },
+  },
 };

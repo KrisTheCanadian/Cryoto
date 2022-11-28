@@ -5,6 +5,7 @@ import IPage from './IPage';
 import IPages from './IPages';
 import Itransaction from './ITransaction';
 import IUser from './IUser';
+import IWalletsBalance from './IWalletsBalance';
 
 export type {
   IJwtDecodedToken,
@@ -14,4 +15,5 @@ export type {
   IPages,
   Itransaction,
   IUser,
+  IWalletsBalance,
 };

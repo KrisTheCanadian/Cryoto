@@ -12,7 +12,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import {getUserProfile} from '@shared/hooks/getUserProfile';
+import {getUserProfile} from '@/data/api/requests/users';
 import {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 
@@ -154,17 +154,17 @@ function LandingPage({isRedirecting}: {isRedirecting: boolean}) {
       </Stack>
       <Grid sx={infographicGroupStyle}>
         <Infographic
-          image="/images/1.svg"
+          image="/images/svgIcons/1.svg"
           imgAlt={t('landingPage.RecognizeAlt')}
           text={t('landingPage.FeatureDescription')}
         />
         <Infographic
-          image="/images/2.svg"
+          image="/images/svgIcons/2.svg"
           imgAlt={t('landingPage.CelebrateAlt')}
           text={t('landingPage.FeatureDescription')}
         />
         <Infographic
-          image="/images/3.svg"
+          image="/images/svgIcons/3.svg"
           imgAlt={t('landingPage.RewardsAlt')}
           text={t('landingPage.FeatureDescription')}
         />

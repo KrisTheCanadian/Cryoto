@@ -3,14 +3,13 @@
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import {useMsal} from '@azure/msal-react';
 import {useEffect, useState} from 'react';
-import {getUserProfile} from '@shared/hooks/getUserProfile';
 import {useNavigate} from 'react-router-dom';
 import {InteractionStatus} from '@azure/msal-browser';
 
 import {LandingPage} from '../LandingPage';
 
 import {routeHome} from '@/pages/routes';
-import {getAccessToken} from '@/data/api/helpers';
+import {getUserProfile} from '@/data/api/requests/users';
 
 function Authentication() {
   const [userProfileData, setUserProfileData] = useState();

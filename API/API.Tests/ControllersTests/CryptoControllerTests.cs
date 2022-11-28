@@ -204,21 +204,19 @@ public class CryptoControllerTests
     public async void CryptoController_GetTokenBalance_ReturnsOK()
     {
         //Arrange
-        var userProfileModelList = GetUserProfileModelList();
-        var oId = userProfileModelList.Result[0].OId;
-        var balance = A.Dummy<double>();
-        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(oId, "toAward",A<ClaimsIdentity>._)).Returns(balance);
+        var userWalletsModel = getFakeUserWalletsModel();
+        A.CallTo(() => _cryptoService.GetWalletsBalanceAsync(A<string>._,A<ClaimsIdentity>._)).Returns(userWalletsModel);
 
         //Act
-        var actionResult = await _controller.GetTokenBalance("toAward");
+        var actionResult = await _controller.GetTokenBalance();
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value;
 
         //Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType<OkObjectResult>();
-        objectResultValue.Should().BeOfType<double>();
-        objectResultValue.Should().Be(balance);
+        objectResultValue.Should().BeOfType<UserWalletsModel>();
+        objectResultValue.Should().Be(userWalletsModel);
     }
 
     private Task<List<UserProfileModel>> GetUserProfileModelList()
@@ -249,5 +247,14 @@ public class CryptoControllerTests
             result = A.Dummy<string>()
         };
         return Task.FromResult(rpcTransactionResult);
+    }
+    
+    private UserWalletsModel getFakeUserWalletsModel()
+    {
+        return new UserWalletsModel(
+            50.50,
+            25
+        );
+
     }
 }

@@ -41,7 +41,7 @@ public class NotificationsControllerTests
         // Assert
         Assert.IsType<OkObjectResult>(objectResult);
         Assert.IsAssignableFrom<IEnumerable<Notification>>(objectResultValue);
-        Assert.NotNull(objectResultValue.ToList());
+        Assert.NotNull(objectResultValue?.ToList());
     }
     
     [Fact]
@@ -69,7 +69,7 @@ public class NotificationsControllerTests
         // Arrange
         var oid = "not123";
         A.CallTo(() => _notificationService.GetNotificationAsync(A<string>.Ignored)).Returns(new Notification("s", oid, "m", "type", 100));
-        A.CallTo(() => _httpContextAccessor.HttpContext.User.FindFirst(A<string>.Ignored)).Returns(new Claim("oid", oid));
+        A.CallTo(() => _httpContextAccessor.HttpContext!.User.FindFirst(A<string>.Ignored)).Returns(new Claim("oid", oid));
 
         // Act
         var controller = GetControllerWithIodContext(oid);

@@ -27,10 +27,7 @@ import {useNotificationSignalRContext} from '@shared/context/NotificationSignalR
 import {useInfiniteQuery, useMutation, useQueryClient} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import moment from 'moment';
-import {
-  toAwardQuery,
-  toSpendQuery,
-} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
+import {walletBalanceQuery} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
 
 import INotification from '@/data/api/types/INotification';
 import {
@@ -182,8 +179,7 @@ function Notifications() {
       setNotifications((prev) => [notification, ...prev]);
       // invalidate queries in homepage
       queryClient.invalidateQueries(postsQuery);
-      queryClient.invalidateQueries(toSpendQuery);
-      queryClient.invalidateQueries(toAwardQuery);
+      queryClient.invalidateQueries(walletBalanceQuery);
     };
 
     const fetchNotifications = async () => {

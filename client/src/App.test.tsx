@@ -99,7 +99,7 @@ describe('Authentication and Permission tests', () => {
       );
     });
 
-    const homeLink = screen.getByText('Wallet').closest('a');
+    const homeLink = screen.getByTestId('wallet-sidebar').closest('a');
 
     expect(homeLink).toHaveClass('Mui-selected');
   });

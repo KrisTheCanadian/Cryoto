@@ -9,6 +9,7 @@ import {createPost} from '@/data/api/requests/posts';
 
 const postsQuery = ['posts-query'];
 const transactionsQuery = ['transactions'];
+const walletsBalanceQuery = ['walletsBalance'];
 
 interface Recipient {
   name: string;
@@ -80,6 +81,8 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
     onSettled: () => {
       queryClient.invalidateQueries(postsQuery);
       queryClient.invalidateQueries(transactionsQuery);
+      queryClient.invalidateQueries(walletsBalanceQuery)
+
     },
   });
   return mutation;

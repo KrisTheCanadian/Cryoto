@@ -20,10 +20,7 @@ import {
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
 import {useQueryClient} from 'react-query';
-import {
-  toAwardQuery,
-  toSpendQuery,
-} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
+import {walletBalanceQuery} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
 import {useMsal} from '@azure/msal-react';
 
 import {useMutationCreatePost} from './hooks/useMutationCreatePost';
@@ -113,8 +110,7 @@ function NewPostDialog(props: NewPostDialogProps) {
 
     mutation.mutate(postData, {
       onSuccess: () => {
-        queryClient.invalidateQueries(toAwardQuery);
-        queryClient.invalidateQueries(toSpendQuery);
+        queryClient.invalidateQueries(walletBalanceQuery);
       },
     });
     setDialogOpen(false);

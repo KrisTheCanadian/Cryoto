@@ -1,54 +1,64 @@
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import PageFrame from '@shared/components/PageFrame';
-import {useEffect} from 'react';
-import {useMutation, useQuery, useQueryClient} from 'react-query';
-import {useAlertContext} from '@shared/hooks/Alerts';
+import {IconButton, Box, Typography} from '@mui/material';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import {useTheme} from '@mui/material/styles';
+import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 
-import getTransactions from '@/data/api/requests/transactions';
-import ITransaction from '@/data/api/types/ITransaction';
-import {selfTransferTokens} from '@/data/api/requests/crypto';
+import {CreditCard, TransactionTable, SelfTransferDialog} from './components';
 
 function Wallet() {
-  const dispatchAlert = useAlertContext();
-  const queryClient = useQueryClient();
-  const {data, status} = useQuery<ITransaction[]>(
-    'transactions',
-    getTransactions,
-  );
+  const theme = useTheme();
+  const {t} = useTranslation();
 
-  useEffect(() => {
-    if (status === 'error') {
-      dispatchAlert.error('Error fetching data');
-    }
-  }, [dispatchAlert, status]);
-
-  const {mutate} = useMutation((amount: number) => selfTransferTokens(amount), {
-    onSuccess: () => {
-      dispatchAlert.success('Tokens transferred successfully');
-    },
-    onError: () => {
-      dispatchAlert.error('Error transferring tokens');
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['transactions']);
-    },
-  });
+  const [selfTransferOpen, setSelfTransferOpen] = useState(false);
+  const handleSelfTransferOpen = () => setSelfTransferOpen(true);
 
   return (
     <PageFrame>
       <FullWidthColumn>
-        {status === 'success' && (
-          // eslint-disable-next-line @shopify/jsx-prefer-fragment-wrappers
-          <div>
-            {data.map((t) => (
-              <p key={t.id}>
-                {t.description} : {t.tokenAmount} coins at {t.timestamp} from
-                wallet: {t.walletType}
-              </p>
-            ))}
-          </div>
-        )}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            marginTop: theme.spacing(2),
+            marginBottom: theme.spacing(2),
+          }}
+        >
+          <CreditCard />
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              marginLeft: theme.spacing(3),
+              alignItems: 'center',
+            }}
+          >
+            <IconButton
+              onClick={handleSelfTransferOpen}
+              data-testid="self-transfer-button"
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                color: theme.interface.main,
+                '&:hover': {backgroundColor: theme.palette.primary.light},
+              }}
+            >
+              <AutorenewIcon fontSize="large" />
+            </IconButton>
+            <Typography variant="body2" sx={{fontWeight: 'medium'}}>
+              {t<string>('wallet.Transfer')}
+            </Typography>
+          </Box>
+        </Box>
+        <Box sx={{marginTop: theme.spacing(2)}}>
+          <TransactionTable />
+        </Box>
+
+        <SelfTransferDialog
+          selfTransferOpen={selfTransferOpen}
+          setSelfTransferOpen={setSelfTransferOpen}
+        />
       </FullWidthColumn>
     </PageFrame>
   );

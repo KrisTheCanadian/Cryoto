@@ -69,7 +69,7 @@ public class CryptoService : ICryptoService
         
         await AddTokensAsync(100, oid, walletType);
         await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-            "master", 100, "Welcome Transfer", DateTimeOffset.UtcNow));
+            "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
         
         var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
         
@@ -106,10 +106,20 @@ public class CryptoService : ICryptoService
 
     }
     
-    public async Task<double> GetTokenBalanceAsync(string oid, string walletType, ClaimsIdentity? user = null)
-    {   // Create userProfile if it has not been created before.
-        await _userProfileService.GetOrAddUserProfileService(oid, user);
+    public async Task<UserWalletsModel> GetWalletsBalanceAsync(string oid, ClaimsIdentity? user = null)
+    {
+        // Create userProfile if it has not been created before.
+        var profile = await _userProfileService.GetOrAddUserProfileService(oid, user);
         
+        var toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
+        var toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");
+        var userWalletsModel = new UserWalletsModel(toAwardBalance, toSpendBalance);
+
+        return userWalletsModel;
+    }
+    
+    public async Task<double> GetTokenBalanceAsync(string oid, string walletType)
+    {
         var walletModel = await GetOrCreateUserWallet(oid, walletType);
         return walletModel?.TokenBalance ?? 0;
     }

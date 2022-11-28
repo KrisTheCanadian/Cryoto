@@ -50,6 +50,7 @@ describe('Authentication and Permission tests', () => {
   };
   const PermissionError = 'You do not have permission to access this page.';
   const SignIn = 'Sign In';
+  const Transaction = 'Transaction History'
 
   beforeEach(() => {
     pca = new PublicClientApplication(msalConfig);
@@ -154,5 +155,6 @@ describe('Authentication and Permission tests', () => {
 
     expect(screen.queryByText(SignIn)).not.toBeInTheDocument();
     expect(screen.queryByText(PermissionError)).not.toBeInTheDocument();
+    expect(screen.queryByText(Transaction)).toBeInTheDocument();
   });
 });

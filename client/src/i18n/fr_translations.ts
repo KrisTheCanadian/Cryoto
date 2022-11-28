@@ -62,4 +62,33 @@ export const frenchTranslations = {
     CelebrateAlt: 'Célébrez',
     RewardsAlt: 'Recompenses',
   },
+  wallet: {
+    toSpend: 'À Dépenser',
+    toAward: 'À Donner',
+    Transfer: 'Transférez',
+    selfTransferDialog: {
+      TransferCoins: 'Transférer des pièces',
+      From: 'De',
+      To: 'Vers',
+      CoinAmount: 'Nombre de pièces',
+      TransferMessage:
+        'Transférez {{coins}} pièce(s) de votre portefeuille <italic>À Dépenser</italic> vers votre portefeuille <italic>À Donner</italic>',
+      TransferErrorMessage: 'Veuillez indiquer un montant',
+    },
+    transactionTable: {
+      TransactionHistory: 'Historique des transactions',
+      Transaction: 'Transaction',
+      Date: 'Date',
+      Wallet: 'Portefeuille',
+      Amount: 'Montant',
+      RowsPage: 'Rangées par page',
+      Of: 'de',
+      Recognition: 'Reconnaissance',
+      SelfTransfer: 'Auto-transfert',
+      WelcomeTransfer: 'Transfert de bienvenue',
+    },
+    creditCard: {
+      Balance: 'Solde',
+    },
+  },
 };

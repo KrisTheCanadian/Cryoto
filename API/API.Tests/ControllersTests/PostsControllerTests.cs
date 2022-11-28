@@ -190,7 +190,7 @@ public class PostsControllerTests
 
         A.CallTo(() => _postService.CreateAsync(A<PostModel>.Ignored)).Returns(true);
         A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
-        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>._, A<string>._,A<ClaimsIdentity>._)).Returns(balance);
+        A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>._, A<string>._)).Returns(balance);
 
         var postCreateModel = new PostCreateModel(post.Message, post.Recipients, post.Tags, post.CreatedDate,
             post.PostType, post.IsTransactable, post.Coins);

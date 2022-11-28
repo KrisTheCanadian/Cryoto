@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using API.Crypto.Solana.SolanaObjects;
 using API.Models.Transactions;
+using API.Models.Users;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,9 +63,9 @@ public class CryptoController : ControllerBase
         await _cryptoService.UpdateTokenBalance(-amount, _oId, "toSpend");
         await _cryptoService.UpdateTokenBalance(amount, _oId, "toAward");
         await _transactionService.AddTransactionAsync(new TransactionModel(_oId, "toAward", "self",
-            "toSpend", amount, "Self Transfer", DateTimeOffset.UtcNow));
+            "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
         await _transactionService.AddTransactionAsync(new TransactionModel("self", "toAward", _oId,
-            "toSpend", amount, "Self Transfer", DateTimeOffset.UtcNow));
+            "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
        _cryptoService.QueueTokenUpdate(new List<string> { _oId ,_oId });
  return Ok(rpcTransactionResult);
     }
@@ -82,9 +83,9 @@ public class CryptoController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<double>> GetTokenBalance(string walletType)
+    public async Task<ActionResult<UserWalletsModel>> GetTokenBalance()
     {
-        return Ok(await _cryptoService.GetTokenBalanceAsync(_oId, walletType, _identity));
+        return Ok(await _cryptoService.GetWalletsBalanceAsync(_oId, _identity));
     }
 
     [HttpGet]

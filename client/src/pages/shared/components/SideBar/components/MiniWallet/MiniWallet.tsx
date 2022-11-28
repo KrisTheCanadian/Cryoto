@@ -1,9 +1,6 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
-
 import {useTranslation} from 'react-i18next';
-import {useMsal} from '@azure/msal-react';
 import {useTheme} from '@mui/material/styles';
-import {getTokenBalance} from '@shared/hooks/getTokenBalance';
 import {
   List,
   ListItem,
@@ -13,35 +10,20 @@ import {
   CardContent,
   CircularProgress,
 } from '@mui/material';
-import {InteractionStatus} from '@azure/msal-browser';
 import {useQuery} from 'react-query';
 
-export const toSpendQuery = 'tospend';
-export const toAwardQuery = 'toaward';
+import {getTokenBalance} from '@/data/api/requests/wallet';
+import IWalletsBalance from '@/data/api/types/IWalletsBalance';
+
+export const walletBalanceQuery = 'walletsBalance';
 
 function MiniWallet() {
   const theme = useTheme();
-  const {inProgress} = useMsal();
   const {t} = useTranslation();
 
-  const loadToAwardCoins = async () => {
-    if (inProgress === InteractionStatus.None) {
-      return getTokenBalance('toAward');
-    }
-  };
-
-  const {data: toAwardCoins, status: awardStatus} = useQuery(
-    toAwardQuery,
-    loadToAwardCoins,
-  );
-
-  const loadToSpendCoins = async () => {
-    return getTokenBalance('toSpend');
-  };
-
-  const {data: toSpendCoins, status: spendStatus} = useQuery(
-    toSpendQuery,
-    loadToSpendCoins,
+  const {data, status} = useQuery<IWalletsBalance>(
+    'walletsBalance',
+    getTokenBalance,
   );
 
   const subtitleStyle: {[key: string]: 'h7' | number} = {
@@ -79,14 +61,14 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            {spendStatus === 'loading' ? (
+            {status === 'loading' ? (
               <CircularProgress
                 data-testid="spendCircularProgress"
                 size="2rem"
               />
             ) : (
               <ListItemText
-                primary={toSpendCoins}
+                primary={data?.toSpendBalance}
                 primaryTypographyProps={amountStyle}
               />
             )}
@@ -99,14 +81,14 @@ function MiniWallet() {
             />
           </ListItem>
           <ListItem>
-            {awardStatus === 'loading' ? (
+            {status === 'loading' ? (
               <CircularProgress
                 data-testid="awardCircularProgress"
                 size="2rem"
               />
             ) : (
               <ListItemText
-                primary={toAwardCoins}
+                primary={data?.toAwardBalance}
                 primaryTypographyProps={amountStyle}
               />
             )}

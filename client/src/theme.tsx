@@ -1,4 +1,4 @@
-import {colors, PaletteMode, ThemeOptions} from '@mui/material';
+import {PaletteMode, ThemeOptions} from '@mui/material';
 
 declare module '@mui/material/styles' {
   interface Theme {
@@ -6,6 +6,9 @@ declare module '@mui/material/styles' {
       main: string;
       contrastMain: string;
       offBackground: string;
+      contrastText: string;
+      titleText: string;
+      type: string;
       shadow: string;
     };
     borderRadius: {
@@ -29,6 +32,9 @@ declare module '@mui/material/styles' {
       main?: string;
       contrastMain?: string;
       offBackground?: string;
+      contrastText?: string;
+      titleText?: string;
+      type?: string;
       shadow?: string;
     };
     borderRadius?: {
@@ -79,11 +85,20 @@ const getDesignTokens = (mode: PaletteMode) =>
       mode,
       ...(mode === 'light'
         ? {
-            main: '#FFFFFF',
-            contrastMain: '#F8FAFB',
-            offBackground: '#FFFFFF',
-          }
-        : {main: '#242424', contrastMain: '#3a3a3a', offBackground: '#2c2c2c'}),
+          main: '#FFFFFF',
+          contrastMain: '#F8FAFB',
+          offBackground: '#FFFFFF',
+          contrastText: '#4e4949de',
+          titleText: '#454CE1',
+          type: 'light',
+        }
+        : { main: '#242424',
+            contrastMain: '#3a3a3a', 
+            offBackground: '#2c2c2c', 
+            contrastText: '#aaa9b0de',  
+            titleText: '#BCC0FF', 
+            type: 'dark' 
+          }),
     },
     borderRadius: {
       default: 2,
@@ -94,11 +109,11 @@ const getDesignTokens = (mode: PaletteMode) =>
       mode,
       ...(mode === 'light'
         ? {
-            default: '3px solid #F2F2F2',
-          }
+          default: '3px solid #F2F2F2',
+        }
         : {
-            default: '3px solid #484848',
-          }),
+          default: '3px solid #484848',
+        }),
     },
     padding: {
       // padding for content, eg. posts or settings
@@ -116,14 +131,14 @@ const getDesignTokens = (mode: PaletteMode) =>
       mode,
       ...(mode === 'light'
         ? {
-            // palette values for light mode
-            background: {
-              default: '#F8FAFB',
-            },
-          }
+          // palette values for light mode
+          background: {
+            default: '#F8FAFB',
+          },
+        }
         : {
-            // palette values for dark mode
-          }),
+          // palette values for dark mode
+        }),
     },
   } as ThemeOptions);
 
