@@ -17,10 +17,23 @@ describe('Responsiveness', () => {
     cy.get('[data-testid="AccountCircleIcon"]').should('exist');
   });
 
-  it('Test search bar responsiveness in iPhoneX', () => {
+  it('Test logo responsiveness', () => {
+    cy.visit('/');
+    cy.get('#companyName').should('exist');
+  });
+
+  it('Test post input responsiveness in iPhoneX', () => {
     cy.viewport('iphone-x');
     cy.visit('/');
+    cy.wait(100);
     cy.get('#new-post-input').should('exist');
+  });
+
+  it('Test post avatar responsiveness in iPhoneX', () => {
+    cy.viewport('iphone-x');
+    cy.visit('/');
+    cy.wait(100);
+    cy.get('.MuiAvatar-root').should('exist');
   });
 
   it('Test Darkmode Button Responsiveness', () => {
