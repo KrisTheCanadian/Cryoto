@@ -19,3 +19,6 @@ import '@cypress/code-coverage/support';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+Cypress.on('uncaught:exception', (err) => {
+  return false;
+});

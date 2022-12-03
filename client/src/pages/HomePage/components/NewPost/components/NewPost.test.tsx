@@ -74,7 +74,7 @@ describe('Search functionality', () => {
         <MsalProvider instance={pca}>
           <QueryClientProvider client={queryClient}>
             <MockAppProviders>
-              <NewPost name="Test Name" />
+              <NewPost name="Test Name" oId="oId" />
             </MockAppProviders>
           </QueryClientProvider>
         </MsalProvider>,

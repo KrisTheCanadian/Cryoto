@@ -1,3 +1,5 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable id-length */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
@@ -36,6 +38,7 @@ import {
 } from '@/data/api/requests/notifications';
 import INotificationPage from '@/data/api/types/INotificationPage';
 import {postsQuery} from '@/pages/HomePage/HomePage';
+import {getUserId, getUserProfilePhoto} from '@/data/api/helpers';
 
 function Notifications() {
   const {t} = useTranslation();
@@ -153,6 +156,17 @@ function Notifications() {
       setNotificationsCount(newNotifications.size);
     };
 
+    if (data && status === 'success') {
+      data.pages.forEach((page: INotificationPage) => {
+        page.data.forEach((n: INotification) => {
+          if (n.senderPhotoUrl === undefined)
+            getUserProfilePhoto(n.senderId).then((response) => {
+              n.senderPhotoUrl = response;
+            });
+        });
+      });
+    }
+
     // set notifications count
     unreadNotifications();
   }, [data, notifications, status]);
@@ -176,6 +190,13 @@ function Notifications() {
     };
 
     const handleNotification = async (notification: INotification) => {
+      notifications.map(
+        async (n) =>
+          // eslint-disable-next-line no-return-await
+          await getUserProfilePhoto(n.senderId).then((response) => {
+            n.senderPhotoUrl = response;
+          }),
+      );
       setNotifications((prev) => [notification, ...prev]);
       // invalidate queries in homepage
       queryClient.invalidateQueries(postsQuery);
@@ -284,7 +305,11 @@ function Notifications() {
               {notifications.map((n) => (
                 <ListItem alignItems="flex-start" key={n.id}>
                   <ListItemAvatar>
-                    <Avatar {...stringAvatar(n.senderName || 'Cryoto')} />
+                    {n.senderPhotoUrl ? (
+                      <Avatar src={n.senderPhotoUrl} />
+                    ) : (
+                      <Avatar {...stringAvatar(n.senderName || 'Cryoto')} />
+                    )}
                   </ListItemAvatar>
                   <Box>
                     <ListItemText sx={{display: 'flex'}} primary={n.message} />
@@ -318,7 +343,13 @@ function Notifications() {
                     {page.data.map((n: INotification) => (
                       <ListItem alignItems="flex-start" key={n.id}>
                         <ListItemAvatar>
-                          <Avatar {...stringAvatar(n.senderName || 'Cryoto')} />
+                          {n.senderPhotoUrl ? (
+                            <Avatar src={n.senderPhotoUrl} />
+                          ) : (
+                            <Avatar
+                              {...stringAvatar(n.senderName || 'Cryoto')}
+                            />
+                          )}
                         </ListItemAvatar>
                         <Box>
                           <ListItemText

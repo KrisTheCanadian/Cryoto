@@ -91,7 +91,10 @@ function HomePage() {
         <PageFrame>
           <MiddleColumn>
             {status === 'success' && accounts && (
-              <NewPost name={accounts[0].name} />
+              <NewPost
+                name={accounts[0].name}
+                oId={accounts[0].idTokenClaims?.oid}
+              />
             )}
 
             {status === 'loading' &&
@@ -106,6 +109,7 @@ function HomePage() {
                     message=""
                     date=""
                     loading
+                    authorId=""
                   />
                 ),
               )}
@@ -126,6 +130,7 @@ function HomePage() {
                     message={post?.message}
                     date={post?.createdDate}
                     loading={false}
+                    authorId={post?.authorProfile?.oId}
                   />
                 )),
               )}
@@ -146,6 +151,7 @@ function HomePage() {
                     message=""
                     date=""
                     loading
+                    authorId=""
                   />
                 ),
               )}

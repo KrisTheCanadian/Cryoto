@@ -11,7 +11,9 @@ import Logout from '@mui/icons-material/Logout';
 import {AccountCircle} from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {NavLink, useLocation} from 'react-router-dom';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+
+import {getUserId, getUserProfilePhoto} from '@/data/api/helpers';
 
 function ProfileMenu() {
   const location = useLocation();
@@ -52,6 +54,21 @@ function ProfileMenu() {
     },
   };
 
+  const [userProfilePhoto, setUserProfilePhoto] = useState();
+  const [oId, setOId] = useState();
+
+  useEffect(() => {
+    getUserId()
+      .then((response: any) => setOId(response))
+      .catch((err) => {});
+  }, []);
+
+  useEffect(() => {
+    getUserProfilePhoto(oId!)
+      .then((response: any) => setUserProfilePhoto(response))
+      .catch((err) => {});
+  }, [oId]);
+
   return (
     <>
       <IconButton
@@ -62,7 +79,13 @@ function ProfileMenu() {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
       >
-        <AccountCircle />
+        {userProfilePhoto === null ||
+        userProfilePhoto === undefined ||
+        userProfilePhoto === '' ? (
+          <AccountCircle />
+        ) : (
+          <Avatar src={userProfilePhoto} />
+        )}
       </IconButton>
 
       <Menu
@@ -80,7 +103,14 @@ function ProfileMenu() {
           to="/profile"
           selected={location.pathname === '/profile'}
         >
-          <Avatar /> {t('layout.Profile')}
+          {userProfilePhoto === null ||
+          userProfilePhoto === undefined ||
+          userProfilePhoto === '' ? (
+            <Avatar />
+          ) : (
+            <Avatar src={userProfilePhoto} />
+          )}
+          {t('layout.Profile')}
         </MenuItem>
         <Divider />
         <MenuItem

@@ -35,7 +35,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
         author: '',
         authorProfile: {
           name: accounts[0].name || '',
-          oId: '',
+          oId: accounts[0].idTokenClaims?.oid || '',
           email: '',
           language: '',
           role: [],
@@ -49,6 +49,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
             roles: [],
             wallets: null,
             role: [],
+            photoUrl: '',
           };
         }),
       };
@@ -81,8 +82,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
     onSettled: () => {
       queryClient.invalidateQueries(postsQuery);
       queryClient.invalidateQueries(transactionsQuery);
-      queryClient.invalidateQueries(walletsBalanceQuery)
-
+      queryClient.invalidateQueries(walletsBalanceQuery);
     },
   });
   return mutation;

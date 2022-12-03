@@ -1,3 +1,3 @@
-import {getAccessToken, getUserId} from './accessHelpers';
+import {getAccessToken, getUserId, getUserProfilePhoto} from './accessHelpers';
 
-export {getAccessToken, getUserId};
+export {getAccessToken, getUserId, getUserProfilePhoto};

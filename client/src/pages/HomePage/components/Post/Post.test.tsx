@@ -18,6 +18,7 @@ it('should render Posts', async () => {
     coinsGiven: number;
     tags?: string[];
     loading: boolean;
+    authorId: string;
   }
 
   const postProps: PostProps = {
@@ -29,6 +30,7 @@ it('should render Posts', async () => {
     coinsGiven: 100,
     tags: [],
     loading: false,
+    authorId: 'authorId',
   };
 
   await act(async () => {

@@ -1,12 +1,17 @@
+/* eslint-disable @shopify/jsx-no-complex-expressions */
+/* eslint-disable react-hooks/rules-of-hooks */
 import {Avatar, Typography, Box, colors, Chip, Stack} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import TollIcon from '@mui/icons-material/Toll';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
+import {useEffect, useState} from 'react';
 
 import {LikeButtons} from '../LikeButtons';
 
 import {LoadingPostSkeleton} from './components';
+
+import {getUserProfilePhoto} from '@/data/api/helpers/accessHelpers';
 
 interface PostProps {
   firstName: string;
@@ -17,6 +22,7 @@ interface PostProps {
   coinsGiven: number;
   tags?: string[];
   loading: boolean;
+  authorId: string;
 }
 
 function Post(props: PostProps) {
@@ -32,6 +38,7 @@ function Post(props: PostProps) {
     date,
     coinsGiven,
     loading,
+    authorId,
   } = props;
   if (loading) {
     return <LoadingPostSkeleton />;
@@ -46,6 +53,43 @@ function Post(props: PostProps) {
   };
 
   const timeAgo = moment.utc(date).local().startOf('seconds').fromNow();
+
+  const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    getUserProfilePhoto(authorId)
+      .then((response) => {
+        setUserProfilePhoto(response);
+      })
+      .catch((err) => {});
+  }, [authorId]);
+
+  function stringAvatar(name: string) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(' ')[0][0]}`,
+    };
+  }
+
+  function stringToColor(string: string) {
+    let hash = 0;
+    let i;
+
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
+    }
+
+    return color;
+  }
 
   return (
     <Box
@@ -67,12 +111,12 @@ function Post(props: PostProps) {
         }}
       >
         <Stack direction="row">
-          <Avatar
-            sx={{bgcolor: colors.red[500], width: '55px', height: '55px'}}
-            aria-label="recipe"
-          >
-            {firstName[0]}
-          </Avatar>
+          {userProfilePhoto ? (
+            <Avatar src={userProfilePhoto} />
+          ) : (
+            <Avatar {...stringAvatar(firstName[0] || 'Cryoto')} />
+          )}
+
           <Stack sx={{ml: 2}}>
             <Typography variant="body1">
               <b>{firstName}</b>

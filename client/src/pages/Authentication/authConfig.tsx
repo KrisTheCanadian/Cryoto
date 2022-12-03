@@ -20,3 +20,13 @@ export const msalConfig = {
 export const loginRequest = {
   scopes: ['api://751147b8-8f35-402c-a1ac-8f775f5baae9/AdminAccess'],
 };
+
+export const graphRequest = {
+  scopes: [
+    'https://graph.microsoft.com/User.Read.All',
+    'https://graph.microsoft.com/User.ReadBasic.All',
+    'https://graph.microsoft.com/User.ReadWrite.All',
+    'https://graph.microsoft.com/User.Read',
+    'https://graph.microsoft.com/User.ReadWrite',
+  ],
+};

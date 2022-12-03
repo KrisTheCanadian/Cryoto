@@ -9,6 +9,7 @@ interface INotification {
   senderName: string;
   receiverName: string;
   amount: number;
+  senderPhotoUrl: string | null;
 }
 
 export default INotification;

@@ -20,13 +20,14 @@ public class NotificationService : INotificationService
     private const string SenderEmail = "Cryoto@31286fb0-ff2a-4420-8b82-32f62d53c117.azurecomm.net";
     private readonly string _emailConnectionString;
 
+
     public NotificationService(IHubContext<NotificationsHub> hubContext, INotificationRepository repository, ILogger<NotificationService> logger, IUserProfileRepository userProfileRepository, IConfiguration configuration)
     {
         _hubContext = hubContext;
         _repository = repository;
         _logger = logger;
         _userProfileRepository = userProfileRepository;
-        _emailConnectionString = configuration.GetConnectionString("CryotoCommunicationsServiceConnectionString");
+        _emailConnectionString = configuration["CryotoCommunicationsServiceConnectionString"];
     }
 
     public async Task SendEmailAsync(string to, string subject, string message, bool isHtml = false)
