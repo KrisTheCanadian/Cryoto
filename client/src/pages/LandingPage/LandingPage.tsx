@@ -1,7 +1,6 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable @shopify/strict-component-boundaries */
-/* eslint-disable no-negated-condition */
-/* eslint-disable @shopify/jsx-no-complex-expressions */
+
 import {useMsal} from '@azure/msal-react';
 import {
   Typography,
@@ -12,12 +11,14 @@ import {
   CircularProgress,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import {getUserProfile} from '@/data/api/requests/users';
 import {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
 
 import {SignInButton} from '../Authentication/components/SignInButton';
 import {routeHome} from '../routes';
+
+import {getUserProfile} from '@/data/api/requests/users';
 
 interface InfographicProps {
   image: string;
@@ -36,7 +37,8 @@ function Infographic({image, imgAlt, text}: InfographicProps) {
   );
 }
 
-function LandingPage({isRedirecting}: {isRedirecting: boolean}) {
+function LandingPage() {
+  const navigate = useNavigate();
   const {accounts} = useMsal();
   const companyName = 'Cryoto';
   const theme = useTheme();
@@ -47,10 +49,10 @@ function LandingPage({isRedirecting}: {isRedirecting: boolean}) {
     if (accounts[0]) {
       // creates the user in the database if it doesn't exist
       getUserProfile().then(() => {
-        window.location.href = routeHome;
+        navigate(routeHome);
       });
     }
-  }, [accounts]);
+  }, [accounts, navigate]);
 
   const headerStyle = {
     color: 'text.primary',
@@ -111,27 +113,13 @@ function LandingPage({isRedirecting}: {isRedirecting: boolean}) {
 
   return (
     <Stack height="100%">
-      {isRedirecting ? (
-        <Backdrop
-          data-testid="Backdrop"
-          sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}
-          open
-        >
-          <CircularProgress data-testid="CircularProgress" size="10rem" />
-        </Backdrop>
-      ) : null}
       <Stack sx={headerStyle} direction="row" position="sticky">
         <Typography variant="h4" sx={{color: theme.palette.text.primary}}>
           {companyName}
         </Typography>
-        {!isRedirecting ? (
-          <Stack direction="row" spacing={2}>
-            <SignInButton />
-            <Button variant="contained">
-              {t('landingPage.ActivateButton')}
-            </Button>
-          </Stack>
-        ) : null}
+        <Stack direction="row" spacing={2}>
+          <SignInButton />
+        </Stack>
       </Stack>
       <Stack sx={mainTextGroupStyle}>
         <Typography

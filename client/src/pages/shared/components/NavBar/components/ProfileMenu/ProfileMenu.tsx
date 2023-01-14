@@ -12,10 +12,12 @@ import {AccountCircle} from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {NavLink, useLocation} from 'react-router-dom';
 import {useEffect, useState} from 'react';
+import {useMsal} from '@azure/msal-react';
 
 import {getUserId, getUserProfilePhoto} from '@/data/api/helpers';
 
 function ProfileMenu() {
+  const {instance} = useMsal();
   const location = useLocation();
   const {t} = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -25,6 +27,10 @@ function ProfileMenu() {
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    instance.logoutRedirect();
   };
 
   const paperProps = {
@@ -73,6 +79,7 @@ function ProfileMenu() {
     <>
       <IconButton
         onClick={handleClick}
+        data-testid="profileButton"
         size="small"
         sx={{ml: 2}}
         aria-controls={open ? 'account-menu' : undefined}
@@ -123,7 +130,7 @@ function ProfileMenu() {
           </ListItemIcon>
           {t('layout.Settings')}
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

@@ -59,6 +59,9 @@ export const englishTranslations = {
     CelebrateAlt: 'Celebrate',
     RewardsAlt: 'Rewards',
   },
+  authenticationPage: {
+    loading: 'logging in...',
+  },
   wallet: {
     toSpend: 'To Spend',
     toAward: 'To Award',

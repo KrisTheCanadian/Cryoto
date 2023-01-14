@@ -1,3 +1,4 @@
 import {ProfileMenu} from './ProfileMenu';
+import {Notifications} from './Notifications';
 
-export {ProfileMenu};
+export {ProfileMenu, Notifications};

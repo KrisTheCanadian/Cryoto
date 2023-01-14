@@ -280,6 +280,7 @@ function Notifications() {
     <>
       <IconButton
         onClick={handleClick}
+        data-testid="NotificationsButton"
         size="small"
         sx={{ml: 2}}
         aria-controls={open ? 'notification-menu' : undefined}

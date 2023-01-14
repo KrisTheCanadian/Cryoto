@@ -5,7 +5,7 @@ describe('Notifications', () => {
     cy.get('[data-testid="NotificationsNoneIcon"]').should('exist');
 
     // don't ask any questions, it just doesn't work otherwise...
-    cy.get('.css-oiifgt > :nth-child(3)')
+    cy.get('[data-testid="NotificationsButton"]')
       .trigger('mouseover')
       .wait(1000)
       .click()

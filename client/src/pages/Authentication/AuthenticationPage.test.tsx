@@ -13,6 +13,7 @@ import {MemoryRouter} from 'react-router-dom';
 import {LandingPage} from '../LandingPage';
 
 import i18n from '@/i18n/i18n';
+import {AuthenticationPage} from '.';
 
 const TEST_CONFIG = {
   MSAL_CLIENT_ID: '0813e1d1-ad72-46a9-8665-399bba48c201',
@@ -66,7 +67,7 @@ it('rendering authentication page should render a Backdrop', async () => {
         <MsalProvider instance={pca}>
           <ThemeContextProvider>
             <I18nextProvider i18n={i18n}>
-              <LandingPage isRedirecting />
+              <AuthenticationPage />
             </I18nextProvider>
           </ThemeContextProvider>
         </MsalProvider>
@@ -74,5 +75,5 @@ it('rendering authentication page should render a Backdrop', async () => {
     );
   });
 
-  expect(screen.getByTestId('Backdrop')).toBeInTheDocument();
+  expect(screen.getByTestId('CircularProgress')).toBeInTheDocument();
 });

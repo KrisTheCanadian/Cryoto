@@ -7,14 +7,14 @@ describe('Navbar', () => {
 
     cy.get('#companyName').should('contain', 'Cryoto');
     cy.get('[data-testid="searchBox"]').should('exist');
-    cy.get('.css-oiifgt > :nth-child(3)').click({force: true});
+    cy.get('[data-testid="search-field"]').click({force: true});
     cy.get('[data-testid="dark-mode-toggle"]').should('exist');
     cy.get('[data-testid="AccountCircleIcon"]').should('exist');
   });
 
   it('Test Darkmode', () => {
     cy.visit('/');
-    cy.get('.css-oiifgt > :nth-child(3)').click({force: true});
+    cy.get('[data-testid="search-field"]').click({force: true});
     cy.get('[data-testid="dark-mode-toggle"]').should('exist');
     cy.get('[data-testid="dark-mode-toggle"]').click({force: true});
 
@@ -22,7 +22,7 @@ describe('Navbar', () => {
     cy.get('body').should('have.css', 'background-color', 'rgb(18, 18, 18)');
 
     // toggle darkmode off
-    cy.get('.css-oiifgt > :nth-child(3)').click({force: true});
+    cy.get('[data-testid="search-field"]').click({force: true});
     cy.get('[data-testid="dark-mode-toggle"]').click({force: true});
 
     // check if darkmode is off

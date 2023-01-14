@@ -2,7 +2,6 @@ describe('Authentication', () => {
   it('Check Content when Authenticated', () => {
     cy.login();
     cy.visit('/authentication');
-    cy.get('[data-testid="Backdrop"]').should('exist').should('be.visible');
     cy.get('[data-testid="CircularProgress"]')
       .should('exist')
       .should('be.visible');

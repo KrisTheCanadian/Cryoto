@@ -62,6 +62,9 @@ export const frenchTranslations = {
     CelebrateAlt: 'Célébrez',
     RewardsAlt: 'Recompenses',
   },
+  authenticationPage: {
+    loading: 'connexion en cours',
+  },
   wallet: {
     toSpend: 'À Dépenser',
     toAward: 'À Donner',

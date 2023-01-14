@@ -62,10 +62,7 @@ function App() {
               <AlertSystem />
               <NavBar />
               <Routes>
-                <Route
-                  path={routeLandingPage}
-                  element={<LandingPage isRedirecting={false} />}
-                />
+                <Route path={routeLandingPage} element={<LandingPage />} />
                 <Route element={<RequireAuth {...[]} />}>
                   <Route path={routeHome} element={<HomePage />} />
                   <Route path={routeWallet} element={<Wallet />} />

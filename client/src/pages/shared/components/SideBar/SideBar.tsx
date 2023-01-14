@@ -96,7 +96,10 @@ function SideBar() {
               <ListItemIcon>
                 <Wallet />
               </ListItemIcon>
-              <ListItemText primary={t('layout.Wallet')} data-testid="wallet-sidebar" />
+              <ListItemText
+                primary={t('layout.Wallet')}
+                data-testid="wallet-sidebar"
+              />
             </ListItemButton>
 
             <ListItemButton onClick={() => handleLogout(instance)}>

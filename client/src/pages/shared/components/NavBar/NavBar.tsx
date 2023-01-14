@@ -11,7 +11,7 @@ import {
   BoxProps,
 } from '@mui/material';
 import {styled, useTheme} from '@mui/material/styles';
-import {useRef, useState} from 'react';
+import {memo, useRef, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
@@ -19,8 +19,9 @@ import {AuthenticatedTemplate} from '@azure/msal-react';
 
 import {RoundedInput} from '../interface-elements/RoundedInput';
 
-import {ProfileMenu} from './components';
-import Notifications from './components/Notifications';
+import {Notifications, ProfileMenu} from './components';
+
+const ProfileMenuMemo = memo(ProfileMenu);
 
 function NavBar() {
   const {colorMode} = useThemeModeContext();
@@ -31,13 +32,21 @@ function NavBar() {
   const theme = useTheme();
   const toggleColorMode = colorMode.toggleColorMode;
 
-  const MainNavigationBar = styled(Toolbar)(({theme}) => ({
+  const MainNavigationBar = styled(Toolbar)(() => ({
     id: 'main-navigation-bar',
     background: theme.interface.main,
     display: 'flex',
     justifyContent: 'space-between',
     color: 'text.primary',
   }));
+
+  const toolBarStyle = {
+    id: 'main-navigation-bar',
+    background: theme.interface.main,
+    display: 'flex',
+    justifyContent: 'space-between',
+    color: 'text.primary',
+  };
 
   const searchBoxStyle = {
     padding: theme.spacing(1),
@@ -104,6 +113,14 @@ function NavBar() {
     },
   }));
 
+  const rightNavBarProps = {
+    alignItems: 'center',
+    display: (searchOpen && 'none') || 'flex',
+    [theme.breakpoints.up('sm')]: {
+      display: 'flex',
+    },
+  };
+
   // End of styling
 
   const inputFieldRef = useRef<HTMLDivElement>(null);
@@ -131,62 +148,66 @@ function NavBar() {
   const sampleSearchResults = "I'm a search result";
 
   return (
-    <AuthenticatedTemplate>
-      <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
-        <MainNavigationBar>
-          <Link to="/" style={{textDecoration: 'none'}}>
-            <Typography
-              id="companyName"
-              variant="h6"
-              sx={{color: theme.palette.text.primary}}
-            >
-              {companyName}
-            </Typography>
-          </Link>
-          <Box sx={searchBoxStyle} data-testid="searchBox">
-            <RoundedInput>
-              <Search
-                sx={{
-                  color: theme.palette.action.active,
-                  ml: theme.spacing(0.5),
-                }}
-              />
-              <InputBase
-                id="searchInput"
-                placeholder={t('layout.Search')}
-                inputRef={inputFieldRef}
-                onBlur={closeSearch}
-                onFocus={openSearch}
-                sx={{width: '100%', ml: theme.spacing(0.5)}}
-              />
-            </RoundedInput>
+    <>
+      <AuthenticatedTemplate>
+        <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
+          <Toolbar sx={toolBarStyle}>
+            <Link to="/" style={{textDecoration: 'none'}}>
+              <Typography
+                id="companyName"
+                variant="h6"
+                sx={{color: theme.palette.text.primary}}
+              >
+                {companyName}
+              </Typography>
+            </Link>
 
-            <Box sx={searchResultsStyle} data-testid="search-results">
-              {sampleSearchResults}
+            <Box sx={searchBoxStyle} data-testid="searchBox">
+              <RoundedInput>
+                <Search
+                  sx={{
+                    color: theme.palette.action.active,
+                    ml: theme.spacing(0.5),
+                  }}
+                />
+                <InputBase
+                  id="searchInput"
+                  placeholder={t('layout.Search')}
+                  data-testid="search-field"
+                  inputRef={inputFieldRef}
+                  onBlur={closeSearch}
+                  onFocus={openSearch}
+                  sx={{width: '100%', ml: theme.spacing(0.5)}}
+                />
+              </RoundedInput>
+
+              <Box sx={searchResultsStyle} data-testid="search-results">
+                {sampleSearchResults}
+              </Box>
             </Box>
-          </Box>
-          <RightNavBarSection>
-            <IconButton
-              aria-label={t('layout.search')}
-              size="large"
-              sx={searchButtonStyle}
-              onClick={openSearch}
-            >
-              <Search sx={searchButtonStyle} />
-            </IconButton>
-            <IconButton
-              sx={{py: 1}}
-              onClick={toggleColorMode}
-              data-testid="dark-mode-toggle"
-            >
-              {brightnessIcon()}
-            </IconButton>
-            <Notifications />
-            <ProfileMenu />
-          </RightNavBarSection>
-        </MainNavigationBar>
-      </AppBar>
-    </AuthenticatedTemplate>
+            <Box sx={rightNavBarProps}>
+              <IconButton
+                aria-label={t('layout.search')}
+                size="large"
+                sx={searchButtonStyle}
+                onClick={openSearch}
+              >
+                <Search sx={searchButtonStyle} />
+              </IconButton>
+              <IconButton
+                sx={{py: 1}}
+                onClick={toggleColorMode}
+                data-testid="dark-mode-toggle"
+              >
+                {brightnessIcon()}
+              </IconButton>
+              <Notifications />
+              <ProfileMenuMemo />
+            </Box>
+          </Toolbar>
+        </AppBar>
+      </AuthenticatedTemplate>
+    </>
   );
 }
 export default NavBar;
