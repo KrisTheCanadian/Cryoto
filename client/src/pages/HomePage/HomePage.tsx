@@ -24,6 +24,7 @@ function HomePage() {
   const {accounts} = useMsal();
   const dispatchAlert = useAlertContext();
   const location = useLocation();
+  const [bottom, setBottom] = useState(false);
 
   useEffect(() => {
     if (location.state !== null) {
@@ -71,19 +72,25 @@ function HomePage() {
   }, [loader, handleObserver, hasNextPage]);
 
   useEffect(() => {
-    if (
-      accounts &&
-      status === 'success' &&
-      !isFetchingNextPage &&
-      !hasNextPage
-    ) {
+    if (!accounts) return;
+    if (bottom) return;
+    if (status === 'success' && !isFetchingNextPage && !hasNextPage) {
       dispatchAlert.info(t('errors.NoMorePosts'));
+      setBottom(true);
       return;
     }
-    if (accounts && status === 'error') {
+    if (status === 'error') {
       dispatchAlert.error(t('errors.BackendError'));
     }
-  }, [isFetchingNextPage, hasNextPage, dispatchAlert, status, t, accounts]);
+  }, [
+    isFetchingNextPage,
+    hasNextPage,
+    dispatchAlert,
+    status,
+    t,
+    accounts,
+    bottom,
+  ]);
 
   return (
     <>
