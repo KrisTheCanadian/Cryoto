@@ -10,6 +10,7 @@ import {useMsal, AuthenticatedTemplate} from '@azure/msal-react';
 import {useAlertContext} from '@shared/hooks/Alerts/AlertContext';
 import {useTranslation} from 'react-i18next';
 import {useLocation} from 'react-router-dom';
+import moment from 'moment';
 
 import {getNextPage} from '../../data/api/requests/posts';
 
@@ -34,7 +35,8 @@ function HomePage() {
   }, [dispatchAlert, location.state]);
   const [postsPerLoad, setPostsPerLoad] = useState(10);
   const loader = useRef();
-  const {t} = useTranslation();
+
+  const {t, i18n} = useTranslation();
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useInfiniteQuery<IPage, Error>(
@@ -56,6 +58,11 @@ function HomePage() {
     },
     [fetchNextPage, hasNextPage],
   );
+
+  useEffect(() => {
+    const lang = i18n.language.substring(0, 2);
+    moment.locale(lang);
+  }, [i18n.language]);
 
   useEffect(() => {
     const divElement = loader.current;

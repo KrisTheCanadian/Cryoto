@@ -52,44 +52,33 @@ public class CryptoService : ICryptoService
     }
 
     private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
-    {   // Return wallet if it is already exist.
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        if (walletModel !=null)
-            return walletModel;
+    {
+        WalletModel? walletModel = null;
         
-        // Creat new wallet if it does not exist.
-        var wallet = _solanaService.CreateWallet();
-        var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
-        var walletPublicKey = wallet.Account.PublicKey;
-        walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
-        
-        if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
-        
-        
-        
-        await AddTokensAsync(100, oid, walletType);
-        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-            "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
-        
-        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
-        
-        // quick fix for double notification
-        // get notifications of user and check if it's empty
-        using (var mutex = new Mutex(false, "NotificationMutex"))
+        using (var mutex = new Mutex(false, "WalletCreateAndNotificationMutex"))
         {
             try
             {
+                walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+                if (walletModel !=null)
+                    return walletModel;
+        
                 mutex.WaitOne();
-                var notifications = await _notificationService.GetUserNotificationsAsync(oid);
-                if (userProfileModel != null && !notifications.Any())
-                {
-                    var messageHtml = "<h1>Welcome to the team!</h1> <p>Hi " + userProfileModel.Name +
-                                      ",</p> <p>Thank you for joining our team. We are excited to have you on board!</p> <p>Best regards,</p> <p>Cryoto Team</p>";
-                    await _notificationService.SendEmailAsync(userProfileModel.Email, "Welcome to the Cryoto!",
-                        messageHtml, true);
-                    await _notificationService.SendNotificationAsync(new Notification("System", oid,
-                        "Welcome to the team!", "Kudos", 100));
-                }
+                // Creat new wallet if it does not exist.
+                var wallet = _solanaService.CreateWallet();
+                var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
+                var walletPublicKey = wallet.Account.PublicKey;
+                walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
+        
+                if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
+
+                await AddTokensAsync(100, oid, walletType);
+                await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+                    "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
+        
+                var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+
+                await SendNotification(oid, userProfileModel);
 
                 mutex.ReleaseMutex();
             }
@@ -105,11 +94,26 @@ public class CryptoService : ICryptoService
         return walletModel;
 
     }
-    
+
+    // sending notification to user using notification service
+    private async Task SendNotification(string oid, UserProfileModel? userProfileModel)
+    {
+        var notifications = await _notificationService.GetUserNotificationsAsync(oid);
+        if (userProfileModel != null && !notifications.Any())
+        {
+            var messageHtml = "<h1>Welcome to the team!</h1> <p>Hi " + userProfileModel.Name +
+                              ",</p> <p>Thank you for joining our team. We are excited to have you on board!</p> <p>Best regards,</p> <p>Cryoto Team</p>";
+            await _notificationService.SendEmailAsync(userProfileModel.Email, "Welcome to the Cryoto!",
+                messageHtml, true);
+            await _notificationService.SendNotificationAsync(new Notification("System", oid,
+                "Welcome to the team!", "Kudos", 100));
+        }
+    }
+
     public async Task<UserWalletsModel> GetWalletsBalanceAsync(string oid, ClaimsIdentity? user = null)
     {
         // Create userProfile if it has not been created before.
-        var profile = await _userProfileService.GetOrAddUserProfileService(oid, user);
+        await _userProfileService.GetOrAddUserProfileService(oid, user);
         
         var toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
         var toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");

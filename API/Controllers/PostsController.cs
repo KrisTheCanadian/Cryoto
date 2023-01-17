@@ -3,6 +3,7 @@ using System.Security.Claims;
 using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Posts;
+using API.Models.Users;
 using API.Services.Interfaces;
 using API.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -89,25 +90,36 @@ public class PostsController : ControllerBase
             await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend", _actorId,
                 "toAward", amount, "Recognition", postCreateModel.CreatedDate));
             
-            var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
-            
-            await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId, postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
-           
-            var senderName = "a Team Member";
-           
-            if (actorProfile != null) { senderName = actorProfile.Name; }
-            
-            
-            var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
-            var htmlContent = "<h1>You have been awarded " + amount + " tokens" + " by " + senderName + "!</h1>" +
-                              "<h3>" + postCreateModel.Message + "</h3>";
-                
-            await _notificationService.SendEmailAsync(recipientProfile.Email, subject, htmlContent, true);
+            await SendNotification(postCreateModel, recipientProfile, postModel, amount);
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);
         
         return Ok(createdPostModel);
+    }
+
+    // send notification to recipient using notification service
+    private async Task SendNotification(PostCreateModel postCreateModel, UserProfileModel recipientProfile,
+        PostModel postModel, double amount)
+    {
+        var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
+
+        await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId,
+            postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
+
+        var senderName = "a Team Member";
+
+        if (actorProfile != null)
+        {
+            senderName = actorProfile.Name;
+        }
+
+
+        var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
+        var htmlContent = "<h1>You have been awarded " + amount + " tokens" + " by " + senderName + "!</h1>" +
+                          "<h3>" + postCreateModel.Message + "</h3>";
+
+        await _notificationService.SendEmailAsync(recipientProfile.Email, subject, htmlContent, true);
     }
 
     [HttpPut]

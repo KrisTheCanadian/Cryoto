@@ -17,13 +17,11 @@ public class UserProfileControllerTests
     private readonly IUserProfileService _userProfileService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly UserProfileController _controller;
-    private readonly INotificationService _notificationService;
 
     public UserProfileControllerTests()
     {
         _userProfileService = A.Fake<IUserProfileService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _notificationService = A.Fake<INotificationService>();
         _controller = new UserProfileController(_userProfileService, _contextAccessor);
     }
 
