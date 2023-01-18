@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Models.Users;
 
+[ExcludeFromCodeCoverage]
 public class UserWalletsModel
 {
     

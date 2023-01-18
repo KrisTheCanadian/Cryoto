@@ -1,13 +1,11 @@
 using API.Hub;
 using API.Models.Notifications;
-using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
 using API.Utils;
 using Azure.Communication.Email;
 using Azure.Communication.Email.Models;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 

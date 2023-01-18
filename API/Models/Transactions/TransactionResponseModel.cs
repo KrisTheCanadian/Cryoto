@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace API.Models.Transactions;
 
 [ExcludeFromCodeCoverage]
-
 public class TransactionResponseModel
 {
     public string Id { get; set; }

@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using API.Models.Notifications;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Security.Claims;
 using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
@@ -18,6 +18,7 @@ public class UserProfileService : IUserProfileService
         _context = context;
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task<UserProfileModel?> GetOrAddUserProfileService(string oid, ClaimsIdentity? identity)
     {
         // Return userProfile if it is already exist.
@@ -34,7 +35,7 @@ public class UserProfileService : IUserProfileService
         userProfileModel.Email = identity?.FindFirst(ClaimConstants.PreferredUserName)?.Value!;
         userProfileModel.Language = "en";
         userProfileModel.Roles = identity?.FindAll(ClaimConstants.Role).Select(x => x.Value).ToArray()!;
-        
+
         if (await _context.AddUserProfileAsync(userProfileModel) <= 0) return null;
 
         return userProfileModel;

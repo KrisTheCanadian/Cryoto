@@ -11,7 +11,7 @@ import {LikeButtons} from '../LikeButtons';
 
 import {LoadingPostSkeleton} from './components';
 
-import {getUserProfilePhoto} from '@/data/api/helpers/accessHelpers';
+import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 interface PostProps {
   firstName: string;

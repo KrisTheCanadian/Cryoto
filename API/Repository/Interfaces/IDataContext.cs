@@ -8,8 +8,6 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Repository.Interfaces;
 
 public interface IDataContext
-
-
 {
     public DbSet<UserProfileModel> UserProfiles { get; set; }
     public DbSet<PostModel> Posts { get; set; }

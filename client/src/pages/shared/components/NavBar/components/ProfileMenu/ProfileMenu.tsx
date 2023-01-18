@@ -14,7 +14,8 @@ import {NavLink, useLocation} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {useMsal} from '@azure/msal-react';
 
-import {getUserId, getUserProfilePhoto} from '@/data/api/helpers';
+import {getUserId} from '@/data/api/helpers';
+import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 function ProfileMenu() {
   const {instance} = useMsal();

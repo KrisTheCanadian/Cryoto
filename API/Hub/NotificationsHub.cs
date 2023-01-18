@@ -1,5 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Hub;
 
+
+[ExcludeFromCodeCoverage]
 public class NotificationsHub : Microsoft.AspNetCore.SignalR.Hub
 {
     private readonly ILogger<NotificationsHub> _logger;

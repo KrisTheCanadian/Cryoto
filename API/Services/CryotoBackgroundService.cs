@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using API.Services.Interfaces;
 using Azure.Storage.Queues;
 
 namespace API.Services;
 
+[ExcludeFromCodeCoverage]
 public class CryotoBackgroundService : BackgroundService
 {
     private readonly QueueClient _queueClient;

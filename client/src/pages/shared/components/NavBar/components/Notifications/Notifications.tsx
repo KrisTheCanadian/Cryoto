@@ -38,7 +38,7 @@ import {
 } from '@/data/api/requests/notifications';
 import INotificationPage from '@/data/api/types/INotificationPage';
 import {postsQuery} from '@/pages/HomePage/HomePage';
-import {getUserId, getUserProfilePhoto} from '@/data/api/helpers';
+import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 function Notifications() {
   const {t} = useTranslation();

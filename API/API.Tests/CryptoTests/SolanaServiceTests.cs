@@ -1,16 +1,11 @@
 using System;
 using API.Crypto.Services;
-using API.Crypto;
-using API.Crypto.Solana.SolanaObjects;
 using Solnet.KeyStore.Exceptions;
 using Solnet.Wallet;
-using Solnet.Rpc;
 using Solnet.Wallet.Bip39;
 using Xunit;
-using FakeItEasy;
-using Solnet.Rpc.Models;
 
-namespace API.Tests.Crypto;
+namespace API.Tests.CryptoTests;
 
 public class SolanaServiceTests
 {
@@ -118,7 +113,7 @@ public class SolanaServiceTests
         Assert.NotNull(retrievedWallet);
         Assert.NotEqual(wallet.Account, retrievedWallet.Account);
     }
-    
+
     [Fact]
     public void GetPublicKeyFromString_ReturnsPublicKeyObject()
     {

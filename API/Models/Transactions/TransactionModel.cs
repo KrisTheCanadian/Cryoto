@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace API.Models.Transactions;
 
 [ExcludeFromCodeCoverage]
-
 public class TransactionModel
 {
     [Key] public string Id { get; set; }

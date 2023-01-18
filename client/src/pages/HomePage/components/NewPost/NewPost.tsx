@@ -15,7 +15,7 @@ import {useEffect, useState} from 'react';
 
 import {NewPostDialog} from './components';
 
-import {getUserProfilePhoto} from '@/data/api/helpers';
+import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 interface NewPostProps {
   name: string | undefined;
