@@ -26,7 +26,9 @@ public class PostsController : ControllerBase
     private readonly IUserProfileService _userProfileService;
 
 
-    public PostsController(IPostService postService, ICryptoService cryptoService, ITransactionService transactionService, IHttpContextAccessor contextAccessor, INotificationService notificationService, IUserProfileService userProfileService)
+    public PostsController(IPostService postService, ICryptoService cryptoService,
+        ITransactionService transactionService, IHttpContextAccessor contextAccessor,
+        INotificationService notificationService, IUserProfileService userProfileService)
     {
         _postService = postService;
         _cryptoService = cryptoService;
@@ -80,10 +82,11 @@ public class PostsController : ControllerBase
             return BadRequest("Your balance is not enough");
         }
 
-        var oIdsList = new List<string> { _actorId };
+        var oIdsList = new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { _actorId } };
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
         {
-            oIdsList.Add(recipientProfile.OId);
+            oIdsList[1].Add(recipientProfile.OId);
             await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
             await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
             await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
@@ -121,6 +124,7 @@ public class PostsController : ControllerBase
 
         await _notificationService.SendEmailAsync(recipientProfile.Email, subject, htmlContent, true);
     }
+
 
     [HttpPut]
     public async Task<ActionResult<PostModel>> Update(PostUpdateModel postUpdateModel)

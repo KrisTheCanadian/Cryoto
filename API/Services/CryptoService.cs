@@ -27,7 +27,7 @@ public class CryptoService : ICryptoService
 
 
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
-        QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService, 
+        QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService,
         INotificationService notificationService)
     {
         _context = context;
@@ -72,10 +72,14 @@ public class CryptoService : ICryptoService
         
                 if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
 
-                await AddTokensAsync(100, oid, walletType);
-                await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-                    "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
-        
+                var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
+                if (rpcTransactionResult.error == null)
+                {
+                    await UpdateTokenBalance(100, oid, "toSpend");
+                    await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+                        "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
+                }
+                
                 var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
 
                 await SendNotification(oid, userProfileModel);
@@ -89,8 +93,13 @@ public class CryptoService : ICryptoService
             }
         }
 
-        
-        QueueTokenUpdate(new List<string> { oid, oid });
+        QueueTokenUpdate(new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { oid, oid } });
+
+        // Register the user to receive the monthly tokens gift
+        QueueMonthlyTokensGift(new List<List<string>>
+            { new List<string> { "monthlyTokenQueue" }, new List<string> { oid } });
+
         return walletModel;
 
     }
@@ -121,12 +130,13 @@ public class CryptoService : ICryptoService
 
         return userWalletsModel;
     }
-    
+
     public async Task<double> GetTokenBalanceAsync(string oid, string walletType)
     {
         var walletModel = await GetOrCreateUserWallet(oid, walletType);
         return walletModel?.TokenBalance ?? 0;
     }
+
     public async Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId)
     {
         var senderWallet = await GetWalletByOIdAsync(senderOId, "toAward");
@@ -135,7 +145,7 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = receiverWallet.Account.PublicKey;
         var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-        if(rpcTransactionResult.error != null)
+        if (rpcTransactionResult.error != null)
         {
             await UpdateTokenBalance((-amount), senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
@@ -143,7 +153,7 @@ public class CryptoService : ICryptoService
 
         return rpcTransactionResult;
     }
-    
+
     public async Task<RpcTransactionResult> SelfTransferTokens(double amount, string userOId)
     {
         var senderWallet = await GetWalletByOIdAsync(userOId, "toSpend");
@@ -197,22 +207,59 @@ public class CryptoService : ICryptoService
         return await _context.SaveChangesAsync() > 0;
     }
 
-    public async void QueueTokenUpdate(List<string> oIdsList)
+    public async Task<bool> SendMonthlyTokenBasedOnRole(string oid)
     {
-        var message = JsonSerializer.Serialize(oIdsList);
-        await _queueClient.SendMessageAsync(message, TimeSpan.FromSeconds(90), TimeSpan.FromSeconds(-1));
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+        double amount;
+        const string walletType = "toAward";
+
+        // Edit below to change the amount of the monthly gifted token based on the user role
+        // If a user has multiple roles they should receive the highest amount of only one role,
+        // so the order of the "if conditions matter
+        if (userProfileModel!.Roles.Contains("Admin"))
+            amount = 50;
+        else if (userProfileModel.Roles.Contains("AddNewRole"))
+            amount = 30;
+        else
+            amount = 10;
+        var rpcTransactionResult = await AddTokensAsync(amount, oid, walletType);
+        if (rpcTransactionResult.error != null) return false;
+
+        await UpdateTokenBalance(amount, oid, walletType);
+        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+            "master", amount, "MonthlyTokensGift", DateTimeOffset.UtcNow));
+
+        return true;
     }
-    
-    public async void QueueSolUpdate(List<string> oIdsList)
+
+    public async void QueueTokenUpdate(List<List<string>> message)
     {
-        var message = JsonSerializer.Serialize(oIdsList);
-        await _queueClient.SendMessageAsync(message, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
+        var serializedMessage = JsonSerializer.Serialize(message);
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(-1));
     }
-    
-    public double GetSolBalance()
+
+    public async void QueueSolUpdate(List<List<string>> message)
     {
-        var publicKey = "HgRdHMtBLZRfLjbjyq8d38LFx3fC2DbVgzjUbKx4VQ4Y";
-        IRpcClient RpcClient = ClientFactory.GetClient(Cluster.DevNet);
-        return Convert.ToDouble(RpcClient.GetBalance(publicKey).Result.Value)/1000000000;
+        var serializedMessage = JsonSerializer.Serialize(message);
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(-1));
+        // await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
+    }
+
+    public async void QueueMonthlyTokensGift(List<List<string>> message)
+    {
+        var serializedMessage = JsonSerializer.Serialize(message);
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromDays(30), TimeSpan.FromSeconds(-1));
+    }
+
+    public double GetSolanaAdminBalance()
+    {
+        return GetSolanaAdminTokenBalance() / 1000000000;
+    }
+
+    public double GetSolanaAdminTokenBalance()
+    {
+        var publicKey = _configuration["publicKey"];
+        var rpcClient = ClientFactory.GetClient(Cluster.DevNet);
+        return Convert.ToDouble(rpcClient.GetBalance(publicKey).Result.Value);
     }
 }

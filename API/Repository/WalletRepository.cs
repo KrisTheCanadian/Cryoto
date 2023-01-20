@@ -9,17 +9,11 @@ namespace API.Repository;
 [ExcludeFromCodeCoverage]
 public class WalletRepository : IWalletRepository
 {
+    private IDataContext Context { get; set; }
+
     public WalletRepository(IDataContext context)
     {
         Context = context;
-    }
-
-    private IDataContext Context { get; set; }
-
-
-    public async Task<List<WalletModel>> GetWalletsModelListAsync()
-    {
-        return await Context.Wallets.AsNoTracking().ToListAsync();
     }
 
     public async Task<WalletModel?> GetWalletModelByOIdAsync(string oid, string walletType)
@@ -32,11 +26,6 @@ public class WalletRepository : IWalletRepository
     {
         return (await Context.Wallets
             .FirstOrDefaultAsync(walletModel => walletModel.OId == oid && walletModel.WalletType == walletType))!;
-    }
-
-    public async Task<WalletModel?> GetWalletModelByPublicKeyAsync(string publicKey)
-    {
-        return await Context.Wallets.FirstOrDefaultAsync(walletModel => walletModel.PublicKey == publicKey);
     }
 
 

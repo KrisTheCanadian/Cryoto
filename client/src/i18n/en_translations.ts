@@ -84,6 +84,8 @@ export const englishTranslations = {
       RowsPage: 'Rows per page',
       Of: 'of',
       Recognition: 'Recognition',
+      MonthlyTokensGift: 'Monthly Tokens Gift',
+      SwaggerPostTokensAPI: 'SwaggerPostTokensAPI',
       SelfTransfer: 'Self Transfer',
       WelcomeTransfer: 'Welcome Transfer',
     },

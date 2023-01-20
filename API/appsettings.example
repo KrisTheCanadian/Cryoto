@@ -12,5 +12,9 @@
   },
   "AllowedHosts": "*",
   "AllowedOrigins": "http://localhost:5173;https://cryotoclient.azurewebsites.net;https://cryotoclientprod.azurewebsites.net;https://cryotoclienttesting.azurewebsites.net",
-  "queueName":"cryoto-update-balance"
+  "queueName":"cryoto-update-balance",
+  "SolanaBalanceLowLimit":0.09,
+  "SolanaTokenBalanceLowLimit":10000,
+  "LowBalanceAdminEmail":"admin@kpmglhx.onmicrosoft.com",
+  "publicKey": "HgRdHMtBLZRfLjbjyq8d38LFx3fC2DbVgzjUbKx4VQ4Y"
 }

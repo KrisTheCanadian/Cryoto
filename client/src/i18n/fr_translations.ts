@@ -87,6 +87,8 @@ export const frenchTranslations = {
       RowsPage: 'Rangées par page',
       Of: 'de',
       Recognition: 'Reconnaissance',
+      MonthlyTokensGift: 'Transfert Mensuel de pièces à donner',
+      SwaggerPostTokensAPI: 'SwaggerPostTokensAPI',
       SelfTransfer: 'Auto-transfert',
       WelcomeTransfer: 'Transfert de bienvenue',
     },

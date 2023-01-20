@@ -20,7 +20,8 @@ public class CryptoController : ControllerBase
     private readonly string _oId;
 
 
-    public CryptoController(ICryptoService cryptoService, ITransactionService transactionService, IHttpContextAccessor contextAccessor)
+    public CryptoController(ICryptoService cryptoService, ITransactionService transactionService,
+        IHttpContextAccessor contextAccessor)
     {
         _cryptoService = cryptoService;
         _transactionService = transactionService;
@@ -37,7 +38,8 @@ public class CryptoController : ControllerBase
 
         await _cryptoService.UpdateTokenBalance((amount), receiverOId, "toSpend");
         await _cryptoService.UpdateTokenBalance((-amount), _oId, "toAward");
-        _cryptoService.QueueTokenUpdate(new List<string> { _oId, receiverOId });
+        _cryptoService.QueueTokenUpdate(new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId, receiverOId } });
 
         return Ok(rpcTransactionResult);
     }
@@ -50,7 +52,8 @@ public class CryptoController : ControllerBase
             return BadRequest(rpcTransactionResult.error);
         await _cryptoService.UpdateTokenBalance((-amount), _oId, "toSpend");
 
-        _cryptoService.QueueTokenUpdate(new List<string> { _oId });
+        _cryptoService.QueueTokenUpdate(new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId } });
         return Ok(rpcTransactionResult);
     }
 
@@ -66,8 +69,10 @@ public class CryptoController : ControllerBase
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
         await _transactionService.AddTransactionAsync(new TransactionModel("self", "toAward", _oId,
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
-       _cryptoService.QueueTokenUpdate(new List<string> { _oId ,_oId });
- return Ok(rpcTransactionResult);
+
+        _cryptoService.QueueTokenUpdate(new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId, _oId } });
+        return Ok(rpcTransactionResult);
     }
 
     [HttpPost]
@@ -77,8 +82,12 @@ public class CryptoController : ControllerBase
         if (rpcTransactionResult.error != null)
             return BadRequest(rpcTransactionResult.error);
         await _cryptoService.UpdateTokenBalance(amount, _oId, walletType);
+        await _transactionService.AddTransactionAsync(new TransactionModel(_oId, walletType, "master",
+            "master", amount, "SwaggerPostTokensAPI", DateTimeOffset.UtcNow));
 
-        _cryptoService.QueueTokenUpdate(new List<string> { _oId });
+
+        _cryptoService.QueueTokenUpdate(new List<List<string>>
+            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId } });
         return Ok(rpcTransactionResult);
     }
 
@@ -91,12 +100,21 @@ public class CryptoController : ControllerBase
     [HttpGet]
     public ActionResult<double> GetSolBalance()
     {
-        return Ok(_cryptoService.GetSolBalance());
+        return Ok(_cryptoService.GetSolanaAdminBalance());
     }
-    
+
     [HttpGet]
-    public void InitiateSOLBalanceCheck()
+    public void InitiateSolBalanceCheck()
     {
-        _cryptoService.QueueSolUpdate(new List<string> { "CheckBalanceMessage" });
+        _cryptoService.QueueSolUpdate(new List<List<string>>
+            { new List<string> { "checkAdminBalanceQueue" }, new List<string> { "null" } });
+    }
+
+    [HttpGet]
+    public async Task InitiateMonthlyTokensGift(string oid)
+    {
+        await _cryptoService.SendMonthlyTokenBasedOnRole(oid);
+        _cryptoService.QueueMonthlyTokensGift(new List<List<string>>
+            { new List<string> { "monthlyTokenQueue" }, new List<string> { oid } });
     }
 }
