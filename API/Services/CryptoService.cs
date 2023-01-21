@@ -241,8 +241,7 @@ public class CryptoService : ICryptoService
     public async void QueueSolUpdate(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
-        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromSeconds(3), TimeSpan.FromSeconds(-1));
-        // await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
     }
 
     public async void QueueMonthlyTokensGift(List<List<string>> message)

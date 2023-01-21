@@ -1,3 +1,5 @@
+/* eslint-disable no-negated-condition */
+/* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
 import {Avatar, Typography, Box, colors, Chip, Stack} from '@mui/material';
@@ -16,7 +18,7 @@ import {getUserProfilePhoto} from '@/data/api/requests/users';
 interface PostProps {
   firstName: string;
   date: string;
-  imageURL?: string;
+  imageUrl?: string;
   recipient: string;
   message: string;
   coinsGiven: number;
@@ -33,7 +35,7 @@ function Post(props: PostProps) {
     firstName,
     recipient,
     message,
-    imageURL,
+    imageUrl,
     tags,
     date,
     coinsGiven,
@@ -148,6 +150,14 @@ function Post(props: PostProps) {
         >
           {message}
         </Typography>
+        {imageUrl !== '' ? (
+          <img
+            src={imageUrl}
+            alt="imageUrl"
+            width="100%"
+            style={{marginBottom: theme.spacing(1)}}
+          />
+        ) : null}
         <LikeButtons />
       </Box>
     </Box>

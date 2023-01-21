@@ -124,6 +124,7 @@ function HomePage() {
                     date=""
                     loading
                     authorId=""
+                    imageUrl=""
                   />
                 ),
               )}
@@ -145,6 +146,7 @@ function HomePage() {
                     date={post?.createdDate}
                     loading={false}
                     authorId={post?.authorProfile?.oId}
+                    imageUrl={post.imageUrl}
                   />
                 )),
               )}
@@ -166,6 +168,7 @@ function HomePage() {
                     date=""
                     loading
                     authorId=""
+                    imageUrl=""
                   />
                 ),
               )}

@@ -5,7 +5,10 @@ describe('Authentication', () => {
     cy.get('[data-testid="CircularProgress"]')
       .should('exist')
       .should('be.visible');
-    cy.url({timeout: 30000}).should('eq', 'http://localhost:5173/');
+    cy.url({timeout: 30000}).should(
+      'eq',
+      'http://localhost:5173/authentication',
+    );
   });
 
   it('Check Routes Unauthenticated', () => {

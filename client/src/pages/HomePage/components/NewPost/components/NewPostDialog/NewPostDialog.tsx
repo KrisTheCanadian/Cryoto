@@ -16,12 +16,14 @@ import {
   styled,
   TextareaAutosize,
   TextField,
+  IconButton,
 } from '@mui/material';
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
 import {useQueryClient} from 'react-query';
 import {walletBalanceQuery} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
 import {useMsal} from '@azure/msal-react';
+import PhotoIcon from '@mui/icons-material/Photo';
 
 import {useMutationCreatePost} from './hooks/useMutationCreatePost';
 import {ImageUploader} from './components';
@@ -73,6 +75,7 @@ function NewPostDialog(props: NewPostDialogProps) {
   const [companyValue, setCompanyValue] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [imageUploaderOpen, setImageUploaderOpen] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string>('');
 
   const queryClient = useQueryClient();
 
@@ -106,6 +109,7 @@ function NewPostDialog(props: NewPostDialogProps) {
       isTransactable: true,
       postType: PostType.Kudos,
       createdDate: new Date(),
+      imageUrl,
     } as INewPost;
 
     mutation.mutate(postData, {
@@ -275,7 +279,10 @@ function NewPostDialog(props: NewPostDialogProps) {
             style={{transitionDelay: imageUploaderOpen ? '200ms' : '0ms'}}
           >
             <Box>
-              <ImageUploader setFileUploadOpen={setImageUploaderOpen} />
+              <ImageUploader
+                setFileUploadOpen={setImageUploaderOpen}
+                setImageUrl={setImageUrl}
+              />
             </Box>
           </Fade>
         </Collapse>
@@ -283,14 +290,14 @@ function NewPostDialog(props: NewPostDialogProps) {
       <DialogActions
         sx={{mt: 1, mb: 1, mr: 2, ml: 2, justifyContent: 'space-between'}}
       >
-        {/* <IconButton
-          sx={{visibility: 'hidden'}}
+        <IconButton
           onClick={handleDropZoneClick}
           data-testid="remove-image-button"
           disabled={imageUploaderOpen}
         >
           <PhotoIcon />
-        </IconButton> */}
+        </IconButton>
+
         <Box />
 
         <Button color="primary" variant="contained" onClick={handleSubmit}>

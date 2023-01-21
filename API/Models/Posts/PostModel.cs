@@ -22,13 +22,14 @@ public class PostModel
     [Required] public string PostType { get; set; }
     public bool IsTransactable { get; set; }
     public ulong Coins { get; set; }
+    public string ImageUrl { get; set; }
 
     [NotMapped] public IEnumerable<UserProfileModel> RecipientProfiles { get; set; }
     [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
 
 
     public PostModel(string author, string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
-        string postType = "General", bool isTransactable = false, ulong coins = 0)
+        string postType = "General", bool isTransactable = false, ulong coins = 0, string imageUrl = "")
     {
         Id = Guid.NewGuid().ToString();
         Author = author;
@@ -45,6 +46,7 @@ public class PostModel
         Coins = isTransactable ? coins : 0;
 
         RecipientProfiles = new List<UserProfileModel>();
+        ImageUrl = imageUrl;
     }
 
     public PostModel(PostCreateModel postCreateModel, string actor)
@@ -63,6 +65,7 @@ public class PostModel
         IsTransactable = Coins != 0;
 
         RecipientProfiles = new List<UserProfileModel>();
+        ImageUrl = postCreateModel.ImageUrl;
     }
 
     public PostModel(PostUpdateModel postUpdateModel, string actor)
@@ -80,5 +83,6 @@ public class PostModel
         IsTransactable = Coins != 0;
 
         RecipientProfiles = new List<UserProfileModel>();
+        ImageUrl = postUpdateModel.ImageUrl;
     }
 }

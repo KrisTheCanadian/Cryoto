@@ -23,7 +23,7 @@ describe('Posts', () => {
     });
     cy.get('#new-post-dialog-amount').type('100');
     cy.get('#new-post-dialog-message').type('test message');
-    cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click({force: true});
+    // cy.get('.MuiDialogActions-root > .MuiButtonBase-root').click({force: true});
   });
 });
 

@@ -16,9 +16,10 @@ public class PostUpdateModel
     public string PostType { get; set; }
     public bool IsTransactable { get; set; }
     public ulong Coins { get; set; }
+    public string ImageUrl { get; set; }
 
     public PostUpdateModel(string id, string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
-        string postType, bool isTransactable, ulong coins = 0)
+        string postType, bool isTransactable, ulong coins = 0, string imageUrl = "")
     {
         Id = id;
         Message = message;
@@ -28,5 +29,6 @@ public class PostUpdateModel
         PostType = postType;
         IsTransactable = isTransactable;
         Coins = coins;
+        ImageUrl = imageUrl;
     }
 }

@@ -14,6 +14,7 @@ interface IPost {
   coins: number;
   recipientProfiles: IUser[];
   authorProfile: IUser;
+  imageUrl: string;
 }
 
 export default IPost;

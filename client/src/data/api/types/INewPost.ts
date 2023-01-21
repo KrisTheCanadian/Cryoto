@@ -9,6 +9,7 @@ interface INewPost {
   isTransactable: boolean;
   coins: number;
   tempRecipients: {name: string; id: string}[];
+  imageUrl: string;
 }
 
 export type {INewPost};

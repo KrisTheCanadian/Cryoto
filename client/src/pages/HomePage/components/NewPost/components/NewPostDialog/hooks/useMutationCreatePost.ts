@@ -33,6 +33,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
         createdDate: post.createdDate.toISOString(),
         id: `temp-id-${Date.now()}`,
         author: '',
+        imageUrl: post.imageUrl,
         authorProfile: {
           name: accounts[0].name || '',
           oId: accounts[0].idTokenClaims?.oid || '',

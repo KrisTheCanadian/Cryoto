@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using static System.Threading.Tasks.Task;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using System.Text.Json;
 
 namespace API.Services;
 

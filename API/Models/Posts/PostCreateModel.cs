@@ -6,6 +6,7 @@ namespace API.Models.Posts;
 public class PostCreateModel
 {
     public string Message { get; set; }
+
     // User Profile Ids (foreign keys)
     public string[] Recipients { get; set; }
     public string[] Tags { get; set; }
@@ -13,8 +14,10 @@ public class PostCreateModel
     public string PostType { get; set; }
     public bool IsTransactable { get; set; }
     public ulong Coins { get; set; }
-    
-    public PostCreateModel(string message, string[] recipients, string[] tags, DateTimeOffset createdDate, string postType, bool isTransactable, ulong coins = 0)
+    public string ImageUrl { get; set; }
+
+    public PostCreateModel(string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
+        string postType, bool isTransactable, ulong coins = 0, string imageUrl = "")
     {
         Message = message;
         Recipients = recipients;
@@ -23,5 +26,6 @@ public class PostCreateModel
         PostType = postType;
         IsTransactable = isTransactable;
         Coins = coins;
+        ImageUrl = imageUrl;
     }
 }

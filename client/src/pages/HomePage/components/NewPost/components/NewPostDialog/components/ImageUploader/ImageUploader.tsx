@@ -11,13 +11,17 @@ import {useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {useTranslation} from 'react-i18next';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import {BlobServiceClient} from '@azure/storage-blob';
+import {v4 as uuidv4} from 'uuid';
 
 interface FileToUpload {
   file: File | null;
   preview: string | null;
 }
+
 interface ImageUploaderProps {
   setFileUploadOpen: (fileUploadOpen: boolean) => void;
+  setImageUrl: (imageUrl: string) => void;
 }
 
 const StyledDropZone = styled(Box)(({theme}) => ({
@@ -32,25 +36,47 @@ const StyledDropZone = styled(Box)(({theme}) => ({
 
 function ImageUploader(props: ImageUploaderProps) {
   const theme = useTheme();
-  const {setFileUploadOpen} = props;
+  const {setFileUploadOpen, setImageUrl} = props;
   const [file, setFile] = useState<FileToUpload>({file: null, preview: null});
+  const [imageName, setImageName] = useState<string>();
   const {t} = useTranslation();
+  const SasURL = process.env.VITE_SAS_URL || '';
+  const blobServiceClient = new BlobServiceClient(SasURL);
+  // Get a reference to a container
+  const containerClient = blobServiceClient.getContainerClient('post-images');
+
   const {getRootProps, getInputProps} = useDropzone({
     accept: {
       'image/*': [],
     },
     maxFiles: 1,
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
       setFile({
         file: acceptedFiles[0],
         preview: URL.createObjectURL(acceptedFiles[0]),
       });
+
+      // Create a unique name for the blob
+      const blobName = `${uuidv4() + acceptedFiles[0].name}`;
+
+      // Get a block blob client
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      setImageUrl(blockBlobClient.url);
+      setImageName(blobName);
+
+      // Upload image to the blob
+      await blockBlobClient.uploadData(acceptedFiles[0]);
     },
   });
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = async () => {
     setFile({file: null, preview: null});
     setFileUploadOpen(false);
+
+    const blockBlobClient = containerClient.getBlockBlobClient(imageName!);
+    // Delete removed image
+    await blockBlobClient.delete();
   };
 
   return (
