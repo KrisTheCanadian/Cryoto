@@ -40,7 +40,7 @@ function Wallet() {
               data-testid="self-transfer-button"
               sx={{
                 backgroundColor: theme.palette.primary.main,
-                color: theme.interface.main,
+                color: theme.palette.common.white,
                 '&:hover': {backgroundColor: theme.palette.primary.light},
               }}
             >

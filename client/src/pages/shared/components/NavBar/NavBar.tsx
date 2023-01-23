@@ -8,11 +8,10 @@ import {
   InputBase,
   IconButton,
   Box,
-  BoxProps,
 } from '@mui/material';
-import {styled, useTheme} from '@mui/material/styles';
+import {useTheme} from '@mui/material/styles';
 import {memo, useRef, useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
 import {AuthenticatedTemplate} from '@azure/msal-react';
@@ -21,6 +20,8 @@ import {RoundedInput} from '../interface-elements/RoundedInput';
 
 import {Notifications, ProfileMenu} from './components';
 
+import {routeMarket} from '@/pages/routes';
+
 const ProfileMenuMemo = memo(ProfileMenu);
 
 function NavBar() {
@@ -28,17 +29,11 @@ function NavBar() {
   const {t} = useTranslation();
   const [searchOpen, setOpen] = useState(false);
 
+  const location = useLocation();
+
   // All styling is done here with custom styling based on theme breakpoints and searchOpen state
   const theme = useTheme();
   const toggleColorMode = colorMode.toggleColorMode;
-
-  const MainNavigationBar = styled(Toolbar)(() => ({
-    id: 'main-navigation-bar',
-    background: theme.interface.main,
-    display: 'flex',
-    justifyContent: 'space-between',
-    color: 'text.primary',
-  }));
 
   const toolBarStyle = {
     id: 'main-navigation-bar',
@@ -57,9 +52,16 @@ function NavBar() {
     boxShadow: (searchOpen && '0px -15px 20px 9px rgba(0,0,0,0.08)') || 'none',
     background:
       (searchOpen && theme.interface.offBackground) || theme.interface.main,
-    display: 'block',
-    width: '40%',
     position: 'relative',
+
+    // changed code for marketplace
+    display: location.pathname === routeMarket ? 'none' : 'block',
+    width: '40%',
+    ...(searchOpen &&
+      location.pathname === routeMarket && {
+        display: 'block',
+      }),
+
     [theme.breakpoints.down('sm')]: {
       display: 'none',
       width: '70%',
@@ -71,18 +73,6 @@ function NavBar() {
     },
   };
 
-  const searchInputStyle = {
-    padding: theme.spacing(0.5),
-    boxSizing: 'border-box',
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: theme.interface.contrastMain,
-    '&:hover': {
-      backgroundColor: theme.interface.contrastMain,
-    },
-    borderRadius: theme.shape.borderRadius,
-    width: '100%',
-  };
   const searchResultsStyle = {
     padding: theme.spacing(2.5),
     position: 'absolute',
@@ -92,7 +82,8 @@ function NavBar() {
     width: '100%',
     borderBottomLeftRadius: theme.borderRadius.large,
     borderBottomRightRadius: theme.borderRadius.large,
-    marginLeft: theme.spacing(-1),
+    marginLeft: theme.spacing(-1.5),
+
     [theme.breakpoints.up('sm')]: {
       marginLeft: theme.spacing(-1.5),
     },
@@ -101,17 +92,9 @@ function NavBar() {
   };
   const searchButtonStyle = {
     [theme.breakpoints.up('sm')]: {
-      display: 'none',
+      display: location.pathname === routeMarket ? 'block' : 'none',
     },
   };
-
-  const RightNavBarSection = styled(Box)<BoxProps>(({theme}) => ({
-    alignItems: 'center',
-    display: (searchOpen && 'none') || 'flex',
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex',
-    },
-  }));
 
   const rightNavBarProps = {
     alignItems: 'center',

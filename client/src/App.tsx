@@ -10,6 +10,7 @@ import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
 import {NotifiSignalRContext} from '@shared/context/NotificationSignalRContext';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 import {NavBar} from '@shared/components/NavBar';
+import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 
 import Role from './pages/roles';
 import {
@@ -66,7 +67,14 @@ function App() {
                 <Route element={<RequireAuth {...[]} />}>
                   <Route path={routeHome} element={<HomePage />} />
                   <Route path={routeWallet} element={<Wallet />} />
-                  <Route path={routeMarket} element={<MarketPlace />} />
+                  <Route
+                    path={routeMarket}
+                    element={
+                      <MarketplaceProvider>
+                        <MarketPlace />
+                      </MarketplaceProvider>
+                    }
+                  />
                   <Route path={routeProfile} element={<Profile />} />
                   <Route path={routeOrders} element={<Orders />} />
                   <Route path={routeSettings} element={<Settings />} />

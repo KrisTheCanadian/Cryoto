@@ -1,4 +1,5 @@
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
+import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
@@ -18,22 +19,26 @@ const queryClient = new QueryClient({
   },
 });
 
-it('MarketPlace page renders', async () => {
-  const MarketPlaceRoute = 'Marketplace Route';
+describe('Marketplace Page', () => {
+  it('MarketPlace page renders', async () => {
+    const MarketPlaceRoute = 'Marketplace';
 
-  await act(async () => {
-    render(
-      <MemoryRouter initialEntries={['/']}>
-        <I18nextProvider i18n={i18n}>
-          <QueryClientProvider client={queryClient}>
-            <ThemeContextProvider>
-              <MarketPlace />
-            </ThemeContextProvider>
-          </QueryClientProvider>
-        </I18nextProvider>
-      </MemoryRouter>,
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={['/']}>
+          <I18nextProvider i18n={i18n}>
+            <QueryClientProvider client={queryClient}>
+              <ThemeContextProvider>
+                <MarketplaceProvider>
+                  <MarketPlace />
+                </MarketplaceProvider>
+              </ThemeContextProvider>
+            </QueryClientProvider>
+          </I18nextProvider>
+        </MemoryRouter>,
+      );
+    });
+
+    expect(screen.getByText(MarketPlaceRoute)).toBeInTheDocument();
   });
-
-  expect(screen.getByText(MarketPlaceRoute)).toBeInTheDocument();
 });

@@ -1,3 +1,4 @@
+/* eslint-disable id-length */
 export const frenchTranslations = {
   layout: {
     Profile: 'Profil',
@@ -94,6 +95,40 @@ export const frenchTranslations = {
     },
     creditCard: {
       Balance: 'Solde',
+    },
+  },
+  marketplace: {
+    Coins: 'pièces',
+    AddToCart: 'Ajouter au panier',
+    Search: 'Recherchez sur le marché',
+    sizes: {
+      xs: 'TP',
+      s: 'P',
+      m: 'M',
+      l: 'G',
+      xl: 'TG',
+      selectSize: 'Veuillez choisir une taille',
+    },
+    filter: {
+      filter: 'Filtrer',
+      type: 'Type',
+      brand: 'Marques',
+      price: {
+        price: 'Prix',
+        under150: 'Moins de 150 pièces',
+        between150to250: '150 à 250 pièces',
+        between250to500: '250 à 500 pièces',
+        between500to1000: '500 à 1000 pièces',
+        over1000: '1000 pièces et plus',
+      },
+      clearAll: 'Réinitialiser',
+    },
+    sort: {
+      sort: 'Trier',
+      lowtohigh: 'Prix: ordre croissant',
+      hightolow: 'Prix: ordre décroissant',
+      AtoZ: 'Marques de A à Z',
+      ZtoA: 'Marques de Z à A',
     },
   },
 };

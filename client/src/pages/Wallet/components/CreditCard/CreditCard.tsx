@@ -33,23 +33,14 @@ function CreditCard() {
       <Box pl={3} pt={2} pr={1}>
         <Grid container spacing={1}>
           <Grid item xs={12} sx={{display: 'flex', justifyContent: 'flex-end'}}>
-            <img
-              src="images/svgIcons/CreditCardLogo.svg"
-              alt="logo"
-              style={{
-                filter:
-                  theme.interface.type === 'dark'
-                    ? 'brightness(15%) saturate(50%)'
-                    : '',
-              }}
-            />
+            <img src="images/svgIcons/CreditCardLogo.svg" alt="logo" />
             <Typography
               id="brand-name"
               variant="subtitle1"
               sx={{
                 fontStyle: 'italic',
                 fontWeight: 'bold',
-                color: theme.interface.main,
+                color: theme.palette.common.white,
                 paddingLeft: 0.5,
               }}
             >
@@ -62,7 +53,7 @@ function CreditCard() {
               variant="h6"
               sx={{
                 fontWeight: 'medium',
-                color: theme.interface.main,
+                color: theme.palette.common.white,
                 letterSpacing: '0.08em',
               }}
             >
@@ -76,7 +67,7 @@ function CreditCard() {
                   id="to-award"
                   variant="body1"
                   sx={{
-                    color: theme.interface.main,
+                    color: theme.palette.common.white,
                     letterSpacing: '0.05em',
                     fontWeight: 'light',
                   }}
@@ -86,7 +77,7 @@ function CreditCard() {
                 <Typography
                   id="to-award-balance"
                   variant="body1"
-                  sx={{color: theme.interface.main, fontWeight: 'light'}}
+                  sx={{color: theme.palette.common.white, fontWeight: 'light'}}
                 >
                   $ {data?.toAwardBalance.toFixed(2)}
                 </Typography>
@@ -97,7 +88,7 @@ function CreditCard() {
                   id="to-spend"
                   variant="body1"
                   sx={{
-                    color: theme.interface.main,
+                    color: theme.palette.common.white,
                     letterSpacing: '0.05em',
                     fontWeight: 'light',
                   }}
@@ -107,7 +98,7 @@ function CreditCard() {
                 <Typography
                   id="to-spend-balance"
                   variant="body1"
-                  sx={{color: theme.interface.main, fontWeight: 'light'}}
+                  sx={{color: theme.palette.common.white, fontWeight: 'light'}}
                 >
                   $ {data?.toSpendBalance.toFixed(2)}
                 </Typography>
@@ -119,7 +110,7 @@ function CreditCard() {
               id="name"
               variant="subtitle1"
               pt={1}
-              sx={{letterSpacing: '0.08em', color: theme.interface.main}}
+              sx={{letterSpacing: '0.08em', color: theme.palette.common.white}}
             >
               {username}
             </Typography>
