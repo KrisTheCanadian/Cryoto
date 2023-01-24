@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 
-import MiddleColumn from './MainFeed';
+import MiddleColumn from './MiddleColumn';
 
 it('Should render children', () => {
   const testText = 'test';

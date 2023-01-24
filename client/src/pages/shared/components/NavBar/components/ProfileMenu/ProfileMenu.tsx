@@ -108,8 +108,8 @@ function ProfileMenu() {
       >
         <MenuItem
           component={NavLink}
-          to="/profile"
-          selected={location.pathname === '/profile'}
+          to={`/profile/${oId}`}
+          selected={location.pathname === `/profile/${oId}}`}
         >
           {userProfilePhoto === null ||
           userProfilePhoto === undefined ||

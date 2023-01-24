@@ -36,6 +36,8 @@ import {Settings} from './pages/Settings';
 import {apiEndpoint} from './data/api/routes';
 import {LandingPage} from './pages/LandingPage';
 
+import {ScrollToTop} from '@shared/components/ScrollToTop';
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -62,6 +64,7 @@ function App() {
               <CssBaseline />
               <AlertSystem />
               <NavBar />
+              <ScrollToTop />
               <Routes>
                 <Route path={routeLandingPage} element={<LandingPage />} />
                 <Route element={<RequireAuth {...[]} />}>

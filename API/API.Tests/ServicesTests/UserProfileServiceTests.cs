@@ -14,10 +14,12 @@ public class UserProfileServicesTests
     private readonly IUserProfileRepository _context;
     private readonly UserProfileService _controller;
 
+
     public UserProfileServicesTests()
     {
         _context = A.Fake<IUserProfileRepository>();
-        _controller = new UserProfileService(_context);
+        var postContext = A.Fake<IPostRepository>();
+        _controller = new UserProfileService(_context, postContext);
     }
 
     [Fact]

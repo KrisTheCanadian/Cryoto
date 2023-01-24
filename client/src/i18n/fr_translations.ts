@@ -66,6 +66,13 @@ export const frenchTranslations = {
   authenticationPage: {
     loading: 'connexion en cours',
   },
+  profilePage: {
+    joinedIn: 'Rejoint en ',
+    recognize: 'Reconnaître',
+    recognitions: 'Reconnaissances',
+    recognitionsSent: ' Reconnaissances envoyées',
+    recognitionsReceived: ' Reconnaissances reçues',
+  },
   wallet: {
     toSpend: 'À Dépenser',
     toAward: 'À Donner',

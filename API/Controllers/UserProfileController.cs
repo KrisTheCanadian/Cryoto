@@ -70,4 +70,21 @@ public class UserProfileController : ControllerBase
         var res = await response.Content.ReadAsByteArrayAsync();
         return "data:image/jpeg;base64," + Convert.ToBase64String(res);
     }
+
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<OkResult> UpdateUserProfileFakeData()
+    {
+        await _userProfileService.UpdateUserProfileFakeData();
+        return Ok();
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<OkResult> UpdateUserProfileRecognitionsCount()
+    {
+        await _userProfileService.UpdateUserProfilesRecognitionsCount();
+        return Ok();
+    }
 }

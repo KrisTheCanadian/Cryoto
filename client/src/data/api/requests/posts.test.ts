@@ -42,7 +42,7 @@ it('GetNextPage returns success', async () => {
 
   mock.onGet(url).reply(200, data);
 
-  const res = await getNextPage(page, pageSize);
+  const res = await getNextPage(page, pageSize, accounts[0].homeAccountId);
 
   expect(res).toEqual(data);
 });

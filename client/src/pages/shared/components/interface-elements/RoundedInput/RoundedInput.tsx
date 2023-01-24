@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import {Box, SxProps} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {ReactNode} from 'react';

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --open",
+    "dev": "vite  --open --force",
     "build": "tsc -p tsconfig.prod.json && vite build",
     "preview": "vite preview",
     "format": "prettier . --write",
@@ -61,6 +61,8 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@types/uuid": "^9.0.0",
+    "@azure/storage-blob": "^12.12.0",
+    "uuid": "^9.0.0",
     "@vitejs/plugin-react": "^2.1.0",
     "babel-jest": "^29.0.3",
     "css-mediaquery": "^0.1.2",

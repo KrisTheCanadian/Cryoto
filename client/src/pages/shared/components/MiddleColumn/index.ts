@@ -1,3 +1,3 @@
-import MiddleColumn from './MainFeed';
+import MiddleColumn from './MiddleColumn';
 
 export {MiddleColumn};

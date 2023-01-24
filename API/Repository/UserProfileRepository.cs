@@ -28,7 +28,7 @@ public class UserProfileRepository : IUserProfileRepository
             .Where(p => !string.IsNullOrWhiteSpace(p))
             .ToArray();
         List<UserProfileModel> userProfileModelList = Context.UserProfiles.AsNoTracking()
-                .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
+            .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
         return Task.FromResult(userProfileModelList);
     }
 
@@ -42,6 +42,12 @@ public class UserProfileRepository : IUserProfileRepository
     {
         if (await GetUserProfileAsync(userProfile.OId) != null) return 1;
         await Context.UserProfiles.AddAsync(userProfile);
+        return await Context.SaveChangesAsync();
+    }
+
+    public async Task<int> UpdateUserProfile(UserProfileModel userProfile)
+    {
+        Context.UserProfiles.Update(userProfile);
         return await Context.SaveChangesAsync();
     }
 

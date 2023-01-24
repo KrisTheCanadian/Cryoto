@@ -9,7 +9,6 @@ using API.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers;
 
@@ -47,6 +46,14 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet]
+    public async Task<ActionResult<PaginationWrapper<PostModel>>> GetUserProfileFeedPaginated(string userId,
+        int page = 1,
+        int pageCount = 10)
+    {
+        return Ok(await _postService.GetUserProfileFeedPaginatedAsync(userId, page, pageCount));
+    }
+
+    [HttpGet]
     public async Task<ActionResult<IEnumerable>> GetAllPosts()
     {
         return Ok(await _postService.GetAllAsync());
@@ -72,7 +79,16 @@ public class PostsController : ControllerBase
             return BadRequest("Could not create the post");
         var createdPostModel = await _postService.GetByIdAsync(postModel.Id);
         var amount = (double)createdPostModel!.Coins;
-        if (amount == 0) return Ok(createdPostModel);
+        if (amount == 0)
+        {
+            await _userProfileService.IncrementRecognitionsSent(_actorId);
+            foreach (var recipientProfile in createdPostModel.RecipientProfiles)
+            {
+                await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
+                await SendNotification(postCreateModel, recipientProfile, postModel, amount);
+            }
+            return Ok(createdPostModel);
+        }
 
 
         var actorBalance = await _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
@@ -82,6 +98,8 @@ public class PostsController : ControllerBase
             return BadRequest("Your balance is not enough");
         }
 
+        await _userProfileService.IncrementRecognitionsSent(_actorId);
+
         var oIdsList = new List<List<string>>
             { new List<string> { "tokenUpdateQueue" }, new List<string> { _actorId } };
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
@@ -90,14 +108,16 @@ public class PostsController : ControllerBase
             await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
             await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
             await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
-            await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend", _actorId,
+            await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
+                _actorId,
                 "toAward", amount, "Recognition", postCreateModel.CreatedDate));
-            
+
+            await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
             await SendNotification(postCreateModel, recipientProfile, postModel, amount);
         }
 
         _cryptoService.QueueTokenUpdate(oIdsList);
-        
+
         return Ok(createdPostModel);
     }
 

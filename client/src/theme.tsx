@@ -81,6 +81,9 @@ const getDesignTokens = (mode: PaletteMode) =>
       subtitle2: {
         fontSize: '1.2rem',
       },
+      button: {
+        textTransform: 'capitalize',
+      },
     },
     interface: {
       shadow: '0px 0px 20px 9px rgba(0,0,0,0.08)',

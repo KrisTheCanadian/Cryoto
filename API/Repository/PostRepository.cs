@@ -65,16 +65,24 @@ public class PostRepository : IPostRepository
         return posts;
     }
 
-    public async Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount = 10)
+    public async Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount = 10, string oid="oid")
     {
         pageCount = pageCount < 1 ? 10 : pageCount;
         page = page < 1 ? 1 : page;
 
-        var posts = await Context.Posts
+        List<PostModel> posts;
+        if (oid.Equals("oid"))
+            posts = await Context.Posts
             .OrderByDescending(x => x.CreatedDate)
             .Skip((page - 1) * pageCount)
             .Take(pageCount)
             .ToListAsync();
+        else
+            posts = await Context.Posts.Where(postModel=>postModel.Author==oid || postModel.Recipients.Any(recipientOid=>recipientOid ==  oid))
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((page - 1) * pageCount)
+                .Take(pageCount)
+                .ToListAsync();
         var totalNumberOfPosts = Context.Posts.Count();
         var totalNumberOfPages = (totalNumberOfPosts / pageCount) + 1;
         foreach (var post in posts)
@@ -83,6 +91,15 @@ public class PostRepository : IPostRepository
         }
 
         return new PaginationWrapper<PostModel>(posts, page, pageCount, totalNumberOfPages);
+    }
+
+    public async Task<int> GetSentPostsCountAsync(string oid)
+    {
+        return await Context.Posts.Where(postModel => postModel.Author == oid ).CountAsync();
+    }
+    public async Task<int> GetReceivedPostsCountAsync(string oid)
+    {
+        return await Context.Posts.Where(postModel => postModel.Recipients.Any(recipientOid => recipientOid == oid)).CountAsync();
     }
 
     private async Task<PostModel> GetAllProfiles(PostModel postModel)

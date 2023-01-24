@@ -15,8 +15,24 @@ interface Recipient {
   name: string;
   id: string;
 }
+const tempUserFields = {
+  email: '',
+  language: '',
+  role: [],
+  businessTitle: '',
+  city: '',
+  timeZone: '',
+  managerReference: '',
+  startDate: '',
+  birthday: '',
+  recognitionsReceived: 0,
+  recognitionsSent: 0,
+};
 
-export const useMutationCreatePost = (recipients: Recipient[]) => {
+export const useMutationCreatePost = (
+  recipients: Recipient[],
+  queryKey: string[],
+) => {
   const {accounts} = useMsal();
   const queryClient = useQueryClient();
   const dispatchAlert = useAlertContext();
@@ -26,7 +42,7 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
     onMutate: async (post: INewPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries(postsQuery);
+      await queryClient.cancelQueries(queryKey);
       // convert post to real post
       const newPost: IPost = {
         ...post,
@@ -37,30 +53,23 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
         authorProfile: {
           name: accounts[0].name || '',
           oId: accounts[0].idTokenClaims?.oid || '',
-          email: '',
-          language: '',
-          role: [],
+          ...tempUserFields,
         },
         recipientProfiles: post.tempRecipients.map((recipient) => {
           return {
             oId: recipient.id,
             name: recipient.name,
-            email: '',
-            language: '',
-            roles: [],
-            wallets: null,
-            role: [],
-            photoUrl: '',
+            ...tempUserFields,
           };
         }),
       };
 
       // Snapshot the previous value
-      const prevData = queryClient.getQueryData(postsQuery) as IPages;
+      const prevData = queryClient.getQueryData(queryKey) as IPages;
 
       // Optimistically update to the new value
       if (prevData) {
-        queryClient.setQueryData(postsQuery, {
+        queryClient.setQueryData(queryKey, {
           ...prevData,
           pages: [
             {...prevData.pages[0], data: [newPost, ...prevData.pages[0].data]},
@@ -75,13 +84,16 @@ export const useMutationCreatePost = (recipients: Recipient[]) => {
     // use the context returned from onMutate to roll back
     onError: (err: any, variables, context) => {
       if (context?.prevData) {
-        queryClient.setQueryData(postsQuery, context.prevData);
+        queryClient.setQueryData(queryKey, context.prevData);
         dispatchAlert.error(err.response.data);
       }
     },
     // Always refetch after error or success:
     onSettled: () => {
-      queryClient.invalidateQueries(postsQuery);
+      queryClient.invalidateQueries(queryKey);
+      if (queryKey[0] !== 'posts-query') {
+        queryClient.invalidateQueries(postsQuery);
+      }
       queryClient.invalidateQueries(transactionsQuery);
       queryClient.invalidateQueries(walletsBalanceQuery);
     },

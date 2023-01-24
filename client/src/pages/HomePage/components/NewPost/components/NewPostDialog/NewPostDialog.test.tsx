@@ -75,6 +75,7 @@ describe('Form Validation', () => {
             <MockAppProviders>
               <NewPostDialog
                 dialogOpen
+                queryKey={['test']}
                 setDialogOpen={function (dialogOpen: boolean): void {
                   throw new Error('Function not implemented.');
                 }}

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
@@ -34,7 +35,13 @@ public class UserProfileModel
     public string? PrimaryWorkTelephone { get; set; }
     public string? Fax { get; set; }
     public string? Mobile { get; set; }
-    
-    
-    [NotMapped]public ICollection<WalletModel> Wallets { get; set; } = null!;
+    public string? TimeZone { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? Birthday { get; set; }
+    public string? City { get; set; }
+    [DefaultValue(0)] public int RecognitionsReceived { get; set; }
+    [DefaultValue(0)] public int RecognitionsSent { get; set; }
+
+
+    [NotMapped] public ICollection<WalletModel> Wallets { get; set; } = null!;
 }

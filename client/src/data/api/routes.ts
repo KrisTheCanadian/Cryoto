@@ -11,6 +11,7 @@ export const clientEndpointAuth = `${clientEndpoint}authentication`;
 export const apiRoutePosts = `${apiEndpoint}posts`;
 // Post Feed
 export const apiRoutePostsGetUserFeed = `${apiRoutePosts}/GetUserFeedPaginated`;
+export const apiRoutePostsGetUserProfileFeed = `${apiRoutePosts}/GetUserProfileFeedPaginated`;
 export const apiRoutePostsGetAllPosts = `${apiRoutePosts}/GetAllPosts`;
 // Crud
 export const apiRoutePostsGetPostById = `${apiRoutePosts}/GetPostById`;
@@ -22,6 +23,7 @@ export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;
 export const apiRouteUserProfileGetUserProfile = `${apiRouteUserProfile}/GetUserProfile`;
 export const apiRouteUserProfileGetUserProfilePhoto = `${apiRouteUserProfile}/GetUserProfilePhoto`;
+export const apiRouteUserProfileGetUserByID = `${apiRouteUserProfile}/GetUserById`;
 export const apiRouteUserGetAllUsers = `${apiRouteUserProfile}/GetAllUsers`;
 export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
 

@@ -29,7 +29,7 @@ function NewPost(props: NewPostProps) {
   // get initials from name
   const initials = props.name
     ?.split(' ')
-    .map((n) => n[0])
+    .map((name) => name[0])
     .join('')
     .toUpperCase();
 
@@ -85,7 +85,11 @@ function NewPost(props: NewPostProps) {
   return (
     <>
       {dialogOpen && (
-        <NewPostDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+        <NewPostDialog
+          dialogOpen={dialogOpen}
+          setDialogOpen={setDialogOpen}
+          queryKey={['posts-query']}
+        />
       )}
       <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
         <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>

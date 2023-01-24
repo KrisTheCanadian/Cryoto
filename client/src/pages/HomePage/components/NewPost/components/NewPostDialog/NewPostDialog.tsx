@@ -35,6 +35,8 @@ import {PostType} from '@/data/api/enums';
 interface NewPostDialogProps {
   dialogOpen: boolean;
   setDialogOpen: (dialogOpen: boolean) => void;
+  initialRecipients?: Recipient[];
+  queryKey: [string];
 }
 
 interface Recipient {
@@ -60,7 +62,7 @@ const StyledTextareaAutosize = styled(TextareaAutosize)(({theme}) => ({
 
 function NewPostDialog(props: NewPostDialogProps) {
   const {accounts} = useMsal();
-  const {dialogOpen, setDialogOpen} = props;
+  const {dialogOpen, setDialogOpen, initialRecipients, queryKey} = props;
   const [formValidity, setFormValidity] = useState<FormValidation>({
     recipients: true,
     companyValue: true,
@@ -70,7 +72,9 @@ function NewPostDialog(props: NewPostDialogProps) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   // form values
   const [amount, setAmount] = useState<string>('');
-  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [recipients, setRecipients] = useState<Recipient[]>(
+    initialRecipients || [],
+  );
   const [users, setusers] = useState<Recipient[]>([]);
   const [companyValue, setCompanyValue] = useState<string>('');
   const [message, setMessage] = useState<string>('');
@@ -79,7 +83,7 @@ function NewPostDialog(props: NewPostDialogProps) {
 
   const queryClient = useQueryClient();
 
-  const mutation = useMutationCreatePost(recipients);
+  const mutation = useMutationCreatePost(recipients, queryKey);
 
   const validateForm = () => {
     setFormValidity({
@@ -207,11 +211,13 @@ function NewPostDialog(props: NewPostDialogProps) {
           <Autocomplete
             id="autocomplete"
             sx={{flex: 1, ml: theme.spacing(1)}}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
+            isOptionEqualToValue={(option: Recipient, value: Recipient) =>
+              option.id === value.id
+            }
             multiple
             options={users}
             getOptionLabel={(user) => user.name}
-            defaultValue={[]}
+            defaultValue={initialRecipients || []}
             onChange={handleRecipientsChange}
             renderInput={(params) => (
               <TextField

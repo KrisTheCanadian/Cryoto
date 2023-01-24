@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-negated-condition */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
@@ -8,8 +9,9 @@ import TollIcon from '@mui/icons-material/Toll';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 
-import {LikeButtons} from '../LikeButtons';
+import {LikeButtons} from '../../../../../HomePage/components/LikeButtons';
 
 import {LoadingPostSkeleton} from './components';
 
@@ -30,6 +32,7 @@ interface PostProps {
 function Post(props: PostProps) {
   const theme = useTheme();
   const {t} = useTranslation();
+  const navigate = useNavigate();
 
   const {
     firstName,
@@ -66,10 +69,15 @@ function Post(props: PostProps) {
       .catch((err) => {});
   }, [authorId]);
 
+  function handleAvatarClickAuthor() {
+    navigate(`/profile/${authorId}`);
+  }
+
   function stringAvatar(name: string) {
     return {
       sx: {
         bgcolor: stringToColor(name),
+        cursor: 'pointer',
       },
       children: `${name.split(' ')[0][0]}`,
     };
@@ -114,14 +122,23 @@ function Post(props: PostProps) {
       >
         <Stack direction="row">
           {userProfilePhoto ? (
-            <Avatar src={userProfilePhoto} />
+            <Avatar
+              sx={{cursor: 'pointer'}}
+              onClick={handleAvatarClickAuthor}
+              src={userProfilePhoto}
+            />
           ) : (
-            <Avatar {...stringAvatar(firstName[0] || 'Cryoto')} />
+            <Avatar
+              onClick={handleAvatarClickAuthor}
+              {...stringAvatar(firstName || 'Cryoto')}
+            />
           )}
 
           <Stack sx={{ml: 2}}>
             <Typography variant="body1">
-              <b>{firstName}</b>
+              <b style={{cursor: 'pointer'}} onClick={handleAvatarClickAuthor}>
+                {firstName}
+              </b>
               {t('homePage.Recognized')}
               <b>{recipient}</b>
             </Typography>

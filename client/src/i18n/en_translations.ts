@@ -63,6 +63,13 @@ export const englishTranslations = {
   authenticationPage: {
     loading: 'logging in...',
   },
+  profilePage: {
+    joinedIn: 'Joined in ',
+    recognize: 'Recognize',
+    recognitions: 'Recognitions',
+    recognitionsSent: ' Recognitions sent',
+    recognitionsReceived: ' Recognitions received',
+  },
   wallet: {
     toSpend: 'To Spend',
     toAward: 'To Award',

@@ -11,5 +11,6 @@ public interface IPostService
     public Task DeleteAsync(PostModel postModel);
     public Task<bool> DeleteByIdAsync(string guid);
     public Task<PaginationWrapper<PostModel>> GetUserFeedPaginatedAsync(string userId, int page, int pageCount);
+    public Task<PaginationWrapper<PostModel>> GetUserProfileFeedPaginatedAsync(string userId, int page, int pageCount);
     public Task<IEnumerable<PostModel>> GetAllAsync();
 }
