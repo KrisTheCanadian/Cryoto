@@ -108,6 +108,7 @@ export const frenchTranslations = {
     Coins: 'pièces',
     AddToCart: 'Ajouter au panier',
     Search: 'Recherchez sur le marché',
+    Quantity: 'Quantité',
     sizes: {
       xs: 'TP',
       s: 'P',
@@ -115,6 +116,7 @@ export const frenchTranslations = {
       l: 'G',
       xl: 'TG',
       selectSize: 'Veuillez choisir une taille',
+      size: 'Taille',
     },
     filter: {
       filter: 'Filtrer',

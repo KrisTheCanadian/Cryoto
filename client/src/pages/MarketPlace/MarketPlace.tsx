@@ -7,18 +7,21 @@ import {
   Pagination,
   useTheme,
   IconButton,
-  Badge,
-  BadgeProps,
   Drawer,
   Divider,
 } from '@mui/material';
-import {Close, ShoppingCart} from '@mui/icons-material';
-import {styled} from '@mui/material/styles';
+import {Close} from '@mui/icons-material';
 import PageFrame from '@shared/components/PageFrame';
 import {useEffect, useState} from 'react';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 
-import {ProductCard, FilterMenu, SortMenu, MarketSearch} from './components';
+import {
+  ProductCard,
+  FilterMenu,
+  SortMenu,
+  MarketSearch,
+  CartButton,
+} from './components';
 
 interface Item {
   id: string;
@@ -41,14 +44,11 @@ interface CartItem {
 
 function MarketPlace() {
   const theme = useTheme();
-  const {itemsDisplayed} = useMarketplaceContext();
+  const {itemsDisplayed, cartItemsQuantity} = useMarketplaceContext();
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [itemsDisplayedInPage, setItemsDisplayedInPage] = useState<Item[]>([]);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
-  const [cartItemsQuantity, setCartItemsQuantity] = useState(0);
 
   useEffect(() => {
     setItemsDisplayedInPage(
@@ -62,39 +62,6 @@ function MarketPlace() {
   const handleChangePage = (event: any, newPage: number) => {
     setPage(newPage);
   };
-
-  const addCartItems = (
-    id: string,
-    title: string,
-    image: string,
-    points: number,
-    size: string,
-  ) => {
-    const quantity = 1;
-    if (size === '') {
-      const item = cartItems.find((i) => i.id === id);
-      if (item) item.quantity += 1;
-      else setCartItems([...cartItems, {id, title, image, points, quantity}]);
-    } else {
-      const item = cartItems.find((i) => i.id === id && i.size === size);
-      if (item) item.quantity += 1;
-      else
-        setCartItems([
-          ...cartItems,
-          {id, title, image, points, size, quantity},
-        ]);
-    }
-    setCartItemsQuantity(cartItemsQuantity + 1);
-  };
-
-  const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
-    '& .MuiBadge-badge': {
-      right: -3,
-      top: 13,
-      border: `2px solid ${theme.palette.background.paper}`,
-      padding: '0 4px',
-    },
-  }));
 
   const [open, setState] = useState(false);
   const toggleDrawer = (open: any) => (event: any) => {
@@ -214,23 +181,7 @@ function MarketPlace() {
                 xs={3}
                 sx={{display: 'flex', justifyContent: 'flex-end'}}
               >
-                <IconButton
-                  sx={{
-                    width: 25,
-                    height: 25,
-                    p: 2.2,
-                    border: 1,
-                    borderColor: theme.palette.primary.main,
-                    backgroundColor: theme.interface.main,
-                    mr: '10%',
-                  }}
-                >
-                  <StyledBadge badgeContent={cartItemsQuantity} color="primary">
-                    <ShoppingCart
-                      sx={{color: theme.interface.icon, fontSize: 20, p: 0}}
-                    />
-                  </StyledBadge>
-                </IconButton>
+                <CartButton cartItemsQuantity={cartItemsQuantity} />
               </Grid>
             </Grid>
           </Grid>
@@ -301,7 +252,6 @@ function MarketPlace() {
                   title={i.title}
                   points={i.points}
                   size={i?.size}
-                  addToCart={addCartItems}
                 />
               </Grid>
             ))}

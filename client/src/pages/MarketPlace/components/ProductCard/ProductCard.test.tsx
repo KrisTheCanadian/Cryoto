@@ -18,7 +18,6 @@ describe('Product Card', () => {
               image={undefined}
               title="Test title"
               points={1000}
-              addToCart={undefined}
             />
           </MarketplaceProvider>
         </MockAppProviders>,

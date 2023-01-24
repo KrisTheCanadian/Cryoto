@@ -105,6 +105,7 @@ export const englishTranslations = {
     Coins: 'coins',
     AddToCart: 'Add To Cart',
     Search: 'Search Marketplace',
+    Quantity: 'Quantity',
     sizes: {
       xs: 'XS',
       s: 'S',
@@ -112,6 +113,7 @@ export const englishTranslations = {
       l: 'L',
       xl: 'XL',
       selectSize: 'Please select a size',
+      size: 'Size',
     },
     filter: {
       filter: 'Filter',

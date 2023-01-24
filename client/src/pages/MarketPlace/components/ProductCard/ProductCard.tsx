@@ -9,8 +9,10 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
+import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
+import {useNavigate} from 'react-router-dom';
 
 interface IProductCardProps {
   id: string;
@@ -18,7 +20,6 @@ interface IProductCardProps {
   title: string;
   points: number;
   size?: string[];
-  addToCart: any;
 }
 
 function ProductCard(props: IProductCardProps) {
@@ -26,6 +27,7 @@ function ProductCard(props: IProductCardProps) {
   const {t} = useTranslation();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addCartValidity, setAddCartValidity] = useState(true);
+  const {addCartItems} = useMarketplaceContext();
   const customTheme = createTheme({
     ...theme,
     components: {
@@ -80,29 +82,15 @@ function ProductCard(props: IProductCardProps) {
     },
   };
 
-  const addToCart = (
-    id: string,
-    title: string,
-    image: string,
-    points: number,
-    size: string,
-  ) => {
-    if (props.size && selectedSize) {
-      props.addToCart(
+  const addToCart = () => {
+    if ((props.size && selectedSize) || props.size === undefined) {
+      addCartItems(
         props.id,
         props.title,
         props.image,
         props.points,
         selectedSize,
-      );
-      setSelectedSize('');
-    } else if (props.size === undefined) {
-      props.addToCart(
-        props.id,
-        props.title,
-        props.image,
-        props.points,
-        selectedSize,
+        1,
       );
       setSelectedSize('');
     } else {
@@ -110,10 +98,25 @@ function ProductCard(props: IProductCardProps) {
     }
   };
 
+  const navigate = useNavigate();
+  const routeChange = () => {
+    const path = props.id;
+    navigate(path);
+  };
+
   return (
     <ThemeProvider theme={customTheme}>
       <Card sx={cardStyle}>
-        <Box sx={{mt: 1, mb: 1, mr: 1.5, ml: 1.5, maxHeight: 140}}>
+        <Box
+          sx={{
+            mt: theme.spacing(),
+            mb: theme.spacing(),
+            mr: 1.5,
+            ml: 1.5,
+            maxHeight: 140,
+          }}
+          onClick={routeChange}
+        >
           <CardMedia
             sx={{
               maxHeight: 130,
@@ -131,19 +134,21 @@ function ProductCard(props: IProductCardProps) {
             },
           }}
         >
-          <Typography
-            gutterBottom
-            variant="body1"
-            component="div"
-            className="title"
-            sx={titleStyle}
-          >
-            {props.title}
-          </Typography>
+          <Box onClick={routeChange}>
+            <Typography
+              gutterBottom
+              variant="body1"
+              component="div"
+              className="title"
+              sx={titleStyle}
+            >
+              {props.title}
+            </Typography>
 
-          <Typography variant="body2" color="text.secondary">
-            {props.points} {t<string>('marketplace.Coins')}
-          </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {props.points} {t<string>('marketplace.Coins')}
+            </Typography>
+          </Box>
           {props.size && (
             <Box
               sx={{
@@ -227,15 +232,7 @@ function ProductCard(props: IProductCardProps) {
               size="small"
               className="hidden-button"
               sx={{marginTop: 1, fontSize: 12}}
-              onClick={() =>
-                addToCart(
-                  props.id,
-                  props.title,
-                  props.image,
-                  props.points,
-                  selectedSize,
-                )
-              }
+              onClick={() => addToCart()}
             >
               {t<string>('marketplace.AddToCart')}
             </Button>

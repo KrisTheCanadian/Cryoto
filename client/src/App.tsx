@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/strict-component-boundaries */
 import {Suspense, useState} from 'react';
 import {CssBaseline} from '@mui/material';
 import {Routes, Route} from 'react-router-dom';
@@ -18,6 +19,7 @@ import {
   routeHome,
   routeLandingPage,
   routeMarket,
+  routeProduct,
   routeOrders,
   routeProfile,
   routeSettings,
@@ -27,6 +29,7 @@ import {
 import {StyleGuide} from './pages/StyleGuide';
 import {AuthenticationPage} from './pages/Authentication';
 import {MarketPlace} from './pages/MarketPlace';
+import {ProductPage} from './pages/MarketPlace/components/ProductPage';
 import {HomePage} from './pages/HomePage';
 import {Wallet} from './pages/Wallet';
 import './App.css';
@@ -75,6 +78,14 @@ function App() {
                     element={
                       <MarketplaceProvider>
                         <MarketPlace />
+                      </MarketplaceProvider>
+                    }
+                  />
+                  <Route
+                    path={routeProduct}
+                    element={
+                      <MarketplaceProvider>
+                        <ProductPage />
                       </MarketplaceProvider>
                     }
                   />

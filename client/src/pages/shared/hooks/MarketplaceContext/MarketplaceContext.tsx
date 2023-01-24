@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {createContext, useContext, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
@@ -16,6 +17,16 @@ interface Item {
   size?: string[];
   brand: string;
   points: number;
+  description?: string;
+}
+
+interface CartItem {
+  id: string;
+  image: any;
+  title: string;
+  points: number;
+  size?: string;
+  quantity: number;
 }
 
 interface MarketplaceContextState {
@@ -28,6 +39,8 @@ interface MarketplaceContextState {
   setItemsDisplayed: any;
   updateSortedItems: boolean;
   setUpdateSortedItems: any;
+  addCartItems: any;
+  cartItemsQuantity: number;
 }
 
 const tempItems = [
@@ -37,6 +50,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Amazon de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Amazon',
     image:
       'https://m.media-amazon.com/images/G/15/gc/designs/livepreview/amazon_dkblue_noto_email_v2016_ca-main._CB468775011_.png',
@@ -48,6 +65,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Amazon de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Amazon',
     image:
       'https://m.media-amazon.com/images/G/15/gc/designs/livepreview/amazon_dkblue_noto_email_v2016_ca-main._CB468775011_.png',
@@ -59,6 +80,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Amazon de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Amazon',
     image:
       'https://m.media-amazon.com/images/G/15/gc/designs/livepreview/amazon_dkblue_noto_email_v2016_ca-main._CB468775011_.png',
@@ -70,6 +95,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Sephora de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Sephora',
     image:
       'https://mallmaverick.imgix.net/web/property_managers/27/properties/250/all/20220804155956/Sephora_logo.jpg',
@@ -81,6 +110,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Sephora de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Sephora',
     image:
       'https://mallmaverick.imgix.net/web/property_managers/27/properties/250/all/20220804155956/Sephora_logo.jpg',
@@ -92,6 +125,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Sephora de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Sephora',
     image:
       'https://mallmaverick.imgix.net/web/property_managers/27/properties/250/all/20220804155956/Sephora_logo.jpg',
@@ -103,6 +140,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau GAP de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'GAP',
     image:
       'https://blackhawknetwork.com/on-demand/uk-en/wp-content/uploads/sites/3/2021/06/GAP.png',
@@ -114,6 +155,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau GAP de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'GAP',
     image:
       'https://blackhawknetwork.com/on-demand/uk-en/wp-content/uploads/sites/3/2021/06/GAP.png',
@@ -125,6 +170,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau GAP de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'GAP',
     image:
       'https://blackhawknetwork.com/on-demand/uk-en/wp-content/uploads/sites/3/2021/06/GAP.png',
@@ -136,6 +185,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau TJX de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'TJX',
     image:
       'https://assets.cardly.net/production/gift-cards/0/3/2/032ce6b0-a747-572b-902b-a28326ff0cc1/card-image/winners-homesense-marshalls-gift-card-fca45a95f9699a90066a30d31b3e7f13.webp',
@@ -147,6 +200,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau TJX de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'TJX',
     image:
       'https://assets.cardly.net/production/gift-cards/0/3/2/032ce6b0-a747-572b-902b-a28326ff0cc1/card-image/winners-homesense-marshalls-gift-card-fca45a95f9699a90066a30d31b3e7f13.webp',
@@ -158,6 +215,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau TJX de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'TJX',
     image:
       'https://assets.cardly.net/production/gift-cards/0/3/2/032ce6b0-a747-572b-902b-a28326ff0cc1/card-image/winners-homesense-marshalls-gift-card-fca45a95f9699a90066a30d31b3e7f13.webp',
@@ -169,6 +230,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Cineplex de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Cineplex',
     image: 'https://ssfinc.ca/sites/default/files/2022-10/Cineplex-logo.png',
     points: 100,
@@ -179,6 +244,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Cineplex de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Cineplex',
     image: 'https://ssfinc.ca/sites/default/files/2022-10/Cineplex-logo.png',
     points: 500,
@@ -249,6 +318,10 @@ const tempItems = [
     'title-fr': "Bouteille d'eau d'entreprise",
     'type-en': 'Company Merchandise',
     'type-fr': "Marchandise d'entreprise",
+    'description-en':
+      'This stainless steel water bottle of 1L capacity has double-wall insulation and a loop cap for easy carrying. Keeps drinks cold or hot for hours.',
+    'description-fr':
+      'Cette bouteille d&apos;eau en acier inoxydable d&apos;une capacité de 1L est dotée d&apos;une isolation à double paroi et d&apos;un bouchon à boucle pour un transport facile. Elle permet de conserver les boissons froides ou chaudes pendant des heures.',
     brand: 'Company',
     image: 'https://i.imgur.com/kIZgIPD.png',
     points: 200,
@@ -260,18 +333,27 @@ const tempItems = [
     'title-fr': "Chandail à capuchon d'entreprise",
     'type-en': 'Company Merchandise',
     'type-fr': "Marchandise d'entreprise",
+    'description-en':
+      'This comfortable cotton blend hoodie features our company logo, perfect for everyday wear and representing the brand. It has a drawstring hood and full zip front.',
+    'description-fr':
+      'Ce confortable hoodie en coton mélangé présente notre logo de société, parfait pour une tenue quotidienne et pour représenter la marque. Il possède un capuchon à cordons et une fermeture à glissière complète.',
     brand: 'Company',
     size: ['xs', 's', 'm', 'l', 'xl'],
     image: 'https://i.imgur.com/A8Yovfa.png',
     points: 300,
     quantity: 40,
   },
+
   {
     id: 'ec65b565-80f9-447c-89e8-8b38f523f3e4',
     'title-en': 'Company Cap',
     'title-fr': "Casquette d'entreprise",
     'type-en': 'Company Merchandise',
     'type-fr': "Marchandise d'entreprise",
+    'description-en':
+      'Stylish and durable cap, featuring a classic design and our company logo. It has an adjustable strap to ensure a perfect fit, and is made of breathable material to keep you cool and comfortable.',
+    'description-fr':
+      'Casquette stylée et durable, présentant un design classique et notre logo d&apos;entreprise. Dotée d&apos;une sangle réglable pour assurer un ajustement parfait, et fabriquée en matériau respirant pour vous garder au frais et à l&apos;aise.',
     brand: 'Company',
     image: 'https://i.imgur.com/KcwxRKp.png',
     points: 300,
@@ -283,6 +365,10 @@ const tempItems = [
     'title-fr': "Polo d'entreprise",
     'type-en': 'Company Merchandise',
     'type-fr': "Marchandise d'entreprise",
+    'description-en':
+      'This classic and versatile polo shirt, made of a soft cotton blend for ultimate comfort features our company logo. This shirt features a button-up placket and a classic collar, making it perfect for any occasion.',
+    'description-fr':
+      'Ce polo classique et versatile, confectionné dans un mélange de coton doux pour un confort optimal, porte le logo de l&aposentreprise. Doté d&aposune patte de boutonnage et d&aposun col classique, ce polo est parfait pour toutes les occasions.',
     brand: 'Company',
     size: ['xs', 's', 'm', 'l', 'xl'],
     image: 'https://i.imgur.com/o3fyfJh.png',
@@ -295,6 +381,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber Eats de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Uber',
     image:
       'https://gcgalore.com/wp-content/uploads/2019/03/Uber-Eats-Gift-Card-750x454.jpg',
@@ -306,6 +396,10 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber Eats de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
     brand: 'Uber',
     image:
       'https://gcgalore.com/wp-content/uploads/2019/03/Uber-Eats-Gift-Card-750x454.jpg',
@@ -317,6 +411,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber Eats de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Uber',
     image:
       'https://gcgalore.com/wp-content/uploads/2019/03/Uber-Eats-Gift-Card-750x454.jpg',
@@ -328,6 +427,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Uber',
     image: 'https://i.imgur.com/Z9Epyje.png',
     points: 100,
@@ -338,6 +442,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Uber',
     image: 'https://i.imgur.com/Z9Epyje.png',
     points: 500,
@@ -348,6 +457,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Uber de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Uber',
     image: 'https://i.imgur.com/Z9Epyje.png',
     points: 1000,
@@ -358,6 +472,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Air Canada de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Air Canada',
     image:
       'https://productimages.nimbledeals.com/gift_card_skin/41ed4b70cbd02a11b4592ec1477fa529_1604993075847',
@@ -369,6 +488,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Air Canada de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Air Canada',
     image:
       'https://productimages.nimbledeals.com/gift_card_skin/41ed4b70cbd02a11b4592ec1477fa529_1604993075847',
@@ -380,6 +504,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau Air Canada de 500$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'Air Canada',
     image:
       'https://productimages.nimbledeals.com/gift_card_skin/41ed4b70cbd02a11b4592ec1477fa529_1604993075847',
@@ -391,6 +520,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau American Eagle de 10$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'American Eagle',
     image:
       'https://assets.cardly.net/production/gift-cards/2/e/7/2e782d33-b002-35e5-ddc8-766f461ab36d/card-image/american-eagle-outfitters-gift-card-16fc372a7946ed13b3957743f5d06813.webp',
@@ -402,6 +536,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau American Eagle de 50$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'American Eagle',
     image:
       'https://assets.cardly.net/production/gift-cards/2/e/7/2e782d33-b002-35e5-ddc8-766f461ab36d/card-image/american-eagle-outfitters-gift-card-16fc372a7946ed13b3957743f5d06813.webp',
@@ -413,6 +552,11 @@ const tempItems = [
     'title-fr': 'Carte-cadeau American Eagle de 100$',
     'type-en': 'Gift Card',
     'type-fr': 'Carte-cadeau',
+    'description-en':
+      'Electronic gift cards will be sent to the recipient&apos;s email when order is processed.',
+    'description-fr':
+      'Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée.',
+
     brand: 'American Eagle',
     image:
       'https://assets.cardly.net/production/gift-cards/2/e/7/2e782d33-b002-35e5-ddc8-766f461ab36d/card-image/american-eagle-outfitters-gift-card-16fc372a7946ed13b3957743f5d06813.webp',
@@ -434,6 +578,8 @@ const MarketplaceProvider = (props: {children: any}) => {
         image: item.image,
         title: lang === 'en' ? item['title-en'] : item['title-fr'],
         type: lang === 'en' ? item['type-en'] : item['type-fr'],
+        description:
+          lang === 'en' ? item['description-en'] : item['description-fr'],
         size: item.size,
         brand: item.brand,
         points: item.points,
@@ -452,6 +598,33 @@ const MarketplaceProvider = (props: {children: any}) => {
   const [updateSortedItems, setUpdateSortedItems] = useState(false);
   const [selectSort, setSelectSort] = useState<string>('');
 
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItemsQuantity, setCartItemsQuantity] = useState(0);
+
+  const addCartItems = (
+    id: string,
+    title: string,
+    image: string,
+    points: number,
+    size: string,
+    quantity: number,
+  ) => {
+    if (size === '') {
+      const item = cartItems.find((i) => i.id === id);
+      if (item) item.quantity += quantity;
+      else setCartItems([...cartItems, {id, title, image, points, quantity}]);
+    } else {
+      const item = cartItems.find((i) => i.id === id && i.size === size);
+      if (item) item.quantity += quantity;
+      else
+        setCartItems([
+          ...cartItems,
+          {id, title, image, points, size, quantity},
+        ]);
+    }
+    setCartItemsQuantity(cartItemsQuantity + quantity);
+  };
+
   const values = useMemo(() => {
     return {
       allItems,
@@ -463,13 +636,17 @@ const MarketplaceProvider = (props: {children: any}) => {
       setSelectSort,
       updateSortedItems,
       setUpdateSortedItems,
+      addCartItems,
+      cartItemsQuantity,
     };
   }, [
+    addCartItems,
     allItems,
     itemsDisplayed,
     selectSort,
     selectedFilters,
     updateSortedItems,
+    cartItemsQuantity,
   ]);
 
   return (

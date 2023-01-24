@@ -59,9 +59,13 @@ function SortMenu() {
   const [openSortMenu, setOpenSortMenu] = useState(null);
   const [openSortMobileMenu, setOpenSortMobileMenu] = useState(false);
 
-  const {selectSort} = useMarketplaceContext();
-  const {itemsDisplayed, setItemsDisplayed} = useMarketplaceContext();
-  const {updateSortedItems, setUpdateSortedItems} = useMarketplaceContext();
+  const {
+    selectSort,
+    itemsDisplayed,
+    setItemsDisplayed,
+    updateSortedItems,
+    setUpdateSortedItems,
+  } = useMarketplaceContext();
 
   const handleSortButtonClick = (event: any) => {
     setOpenSortMenu(event.currentTarget);

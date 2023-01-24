@@ -2,6 +2,7 @@ export const routeHome = '/';
 export const routeLandingPage = '/welcome';
 export const routeWallet = '/wallet';
 export const routeMarket = '/market';
+export const routeProduct = '/market/:id';
 export const routeProfile = '/profile/:id';
 export const routeOrders = '/orders';
 export const routeSettings = '/settings';

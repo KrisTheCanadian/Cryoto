@@ -52,8 +52,8 @@ function FilterMenuItems() {
   const [openType, setOpenType] = useState(false);
   const [openBrand, setOpenBrand] = useState(false);
   const [openPrice, setOpenPrice] = useState(false);
-  const {selectedFilters, setSelectedFilters} = useMarketplaceContext();
-  const {setItemsDisplayed} = useMarketplaceContext();
+  const {selectedFilters, setSelectedFilters, setItemsDisplayed} =
+    useMarketplaceContext();
 
   const isSelectedFilter = (filter: string) => {
     return selectedFilters.some((f) => f.filter === filter);
@@ -254,10 +254,8 @@ function FilterMenu() {
 
   const [openFilterMenu, setOpenFilterMenu] = useState(null);
   const [openFilterMobileMenu, setOpenFilterMobileMenu] = useState(false);
-  const {selectedFilters} = useMarketplaceContext();
-  const {setItemsDisplayed} = useMarketplaceContext();
-  const {allItems} = useMarketplaceContext();
-  const {setUpdateSortedItems} = useMarketplaceContext();
+  const {allItems, selectedFilters, setItemsDisplayed, setUpdateSortedItems} =
+    useMarketplaceContext();
 
   useEffect(() => {
     if (selectedFilters?.length > 0) {
