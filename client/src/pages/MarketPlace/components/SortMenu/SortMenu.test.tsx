@@ -5,6 +5,16 @@ import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 
 import SortMenu from './SortMenu';
 
+jest.mock('react-query', () => {
+  return {
+    useQuery: jest.fn(() => {
+      return {
+        invalidateQueries: jest.fn(),
+      };
+    }),
+  };
+});
+
 describe('Sort Menu', () => {
   it('Renders the right sections and child components', async () => {
     const Sort = 'Sort';

@@ -5,6 +5,16 @@ import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 
 import FilterMenu from './FilterMenu';
 
+jest.mock('react-query', () => {
+  return {
+    useQuery: jest.fn(() => {
+      return {
+        invalidateQueries: jest.fn(),
+      };
+    }),
+  };
+});
+
 describe('Filter Menu', () => {
   it('Renders the right sections and child components', async () => {
     const Filter = 'Filter';
@@ -25,8 +35,7 @@ describe('Filter Menu', () => {
     expect(screen.getByText(Brand)).toBeInTheDocument();
     expect(screen.getByText(Price)).toBeInTheDocument();
   });
-  it('Should open dialog when icon button is clicked', async () => {
-    const typeOption = 'Gift Card';
+  it('Should open dialog when price button is clicked', async () => {
     const priceOption = 'Under 150 coins';
 
     await act(() => {
@@ -38,15 +47,12 @@ describe('Filter Menu', () => {
         </MockAppProviders>,
       );
     });
-    const typeButton = screen.getByTestId('type-button');
     const priceButton = screen.getByTestId('price-button');
 
     act(() => {
-      typeButton.click();
       priceButton.click();
     });
 
-    expect(screen.getByText(typeOption)).toBeInTheDocument();
     expect(screen.getByText(priceOption)).toBeInTheDocument();
   });
 });

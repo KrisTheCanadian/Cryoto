@@ -91,6 +91,8 @@ internal static class Program
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
+        builder.Services.AddScoped<IMarketPlaceService, MarketPlaceService>();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

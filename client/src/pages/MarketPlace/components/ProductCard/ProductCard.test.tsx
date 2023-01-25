@@ -5,6 +5,16 @@ import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 
 import ProductCard from './ProductCard';
 
+jest.mock('react-query', () => {
+  return {
+    useQuery: jest.fn(() => {
+      return {
+        invalidateQueries: jest.fn(),
+      };
+    }),
+  };
+});
+
 describe('Product Card', () => {
   it('Renders the right sections and child components', async () => {
     const Title = 'Test title';

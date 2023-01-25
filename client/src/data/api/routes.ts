@@ -40,7 +40,6 @@ export const apiRouteTransactionsGetTransactionsBySenderOId = `${apiRouteTransac
 export const apiRouteTransactionsGetTransactionsByReceiverOId = `${apiRouteTransactions}/GetTransactionsByReceiverOId`;
 
 // Notifications
-
 export const apiRouteNotifications = `${apiEndpoint}Notification`;
 export const apiRouteNotificationsGetNotifications = `${apiRouteNotifications}/GetNotifications`;
 export const apiRouteNotificationsReadNotification = `${apiRouteNotifications}/ReadNotification`;
@@ -54,3 +53,9 @@ export const apiRouteAddressGetAllUserAddresses = `${apiRouteAddress}/GetAllUser
 export const apiRouteAddressAdd = `${apiRouteAddress}/Add`;
 export const apiRouteAddressDelete = `${apiRouteAddress}/Delete`;
 export const apiRouteAddressUpdate = `${apiRouteAddress}/Update`;
+
+// MarketPlace
+export const apiRouteMarketPlace = `${apiEndpoint}MarketPlace`;
+export const apiRouteMarketPlaceGetAllItems = `${apiRouteMarketPlace}/GetAllItems`;
+export const apiRouteMarketPlaceGetItemById = `${apiRouteMarketPlace}/GetItemById`;
+export const apiRouteMarketPlaceCompletePurchase = `${apiRouteMarketPlace}/CompletePurchase`;

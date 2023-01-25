@@ -33,15 +33,6 @@ interface Item {
   points: number;
 }
 
-interface CartItem {
-  id: string;
-  image: any;
-  title: string;
-  points: number;
-  size?: string;
-  quantity: number;
-}
-
 function MarketPlace() {
   const theme = useTheme();
   const {itemsDisplayed, cartItemsQuantity} = useMarketplaceContext();

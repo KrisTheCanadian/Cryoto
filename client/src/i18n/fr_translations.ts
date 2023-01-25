@@ -99,6 +99,7 @@ export const frenchTranslations = {
       SwaggerPostTokensAPI: 'SwaggerPostTokensAPI',
       SelfTransfer: 'Auto-transfert',
       WelcomeTransfer: 'Transfert de bienvenue',
+      MarketPlacePurchase: 'Achats en ligne',
     },
     creditCard: {
       Balance: 'Solde',

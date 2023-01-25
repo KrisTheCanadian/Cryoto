@@ -45,7 +45,7 @@ public class TransactionController : ControllerBase
     
     
     [HttpPost]
-    public async Task<ActionResult<List<TransactionModel>>> AddTransaction(TransactionModel transaction)
+    public async Task<ActionResult<TransactionModel>> AddTransaction(TransactionModel transaction)
     {
         var created = await _transactionService.AddTransactionAsync(transaction);
         if (!created)
@@ -55,7 +55,7 @@ public class TransactionController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult<List<TransactionModel>>> UpdateTransaction(TransactionModel transaction)
+    public async Task<ActionResult<TransactionModel>> UpdateTransaction(TransactionModel transaction)
     {
         var exists = await _transactionService.GetTransactionByIdAsync(transaction.Id);
         if (exists == null) return Conflict("Cannot update the transaction because it does not exist.");
@@ -67,7 +67,7 @@ public class TransactionController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<ActionResult<List<TransactionModel>>> DeleteTransaction(TransactionModel transaction)
+    public async Task<ActionResult> DeleteTransaction(TransactionModel transaction)
     {
         var exists = await _transactionService.GetTransactionByIdAsync(transaction.Id);
         if (exists == null) return Conflict("Cannot delete the transaction because it does not exist.");

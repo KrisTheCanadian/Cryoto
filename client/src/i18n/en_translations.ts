@@ -96,6 +96,7 @@ export const englishTranslations = {
       SwaggerPostTokensAPI: 'SwaggerPostTokensAPI',
       SelfTransfer: 'Self Transfer',
       WelcomeTransfer: 'Welcome Transfer',
+      MarketPlacePurchase: 'Marketplace Purchase',
     },
     creditCard: {
       Balance: 'Balance',

@@ -83,7 +83,7 @@ function ProductCard(props: IProductCardProps) {
   };
 
   const addToCart = () => {
-    if ((props.size && selectedSize) || props.size === undefined) {
+    if ((props.size && selectedSize) || props.size === null) {
       addCartItems(
         props.id,
         props.title,

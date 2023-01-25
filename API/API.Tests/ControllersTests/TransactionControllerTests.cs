@@ -245,7 +245,7 @@ public class TransactionControllerTests
 
         // Act
         var actionResult = await _controller.DeleteTransaction(transaction);
-        var objectResult = actionResult.Result as OkObjectResult;
+        var objectResult = actionResult as OkObjectResult;
         var objectResultValue = objectResult?.Value as string;
 
         // Assert
@@ -267,7 +267,7 @@ public class TransactionControllerTests
 
         // Act
         var actionResult = await _controller.DeleteTransaction(t);
-        var objectResult = actionResult.Result as ConflictObjectResult;
+        var objectResult = actionResult as ConflictObjectResult;
         var objectResultValue = objectResult?.Value as string;
 
         // Assert

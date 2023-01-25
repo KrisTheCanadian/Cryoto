@@ -30,7 +30,7 @@ function ProductPage() {
   const item = allItems.find((i) => i.id === id);
 
   const addToCart = () => {
-    if ((item?.size && selectedSize) || item?.size === undefined) {
+    if ((item?.size && selectedSize) || item?.size === null) {
       addCartItems(
         item?.id,
         item?.title,

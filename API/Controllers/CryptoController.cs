@@ -45,19 +45,6 @@ public class CryptoController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<RpcTransactionResult>> PurchaseTransaction(double amount)
-    {
-        var rpcTransactionResult = await _cryptoService.CreatePurchase(amount, _oId);
-        if (rpcTransactionResult.error != null)
-            return BadRequest(rpcTransactionResult.error);
-        await _cryptoService.UpdateTokenBalance((-amount), _oId, "toSpend");
-
-        _cryptoService.QueueTokenUpdate(new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId } });
-        return Ok(rpcTransactionResult);
-    }
-
-    [HttpPost]
     public async Task<ActionResult<RpcTransactionResult>> SelfTransferTokens(double amount)
     {
         var rpcTransactionResult = await _cryptoService.SelfTransferTokens(amount, _oId);
@@ -69,8 +56,7 @@ public class CryptoController : ControllerBase
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
         await _transactionService.AddTransactionAsync(new TransactionModel("self", "toAward", _oId,
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
-
-        _cryptoService.QueueTokenUpdate(new List<List<string>>
+       _cryptoService.QueueTokenUpdate(new List<List<string>>
             { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId, _oId } });
         return Ok(rpcTransactionResult);
     }
