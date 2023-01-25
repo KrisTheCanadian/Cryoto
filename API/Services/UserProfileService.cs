@@ -140,4 +140,9 @@ public class UserProfileService : IUserProfileService
 
         return userProfileModel;
     }
+    
+    public async Task<bool> UpdateAsync(UserProfileModel userProfileModel)
+    {
+        return await _context.UpdateAsync(userProfileModel);
+    }
 }

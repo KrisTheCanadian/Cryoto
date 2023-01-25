@@ -55,4 +55,10 @@ public class UserProfileRepository : IUserProfileRepository
     {
         return await Context.UserProfiles.AsNoTracking().FirstAsync(x => x.OId.Equals(userId));
     }
+    
+    public async Task<bool> UpdateAsync(UserProfileModel userProfileModel)
+    {
+        Context.UserProfiles.Update(userProfileModel);
+        return await Context.SaveChangesAsync() > 0;
+    }
 }

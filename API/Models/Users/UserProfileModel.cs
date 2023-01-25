@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using API.Models.Address;
 
 namespace API.Models.Users;
 
@@ -35,6 +36,10 @@ public class UserProfileModel
     public string? PrimaryWorkTelephone { get; set; }
     public string? Fax { get; set; }
     public string? Mobile { get; set; }
+    public string? Bio { get; set; }
+    
+    
+    [NotMapped]public ICollection<AddressModel> Addresses { get; set; } = null!;
     public string? TimeZone { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? Birthday { get; set; }

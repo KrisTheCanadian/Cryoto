@@ -1,0 +1,14 @@
+using API.Models.Address;
+
+namespace API.Services.Interfaces;
+
+public interface IAddressService
+{
+    public Task<bool> CreateAddressAsync(AddressModel addressModel);
+    public Task<bool> DeleteAddressAsync(AddressModel addressModel);
+    public Task<AddressModel?> GetDefaultAddressByOIdAsync(string oid);
+    public Task<List<AddressModel>> GetAllAddressesByOIdAsync(string oid);
+    public Task<List<AddressModel>> GetAllAddressesAsync();
+    public Task<AddressModel?> GetAddressByIdAsync(long id);
+    public Task<bool> UpdateAddressAsync(AddressModel addressModel);
+}

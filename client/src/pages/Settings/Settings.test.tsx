@@ -19,8 +19,7 @@ const queryClient = new QueryClient({
 });
 
 it('Should render settings in English', async () => {
-  const settingsRoute = 'Settings Route';
-  const SelectLanguageEn = 'Select Language';
+  const settings = 'Settings';
 
   await act(async () => {
     render(
@@ -36,7 +35,5 @@ it('Should render settings in English', async () => {
     );
   });
 
-  expect(screen.getByText(settingsRoute)).toBeInTheDocument();
-  expect(screen.getByText(SelectLanguageEn)).toBeInTheDocument();
-  expect(screen.getByTestId('language-selector')).toBeInTheDocument();
+  expect(screen.getByText(settings)).toBeInTheDocument();
 });

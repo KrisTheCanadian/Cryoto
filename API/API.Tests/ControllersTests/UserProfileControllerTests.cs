@@ -178,6 +178,88 @@ public class UserProfileControllerTests
             .MustHaveHappened();
     }
 
+    [Fact]
+    public async void UserProfileController_Update_ReturnsBadRequest1()
+    {
+        //Arrange
+        UserProfileUpdateModel nullUserProfileUpdateModel = new UserProfileUpdateModel(null, null, null, null, null);
+
+        //Act
+        var actionResult = await _controller.Update(nullUserProfileUpdateModel);
+        var objectResult = actionResult.Result as ObjectResult;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+    }
+
+    [Fact]
+    public async void UserProfileController_Update_ReturnsBadRequest2()
+    {
+        //Arrange
+        UserProfileUpdateModel userProfileUpdateModel =
+            new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
+        UserProfileModel? userProfileModel =
+            new UserProfileModel("oid1", "name1", "email1", "lang1", new[] { "roel1" });
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
+            .Returns(userProfileModel);
+        A.CallTo(() => _userProfileService.UpdateAsync(A<UserProfileModel>._))
+            .Returns(Task.FromResult(false));
+
+        //Act
+        var actionResult = await _controller.Update(userProfileUpdateModel);
+        var objectResult = actionResult.Result as ObjectResult;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+    }
+
+    [Fact]
+    public async void UserProfileController_Update_ReturnsConflict()
+    {
+        //Arrange
+        UserProfileUpdateModel userProfileUpdateModel =
+            new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
+        UserProfileModel? nullUserProfileModel = null;
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
+            .Returns(nullUserProfileModel);
+
+        //Act
+        var actionResult = await _controller.Update(userProfileUpdateModel);
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as UserProfileModel;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(ConflictObjectResult));
+    }
+
+    [Fact]
+    public async void UserProfileController_Update_ReturnsOk()
+    {
+        //Arrange
+        UserProfileUpdateModel userProfileUpdateModel =
+            new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
+        UserProfileModel? userProfileModel =
+            new UserProfileModel("oid1", "name1", "email1", "lang1", new[] { "roel1" });
+        UserProfileModel? updatedUserProfileModel = new UserProfileModel("oid1", "name1", "email1",
+            userProfileUpdateModel.Language ?? "", new[] { "roel1" });
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
+            .ReturnsNextFromSequence(new[] { userProfileModel, updatedUserProfileModel });
+        A.CallTo(() => _userProfileService.UpdateAsync(A<UserProfileModel>._))
+            .Returns(Task.FromResult(true));
+
+        //Act
+        var actionResult = await _controller.Update(userProfileUpdateModel);
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as UserProfileModel;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResultValue?.Language.Should().Be(updatedUserProfileModel.Language);
+    }
 
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
     {

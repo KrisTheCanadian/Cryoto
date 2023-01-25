@@ -85,6 +85,9 @@ internal static class Program
         builder.Services.AddScoped<ISolanaService, SolanaService>();
         builder.Services.AddScoped<ICryptoService, CryptoService>();
 
+        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+        builder.Services.AddScoped<IAddressService, AddressService>();
+
         builder.Services.AddScoped<INotificationService, NotificationService>();
         builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 

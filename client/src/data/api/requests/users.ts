@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 
 import {getAccessToken, getGraphAccessToken} from '../helpers';
 import {
@@ -7,8 +7,9 @@ import {
   apiRouteUserProfileGetUserProfile,
   apiRouteUserProfileGetUserProfilePhoto,
   apiRouteUserProfileGetUserByID,
+  apiRouteUserProfileUpdate,
 } from '../routes';
-import IUser from '../types/IUser';
+import IUser, {IUserProfile, IUpdateUserProfile} from '../types/IUser';
 
 export async function searchUsers(searchTerms: string): Promise<IUser[]> {
   // get access token
@@ -55,6 +56,31 @@ export async function getUserProfilePhoto(oId: string) {
       userOId: oId,
     },
   });
+
+  return res.data;
+}
+
+export async function updateUserProfile(
+  updateUserProfileData: IUpdateUserProfile,
+): Promise<IUserProfile> {
+  const accessToken = await getAccessToken();
+  const headers = new Headers();
+  const bearer = `Bearer ${accessToken}`;
+
+  headers.append('Authorization', bearer);
+
+  // convert fetch to axios for consistency
+  const res = await axios.put<IUserProfile>(
+    apiRouteUserProfileUpdate,
+    JSON.stringify(updateUserProfileData),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: bearer,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
 
   return res.data;
 }

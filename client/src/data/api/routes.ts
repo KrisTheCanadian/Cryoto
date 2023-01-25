@@ -27,6 +27,7 @@ export const apiRouteUserProfileGetUserProfilePhoto = `${apiRouteUserProfile}/Ge
 export const apiRouteUserProfileGetUserByID = `${apiRouteUserProfile}/GetUserById`;
 export const apiRouteUserGetAllUsers = `${apiRouteUserProfile}/GetAllUsers`;
 export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
+export const apiRouteUserProfileUpdate = `${apiRouteUserProfile}/Update`;
 
 // Crypto
 export const apiRouteCrypto = `${apiEndpoint}Crypto`;
@@ -44,3 +45,12 @@ export const apiRouteNotifications = `${apiEndpoint}Notification`;
 export const apiRouteNotificationsGetNotifications = `${apiRouteNotifications}/GetNotifications`;
 export const apiRouteNotificationsReadNotification = `${apiRouteNotifications}/ReadNotification`;
 export const apiRouteNotificationsGetNotificationsPaginated = `${apiRouteNotifications}/GetNotificationsPaginated`;
+
+// Address
+export const apiRouteAddress = `${apiEndpoint}Address`;
+export const apiRouteAddressGetAll = `${apiRouteAddress}/GetAll`;
+export const apiRouteAddressGetDefaultAddress = `${apiRouteAddress}/GetDefaultAddress`;
+export const apiRouteAddressGetAllUserAddresses = `${apiRouteAddress}/GetAllUserAddresses`;
+export const apiRouteAddressAdd = `${apiRouteAddress}/Add`;
+export const apiRouteAddressDelete = `${apiRouteAddress}/Delete`;
+export const apiRouteAddressUpdate = `${apiRouteAddress}/Update`;

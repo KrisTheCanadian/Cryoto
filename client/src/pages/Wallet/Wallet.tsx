@@ -1,7 +1,7 @@
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import PageFrame from '@shared/components/PageFrame';
 import {IconButton, Box, Typography} from '@mui/material';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+import {Autorenew} from '@mui/icons-material';
 import {useTheme} from '@mui/material/styles';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -44,7 +44,7 @@ function Wallet() {
                 '&:hover': {backgroundColor: theme.palette.primary.light},
               }}
             >
-              <AutorenewIcon fontSize="large" />
+              <Autorenew fontSize="large" />
             </IconButton>
             <Typography variant="body2" sx={{fontWeight: 'medium'}}>
               {t<string>('wallet.Transfer')}
