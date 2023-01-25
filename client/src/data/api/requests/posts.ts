@@ -6,6 +6,7 @@ import {
   apiRoutePostsCreatePost,
   apiRoutePostsGetUserFeed,
   apiRoutePostsGetUserProfileFeed,
+  apiRoutePostsReactPost,
 } from '../routes';
 import IPage from '../types/IPage';
 import IPost from '../types/IPost';
@@ -50,7 +51,6 @@ async function getNextPageUserProfile(
       'Access-Control-Allow-Origin': `${apiEndpoint}`,
     },
   });
-  console.log(response.data);
   return response.data;
 }
 
@@ -72,4 +72,27 @@ async function createPost(post: INewPost): Promise<IPost | AxiosError> {
   return response.data;
 }
 
-export {getNextPage, createPost, getNextPageUserProfile};
+async function reactPost(
+  type: number,
+  postId: string,
+): Promise<IPost | AxiosError> {
+  const accessToken = await getAccessToken();
+  const url = `${apiRoutePostsReactPost}?type=${type}&guid=${postId}`;
+
+  const response = await axios.post<IPost>(
+    url,
+    {},
+    {
+      // add CORS headers to request
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export {getNextPage, createPost, getNextPageUserProfile, reactPost};

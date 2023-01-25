@@ -1,9 +1,10 @@
+/* eslint-disable @shopify/strict-component-boundaries */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-negated-condition */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
-import {Avatar, Typography, Box, colors, Chip, Stack} from '@mui/material';
+import {Avatar, Typography, Box, Chip, Stack} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import TollIcon from '@mui/icons-material/Toll';
 import moment from 'moment';
@@ -18,6 +19,7 @@ import {LoadingPostSkeleton} from './components';
 import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 interface PostProps {
+  id: string;
   firstName: string;
   date: string;
   imageUrl?: string;
@@ -27,6 +29,9 @@ interface PostProps {
   tags?: string[];
   loading: boolean;
   authorId: string;
+  hearts: string[];
+  claps: string[];
+  celebrations: string[];
 }
 
 function Post(props: PostProps) {
@@ -35,6 +40,7 @@ function Post(props: PostProps) {
   const navigate = useNavigate();
 
   const {
+    id,
     firstName,
     recipient,
     message,
@@ -44,6 +50,9 @@ function Post(props: PostProps) {
     coinsGiven,
     loading,
     authorId,
+    hearts,
+    claps,
+    celebrations,
   } = props;
   if (loading) {
     return <LoadingPostSkeleton />;
@@ -150,7 +159,7 @@ function Post(props: PostProps) {
                 label={coinsGiven.toString()}
               />
               {tags?.map((tag) => (
-                <Chip sx={ChipStyles} clickable key={tag} label={tag} />
+                <Chip sx={ChipStyles} key={tag} label={tag} />
               ))}
             </Box>
             <Typography
@@ -175,7 +184,12 @@ function Post(props: PostProps) {
             style={{marginBottom: theme.spacing(1)}}
           />
         ) : null}
-        <LikeButtons />
+        <LikeButtons
+          id={id}
+          hearts={hearts}
+          claps={claps}
+          celebrations={celebrations}
+        />
       </Box>
     </Box>
   );

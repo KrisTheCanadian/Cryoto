@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import {useMsal} from '@azure/msal-react';
 import {useTranslation} from 'react-i18next';
+import moment from 'moment';
 
 import {IPage, IPost} from '@/data/api/types';
 import {Post} from '@/pages/HomePage/components';
@@ -24,8 +25,9 @@ function PostsFeed(props: PostsFeedProps) {
   const {accounts} = useMsal();
   const dispatchAlert = useAlertContext();
   const [postsPerLoad, setPostsPerLoad] = useState(10);
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const loader = useRef();
+  const [bottom, setBottom] = useState(false);
 
   // setup query
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
@@ -64,21 +66,32 @@ function PostsFeed(props: PostsFeedProps) {
     };
   }, [loader, handleObserver, hasNextPage]);
 
+  useEffect(() => {
+    const lang = i18n.language.substring(0, 2);
+    moment.locale(lang);
+  }, [i18n.language]);
+
   // handle errors
   useEffect(() => {
-    if (
-      accounts &&
-      status === 'success' &&
-      !isFetchingNextPage &&
-      !hasNextPage
-    ) {
+    if (!accounts) return;
+    if (bottom) return;
+    if (status === 'success' && !isFetchingNextPage && !hasNextPage) {
       dispatchAlert.info(t('errors.NoMorePosts'));
+      setBottom(true);
       return;
     }
-    if (accounts && status === 'error') {
+    if (status === 'error') {
       dispatchAlert.error(t('errors.BackendError'));
     }
-  }, [isFetchingNextPage, hasNextPage, dispatchAlert, status, t, accounts]);
+  }, [
+    isFetchingNextPage,
+    hasNextPage,
+    dispatchAlert,
+    status,
+    t,
+    accounts,
+    bottom,
+  ]);
 
   return (
     <>
@@ -96,6 +109,10 @@ function PostsFeed(props: PostsFeedProps) {
               loading
               authorId=""
               imageUrl=""
+              id=""
+              hearts={[]}
+              claps={[]}
+              celebrations={[]}
             />
           ),
         )}
@@ -116,6 +133,10 @@ function PostsFeed(props: PostsFeedProps) {
               loading={false}
               authorId={post?.authorProfile?.oId}
               imageUrl={post?.imageUrl}
+              id={post?.id}
+              hearts={post?.hearts || []}
+              claps={post?.claps || []}
+              celebrations={post?.celebrations || []}
             />
           )),
         )}
@@ -138,6 +159,10 @@ function PostsFeed(props: PostsFeedProps) {
               loading
               authorId=""
               imageUrl=""
+              id=""
+              hearts={[]}
+              claps={[]}
+              celebrations={[]}
             />
           ),
         )}

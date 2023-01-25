@@ -15,6 +15,9 @@ interface IPost {
   recipientProfiles: IUser[];
   authorProfile: IUser;
   imageUrl: string;
+  hearts: string[];
+  claps: string[];
+  celebrations: string[];
 }
 
 export default IPost;

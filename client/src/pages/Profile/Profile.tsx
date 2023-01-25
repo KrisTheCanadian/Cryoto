@@ -1,6 +1,7 @@
+/* eslint-disable @shopify/strict-component-boundaries */
 import PageFrame from '@shared/components/PageFrame';
 import {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {MiddleColumn} from '@shared/components/MiddleColumn';
 import {RightBar} from '@shared/components/RightBar';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -16,6 +17,7 @@ import {
   Button,
   Card,
   CardHeader,
+  ClickAwayListener,
   List,
   ListItem,
   Typography,
@@ -25,8 +27,10 @@ import {PostsFeed} from '@shared/components/PostsFeed';
 import {useMsal} from '@azure/msal-react';
 import {useTranslation} from 'react-i18next';
 import moment from 'moment';
+import {useQueryClient} from 'react-query';
 
 import {NewPostDialog} from '../HomePage/components/NewPost/components';
+import {postsQuery} from '../HomePage/HomePage';
 
 import {getUserById, getUserProfilePhoto} from '@/data/api/requests/users';
 import {IUser} from '@/data/api/types';
@@ -42,6 +46,9 @@ function Profile() {
   const {accounts} = useMsal();
   const {t} = useTranslation();
 
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     const lang = i18n.language.substring(0, 2);
     moment.locale(lang);
@@ -52,11 +59,13 @@ function Profile() {
   }
 
   useEffect(() => {
+    // invalidate the cache
+    queryClient.invalidateQueries();
     setUserProfile(undefined);
     getUserProfilePhoto(id!)
       .then((response: any) => setUserProfilePhoto(response))
       .catch((err) => {});
-  }, [id]);
+  }, [id, queryClient]);
 
   useEffect(() => {
     setUserProfilePhoto(undefined);
@@ -81,14 +90,18 @@ function Profile() {
 
   return (
     <PageFrame>
-      {userProfile?.name && (
-        <NewPostDialog
-          dialogOpen={dialogOpen}
-          queryKey={[`profile-${id}`]}
-          setDialogOpen={setDialogOpen}
-          initialRecipients={[{id: userProfile?.oId, name: userProfile?.name}]}
-        />
-      )}
+      <>
+        {userProfile?.name && (
+          <NewPostDialog
+            dialogOpen={dialogOpen}
+            queryKey={[`profile-${id}`]}
+            setDialogOpen={setDialogOpen}
+            initialRecipients={[
+              {id: userProfile?.oId, name: userProfile?.name},
+            ]}
+          />
+        )}
+      </>
       <MiddleColumn>
         <Box
           sx={{
@@ -151,22 +164,25 @@ function Profile() {
                 </>
               }
               action={
-                accounts[0].idTokenClaims?.oid !== id && (
-                  <Button
-                    aria-label="settings"
-                    variant="outlined"
-                    sx={iconStyle}
-                    onClick={handleDialogOpen}
-                  >
-                    {t('profilePage.recognize')}
-                  </Button>
-                )
+                <>
+                  {accounts[0].idTokenClaims?.oid !== id && (
+                    <Button
+                      aria-label="settings"
+                      variant="outlined"
+                      sx={iconStyle}
+                      onClick={handleDialogOpen}
+                    >
+                      {t('profilePage.recognize')}
+                    </Button>
+                  )}
+                </>
               }
             />
           </Card>
           <Typography gutterBottom variant="h5" color={theme.palette.grey[700]}>
             {t('profilePage.recognitions')}
           </Typography>
+
           <PostsFeed
             queryKey={[`profile-${id}`]}
             getNextPage={getNextPageUserProfile}

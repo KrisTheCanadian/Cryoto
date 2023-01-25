@@ -23,6 +23,13 @@ public class PostModel
     public bool IsTransactable { get; set; }
     public ulong Coins { get; set; }
     public string ImageUrl { get; set; }
+    
+    // reactions
+    public string[] Hearts { get; set; }
+    public string[] Claps { get; set; }
+    public string[] Celebrations { get; set; }
+    
+    public string[] UsersWhoReacted { get; set; }
 
     [NotMapped] public IEnumerable<UserProfileModel> RecipientProfiles { get; set; }
     [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
@@ -47,6 +54,11 @@ public class PostModel
 
         RecipientProfiles = new List<UserProfileModel>();
         ImageUrl = imageUrl;
+        
+        Hearts = Array.Empty<string>();
+        Claps = Array.Empty<string>();
+        Celebrations = Array.Empty<string>();
+        UsersWhoReacted = Array.Empty<string>();
     }
 
     public PostModel(PostCreateModel postCreateModel, string actor)
@@ -66,6 +78,11 @@ public class PostModel
 
         RecipientProfiles = new List<UserProfileModel>();
         ImageUrl = postCreateModel.ImageUrl;
+        
+        Hearts = Array.Empty<string>();
+        Claps = Array.Empty<string>();
+        Celebrations = Array.Empty<string>();
+        UsersWhoReacted = Array.Empty<string>();
     }
 
     public PostModel(PostUpdateModel postUpdateModel, string actor)
@@ -84,5 +101,10 @@ public class PostModel
 
         RecipientProfiles = new List<UserProfileModel>();
         ImageUrl = postUpdateModel.ImageUrl;
+        
+        Hearts = postUpdateModel.Hearts;
+        Claps = postUpdateModel.Claps;
+        Celebrations = postUpdateModel.Celebrations;
+        UsersWhoReacted = postUpdateModel.UsersWhoReacted;
     }
 }

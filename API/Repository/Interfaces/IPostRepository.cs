@@ -14,4 +14,5 @@ public interface IPostRepository
     Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount, string oid = "oid");
     public Task<int> GetSentPostsCountAsync(string oid );
     public Task<int> GetReceivedPostsCountAsync(string oid);
+    Task<bool> ReactAsync(int type, string guid, string actorId);
 }

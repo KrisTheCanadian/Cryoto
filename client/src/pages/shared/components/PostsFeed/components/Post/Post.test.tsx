@@ -38,7 +38,13 @@ it('should render Posts', async () => {
       <MemoryRouter initialEntries={['/']}>
         <I18nextProvider i18n={i18n}>
           <ThemeContextProvider>
-            <Post {...postProps} />
+            <Post
+              id=""
+              hearts={[]}
+              claps={[]}
+              celebrations={[]}
+              {...postProps}
+            />
           </ThemeContextProvider>
         </I18nextProvider>
       </MemoryRouter>,

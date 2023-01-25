@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using API.Controllers;
 using API.Models.Posts;
-using API.Services;
 using API.Services.Interfaces;
 using API.Utils;
 using FakeItEasy;
@@ -311,5 +310,68 @@ public class PostsControllerTests
         // Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(ConflictObjectResult));
+    }
+
+    [Fact]
+    public async void PostController_React_ReturnsConflict()
+    {
+        // Arrange
+        PostModel? existingPost = null;
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.React(A.Dummy<int>(), A.Dummy<string>());
+        
+        var objectResult = actionResult.Result as ConflictObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(ConflictObjectResult));
+    }
+    
+    [Fact]
+    public async void PostController_React_ReturnsBadRequest()
+    {
+        // Arrange
+        var post = GetFakePost();
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
+
+        A.CallTo(() => _postService.ReactAsync(0, A<string>._, A<string>._)).Returns(false);
+
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.React(A.Dummy<int>(), A.Dummy<string>());
+        
+        var objectResult = actionResult.Result as BadRequestObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+    }
+
+    [Fact]
+    public async void PostController_React_ReturnsOK()
+    {
+        // Arrange
+        var post = GetFakePost();
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
+
+        A.CallTo(() => _postService.ReactAsync(0, A<string>._, A<string>._)).Returns(true);
+
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.React(A.Dummy<int>(), A.Dummy<string>());
+        
+        var objectResult = actionResult.Result as OkObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResult?.Value.Should().BeOfType(typeof(PostModel));
+        Assert.Equal(objectResult?.Value, post);
     }
 }

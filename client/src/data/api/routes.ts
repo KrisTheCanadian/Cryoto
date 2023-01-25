@@ -18,6 +18,7 @@ export const apiRoutePostsGetPostById = `${apiRoutePosts}/GetPostById`;
 export const apiRoutePostsCreatePost = `${apiRoutePosts}/Create`;
 export const apiRoutePostsUpdatePost = `${apiRoutePosts}/Update`;
 export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
+export const apiRoutePostsReactPost = `${apiRoutePosts}/React`;
 
 // UserProfile
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;

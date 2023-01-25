@@ -17,6 +17,13 @@ public class PostUpdateModel
     public bool IsTransactable { get; set; }
     public ulong Coins { get; set; }
     public string ImageUrl { get; set; }
+    
+    // reactions
+    public string[] Hearts { get; set; }
+    public string[] Claps { get; set; }
+    public string[] Celebrations { get; set; }
+    
+    public string[] UsersWhoReacted { get; set; }
 
     public PostUpdateModel(string id, string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
         string postType, bool isTransactable, ulong coins = 0, string imageUrl = "")
@@ -29,6 +36,12 @@ public class PostUpdateModel
         PostType = postType;
         IsTransactable = isTransactable;
         Coins = coins;
+        
         ImageUrl = imageUrl;
+
+        Hearts = Array.Empty<string>();
+        Claps = Array.Empty<string>();
+        Celebrations = Array.Empty<string>();
+        UsersWhoReacted = Array.Empty<string>();
     }
 }

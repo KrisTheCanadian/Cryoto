@@ -57,4 +57,9 @@ public class PostService : IPostService
     {
         return await _postRepository.GetAllAsync();
     }
+
+    public async Task<bool> ReactAsync(int type, string guid, string actorId)
+    {
+        return await _postRepository.ReactAsync(type, guid, actorId);
+    }
 }

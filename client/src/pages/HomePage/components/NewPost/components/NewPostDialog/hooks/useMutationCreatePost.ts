@@ -62,6 +62,9 @@ export const useMutationCreatePost = (
             ...tempUserFields,
           };
         }),
+        hearts: [],
+        claps: [],
+        celebrations: [],
       };
 
       // Snapshot the previous value

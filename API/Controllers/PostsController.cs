@@ -170,4 +170,16 @@ public class PostsController : ControllerBase
 
         return Ok($"Successfully Delete Post {guid}");
     }
+
+    [HttpPost]
+    public async Task<ActionResult<PostModel>> React(int type, string guid)
+    {
+        var existingPost = await _postService.GetByIdAsync(guid);
+        if (existingPost == null) return Conflict("Cannot like the post because it does not exist.");
+
+        var liked = await _postService.ReactAsync(type, guid, _actorId);
+        if (!liked) return BadRequest("Could not like the post");
+
+        return Ok(await _postService.GetByIdAsync(guid));
+    }
 }
