@@ -29,7 +29,7 @@ import {useNotificationSignalRContext} from '@shared/context/NotificationSignalR
 import {useInfiniteQuery, useMutation, useQueryClient} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import moment from 'moment';
-import {walletBalanceQuery} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
+import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
 
 import INotification from '@/data/api/types/INotification';
 import {

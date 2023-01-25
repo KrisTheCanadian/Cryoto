@@ -21,7 +21,7 @@ import {
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
 import {useQueryClient} from 'react-query';
-import {walletBalanceQuery} from '@shared/components/SideBar/components/MiniWallet/MiniWallet';
+import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
 import {useMsal} from '@azure/msal-react';
 import PhotoIcon from '@mui/icons-material/Photo';
 

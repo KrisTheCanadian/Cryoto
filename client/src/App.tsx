@@ -12,6 +12,7 @@ import {NotifiSignalRContext} from '@shared/context/NotificationSignalRContext';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 import {NavBar} from '@shared/components/NavBar';
 import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
+import {ScrollToTop} from '@shared/components/ScrollToTop';
 
 import Role from './pages/roles';
 import {
@@ -38,8 +39,6 @@ import {Orders} from './pages/Orders';
 import {Settings} from './pages/Settings';
 import {apiEndpoint} from './data/api/routes';
 import {LandingPage} from './pages/LandingPage';
-
-import {ScrollToTop} from '@shared/components/ScrollToTop';
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,26 +1,37 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
-import {AccountCircle} from '@mui/icons-material';
+import {
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  IconButton,
+} from '@mui/material';
+import {
+  AccountCircle,
+  Brightness4,
+  Brightness7,
+  Settings,
+  Logout,
+} from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {NavLink, useLocation} from 'react-router-dom';
 import {useEffect, useState} from 'react';
 import {useMsal} from '@azure/msal-react';
+import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
+import {useTheme} from '@mui/material/styles';
 
 import {getUserId} from '@/data/api/helpers';
 import {getUserProfilePhoto} from '@/data/api/requests/users';
+import {routeProfile, routeSettings} from '@/pages/routes';
 
 function ProfileMenu() {
-  const {instance} = useMsal();
+  const {colorMode} = useThemeModeContext();
+  const theme = useTheme();
   const location = useLocation();
   const {t} = useTranslation();
+  const {instance} = useMsal();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -76,13 +87,25 @@ function ProfileMenu() {
       .catch((err) => {});
   }, [oId]);
 
+  const mode =
+    theme.palette.mode === 'dark'
+      ? t('layout.LightMode')
+      : t('layout.DarkMode');
+
+  const brightnessIcon = () => {
+    return theme.palette.mode === 'dark' ? (
+      <Brightness7 sx={{height: 20, width: 20}} />
+    ) : (
+      <Brightness4 sx={{height: 20, width: 20}} />
+    );
+  };
+
   return (
     <>
       <IconButton
         onClick={handleClick}
         data-testid="profileButton"
-        size="small"
-        sx={{ml: 2}}
+        size="large"
         aria-controls={open ? 'account-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
@@ -122,8 +145,15 @@ function ProfileMenu() {
         </MenuItem>
         <Divider />
         <MenuItem
+          onClick={colorMode.toggleColorMode}
+          data-testid="dark-mode-toggle"
+        >
+          <ListItemIcon>{brightnessIcon()}</ListItemIcon>
+          {mode}
+        </MenuItem>
+        <MenuItem
           component={NavLink}
-          to="/settings"
+          to={routeSettings}
           selected={location.pathname === '/settings'}
         >
           <ListItemIcon>

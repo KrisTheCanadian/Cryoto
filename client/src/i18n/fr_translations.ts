@@ -5,6 +5,7 @@ export const frenchTranslations = {
     English: 'Anglais',
     French: 'Français',
     SelectLanguage: 'Sélectionnez la langue',
+    Menu: 'Menu',
     Home: 'Accueil',
     Orders: 'Mes Commandes',
     Settings: 'Paramètres',
@@ -15,6 +16,8 @@ export const frenchTranslations = {
     MyBalance: 'Solde de Compte',
     ToSpend: 'À Dépenser',
     ToAward: 'À Donner',
+    DarkMode: 'Mode sombre',
+    LightMode: 'Mode claire',
   },
   errors: {
     PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
@@ -38,6 +41,9 @@ export const frenchTranslations = {
     React: 'Réagir',
     Recognized: ' a reconnu ',
     UploadImageMessage: 'Déposez l’image ici',
+  },
+  sideBar: {
+    navTitle: 'Navigation principale',
   },
   values: {
     ClientsAndValues: 'Clients & Valeurs',

@@ -1,36 +1,46 @@
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {
   Box,
   List,
-  ListItemButton,
+  Typography,
+  useTheme,
+  styled,
+  ListSubheader,
   ListItemIcon,
+  ListItemButton,
   ListItemText,
+  Divider,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
+import {Home, Wallet, Storefront, LocalShipping} from '@mui/icons-material';
 import {NavLink, useLocation} from 'react-router-dom';
-import {Home, Wallet, Logout} from '@mui/icons-material';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import {useTranslation} from 'react-i18next';
-import {useMsal} from '@azure/msal-react';
-import {IPublicClientApplication} from '@azure/msal-browser';
-import {MiniWallet} from '@shared/components/SideBar/components/MiniWallet';
+import {useQuery} from 'react-query';
 
+import {MenuItem} from './components';
+
+import {getTokenBalance} from '@/data/api/requests/wallet';
+import IWalletsBalance from '@/data/api/types/IWalletsBalance';
 import {routeHome, routeMarket, routeOrders, routeWallet} from '@/pages/routes';
 
-function handleLogout(instance: IPublicClientApplication) {
-  instance.logoutRedirect();
-}
+export const walletBalanceQuery = 'walletsBalance';
+
+const StyledMenuBox = styled(Box)(({theme}) => ({
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: theme.spacing(2),
+}));
 
 function SideBar() {
   const {t} = useTranslation();
   const location = useLocation();
   const theme = useTheme();
-  const {instance} = useMsal();
+
+  const {data, status} = useQuery<IWalletsBalance>(
+    'walletsBalance',
+    getTokenBalance,
+  );
 
   const sideBarStyle = {
     // to adjust to the navbar height
-    top: 56,
     maxHeight: 0,
     position: 'sticky',
     minHeight: 'calc(100vh - 56px)',
@@ -46,73 +56,113 @@ function SideBar() {
       top: 64,
       minHeight: 'calc(100vh - 64px)',
     },
-    display: {xs: 'none', sm: 'block'},
-    overflowY: 'hidden',
-    overFlowAnchor: 'none',
   };
+
   return (
     <Box sx={sideBarStyle}>
-      <Box>
-        <nav aria-label="main mailbox folders" style={{textDecoration: 'none'}}>
-          <List>
-            <ListItemButton
-              component={NavLink}
-              to={routeHome}
-              selected={location.pathname === routeHome}
-            >
-              <ListItemIcon>
-                <Home />
-              </ListItemIcon>
-              <ListItemText primary={t('layout.Home')} />
-            </ListItemButton>
-
-            <ListItemButton
-              component={NavLink}
+      <StyledMenuBox>
+        <nav aria-label={t('sideBar.navTitle')}>
+          <List
+            sx={{
+              textDecoration: 'none',
+              borderRadius: theme.borderRadius.default,
+              backgroundColor: theme.interface.main,
+              boxShadow: 1,
+            }}
+            subheader={
+              <ListSubheader
+                sx={{
+                  backgroundColor: theme.interface.border,
+                  borderRadius: '4px 4px 0px 0px',
+                  padding: theme.spacing(1.5),
+                  paddingLeft: theme.spacing(2.5),
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight={theme.typography.fontWeightBold}
+                  color={theme.palette.text.primary}
+                >
+                  {t('layout.Menu')}
+                </Typography>
+              </ListSubheader>
+            }
+          >
+            <MenuItem to={routeHome} icon={<Home />} text="layout.Home" />
+            <MenuItem
               to={routeMarket}
-              selected={location.pathname === routeMarket}
-            >
-              <ListItemIcon>
-                <StorefrontIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('layout.MarketPlace')} />
-            </ListItemButton>
-
-            <ListItemButton
-              component={NavLink}
+              icon={<Storefront />}
+              text="layout.MarketPlace"
+            />
+            <MenuItem
               to={routeOrders}
-              selected={location.pathname === routeOrders}
-            >
-              <ListItemIcon>
-                <LocalShippingIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('layout.Orders')} />
-            </ListItemButton>
-
-            <ListItemButton
-              component={NavLink}
-              to={routeWallet}
-              selected={location.pathname === routeWallet}
-            >
-              <ListItemIcon>
-                <Wallet />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('layout.Wallet')}
-                data-testid="wallet-sidebar"
-              />
-            </ListItemButton>
-
-            <ListItemButton onClick={() => handleLogout(instance)}>
-              <ListItemIcon>
-                <Logout />
-              </ListItemIcon>
-              <ListItemText primary="Logout" />
-            </ListItemButton>
+              icon={<LocalShipping />}
+              text="layout.Orders"
+            />
+            <MenuItem to={routeWallet} icon={<Wallet />} text="layout.Wallet" />
           </List>
         </nav>
-      </Box>
-      {location.pathname !== routeWallet && <MiniWallet />}
+      </StyledMenuBox>
+      <StyledMenuBox>
+        {location.pathname !== routeWallet && (
+          <nav aria-label={t('sideBar.navTitle')}>
+            <List
+              sx={{
+                textDecoration: 'none',
+                borderRadius: theme.borderRadius.default,
+                backgroundColor: theme.interface.main,
+                boxShadow: 1,
+              }}
+              subheader={
+                <ListSubheader
+                  sx={{
+                    backgroundColor: theme.interface.border,
+                    borderRadius: '4px 4px 0px 0px',
+                    padding: theme.spacing(1.5),
+                    paddingLeft: theme.spacing(2.5),
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    fontWeight={theme.typography.fontWeightBold}
+                    color={theme.palette.text.primary}
+                  >
+                    {t('layout.MyBalance')}
+                  </Typography>
+                </ListSubheader>
+              }
+            >
+              <ListItemButton component={NavLink} to={routeWallet}>
+                <ListItemIcon sx={{width: 100}}>
+                  {t('layout.ToSpend')}
+                </ListItemIcon>
+                <ListItemText
+                  primaryTypographyProps={{
+                    fontSize: '18px',
+                    fontWeight: theme.typography.fontWeightMedium,
+                  }}
+                  primary={data?.toSpendBalance}
+                />
+              </ListItemButton>
+              <Divider variant="middle" />
+              <ListItemButton component={NavLink} to={routeWallet}>
+                <ListItemIcon sx={{width: 100}}>
+                  {t('layout.ToAward')}
+                </ListItemIcon>
+                <ListItemText
+                  primaryTypographyProps={{
+                    fontSize: '18px',
+                    fontWeight: theme.typography.fontWeightMedium,
+                  }}
+                  primary={data?.toAwardBalance}
+                />
+              </ListItemButton>
+            </List>
+          </nav>
+        )}
+      </StyledMenuBox>
     </Box>
   );
 }
+
 export default SideBar;

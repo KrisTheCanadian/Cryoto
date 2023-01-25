@@ -1,18 +1,20 @@
 import {render, screen, within} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
-import {MemoryRouter} from 'react-router-dom';
 import {I18nextProvider} from 'react-i18next';
-import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
+import {MsalProvider} from '@azure/msal-react';
 import {
   AccountInfo,
   Configuration,
   IPublicClientApplication,
   PublicClientApplication,
 } from '@azure/msal-browser';
-import {MsalProvider} from '@azure/msal-react';
+import {MemoryRouter} from 'react-router-dom';
+import {MockAppProviders} from '@shared/testing/mocks';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
-import i18n from './i18n/i18n';
-import App from './App';
+import SideBar from './SideBar';
+
+import i18n from '@/i18n/i18n';
 
 const TEST_CONFIG = {
   MSAL_CLIENT_ID: '0813e1d1-ad72-46a9-8665-399bba48c201',
@@ -42,7 +44,20 @@ const testAccount: AccountInfo = {
   idTokenClaims: {roles: []},
 };
 
-describe('Authentication and Permission tests', () => {
+const MY_BALANCE = 'My Balance';
+const TO_SPEND_LABEL = 'To Spend';
+const TO_AWARD_LABEL = 'To Award';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
+    },
+  },
+});
+
+describe("Sidebar's Mini Wallet tests", () => {
   let pca: IPublicClientApplication;
   let getAllAccountsSpy: jest.SpyInstance;
   const msalConfig: Configuration = {
@@ -61,54 +76,41 @@ describe('Authentication and Permission tests', () => {
     jest.clearAllMocks();
   });
 
-  const PermissionError = 'You do not have permission to access this page.';
-
-  const SignIn = 'Sign In';
-
-  it('should load Main Page at /', async () => {
-    const intersectionObserverMock = () => ({
-      observe: () => null,
-    });
-    window.IntersectionObserver = jest
-      .fn()
-      .mockImplementation(intersectionObserverMock);
-
-    await act(async () => {
-      render(
-        <MemoryRouter initialEntries={['/']}>
-          <I18nextProvider i18n={i18n}>
-            <AlertSystem />
-            <App />
-          </I18nextProvider>
-        </MemoryRouter>,
-      );
-    });
-    expect(screen.queryByText(SignIn)).toBeInTheDocument();
-  });
-
-  it('dark mode toggle should work', async () => {
-    await act(async () => {
+  it('Mini wallet should be rendered when user is logged in', () => {
+    act(() => {
       render(
         <MsalProvider instance={pca}>
-          <MemoryRouter initialEntries={['/wallet']}>
-            <I18nextProvider i18n={i18n}>
-              <App />
-            </I18nextProvider>
-          </MemoryRouter>
+          <QueryClientProvider client={queryClient}>
+            <MockAppProviders>
+              <I18nextProvider i18n={i18n}>
+                <SideBar />
+              </I18nextProvider>
+            </MockAppProviders>
+          </QueryClientProvider>
         </MsalProvider>,
       );
     });
-    const profileButton = screen.getByTestId('profileButton');
-    act(() => {
-      profileButton.click();
-    });
-    const darkModeSwitch = screen.getByTestId('dark-mode-toggle');
-    const body = document.getElementsByTagName('body')[0];
+    expect(screen.getByText(MY_BALANCE)).toBeInTheDocument();
+    expect(screen.getByText(TO_SPEND_LABEL)).toBeInTheDocument();
+    expect(screen.getByText(TO_AWARD_LABEL)).toBeInTheDocument();
+  });
 
-    act(() => {
-      darkModeSwitch.click();
+  it('Home should be selected when on "\\"', async () => {
+    await act(async () => {
+      render(
+        <MsalProvider instance={pca}>
+          <QueryClientProvider client={queryClient}>
+            <MockAppProviders>
+              <I18nextProvider i18n={i18n}>
+                <SideBar />
+              </I18nextProvider>
+            </MockAppProviders>
+          </QueryClientProvider>
+        </MsalProvider>,
+      );
     });
 
-    expect(body).toHaveStyle('background-color: rgb(18, 18, 18)');
+    const homeLink = screen.getByText('Home').closest('a');
+    expect(homeLink).toHaveClass('Mui-selected');
   });
 });

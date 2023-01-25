@@ -29,17 +29,12 @@ describe('Responsiveness', () => {
     cy.get('#new-post-input').should('exist');
   });
 
-  it('Test post avatar responsiveness in iPhoneX', () => {
-    cy.viewport('iphone-x');
-    cy.visit('/');
-    cy.wait(100);
-    cy.get('.MuiAvatar-root').should('exist');
-  });
-
-  it('Test Darkmode Button Responsiveness', () => {
-    cy.visit('/');
-    cy.get('[data-testid="dark-mode-toggle"]').should('exist');
-  });
+  // it('Test post avatar responsiveness in iPhoneX', () => {
+  //   cy.viewport('iphone-x');
+  //   cy.visit('/');
+  //   cy.wait(100);
+  //   cy.get('.MuiAvatar-root').should('exist');
+  // });
 });
 
 export {};

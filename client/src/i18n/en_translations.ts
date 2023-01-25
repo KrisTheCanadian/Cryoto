@@ -5,6 +5,7 @@ export const englishTranslations = {
     English: 'English',
     French: 'French',
     SelectLanguage: 'Select Language',
+    Menu: 'Menu',
     Home: 'Home',
     Orders: 'My Orders',
     Settings: 'Settings',
@@ -15,6 +16,8 @@ export const englishTranslations = {
     MyBalance: 'My Balance',
     ToSpend: 'To Spend',
     ToAward: 'To Award',
+    DarkMode: 'Dark mode',
+    LightMode: 'Light mode',
   },
   errors: {
     PermissionError: 'You do not have permission to access this page.',
@@ -35,6 +38,9 @@ export const englishTranslations = {
     React: 'React',
     Recognized: ' recognized ',
     UploadImageMessage: 'Drop image here',
+  },
+  sideBar: {
+    navTitle: 'Main Navigation',
   },
   values: {
     ClientsAndValues: 'Clients & Values',

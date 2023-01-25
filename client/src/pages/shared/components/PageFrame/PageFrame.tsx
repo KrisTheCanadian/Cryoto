@@ -1,6 +1,6 @@
 import {ReactNode} from 'react';
 import {SideBar} from '@shared/components/SideBar';
-import {Stack} from '@mui/material';
+import {Stack, Box} from '@mui/material';
 
 interface PageFrameProps {
   children: ReactNode | string | ReactNode[];
@@ -15,7 +15,9 @@ function PageFrame(props: PageFrameProps) {
         spacing={2}
         position="relative"
       >
-        <SideBar />
+        <Box sx={{display: {xs: 'none', md: 'flex'}, flex: 'auto'}}>
+          <SideBar />
+        </Box>
         {children}
       </Stack>
     </>

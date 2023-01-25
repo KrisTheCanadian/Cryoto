@@ -9,6 +9,7 @@ declare module '@mui/material/styles' {
       contrastText: string;
       titleText: string;
       type: string;
+      border: string;
       shadow: string;
       icon: string;
     };
@@ -36,6 +37,7 @@ declare module '@mui/material/styles' {
       contrastText?: string;
       titleText?: string;
       type?: string;
+      border?: string;
       shadow?: string;
       icon?: string;
     };
@@ -97,6 +99,7 @@ const getDesignTokens = (mode: PaletteMode) =>
             titleText: '#454CE1',
             icon: '#727373',
             type: 'light',
+            border: '#F2F2F2',
           }
         : {
             main: '#242424',
@@ -106,11 +109,12 @@ const getDesignTokens = (mode: PaletteMode) =>
             titleText: '#BCC0FF',
             icon: '#727373',
             type: 'dark',
+            border: '#484848',
           }),
     },
     borderRadius: {
       default: 2,
-      medium: 8,
+      medium: 4,
       large: 16,
     },
     border: {

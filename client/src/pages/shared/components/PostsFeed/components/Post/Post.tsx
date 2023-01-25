@@ -123,10 +123,10 @@ function Post(props: PostProps) {
           maxWidth: 600,
           mb: theme.margin.default,
           flex: 1,
-          border: theme.border.default,
           backgroundColor: theme.interface.main,
           padding: theme.padding.default,
           borderRadius: theme.borderRadius.default,
+          boxShadow: 1,
         }}
       >
         <Stack direction="row">
