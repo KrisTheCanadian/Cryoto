@@ -87,11 +87,12 @@ public class PostsController : ControllerBase
                 await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
                 await SendNotification(postCreateModel, recipientProfile, postModel, amount);
             }
+
             return Ok(createdPostModel);
         }
 
 
-        var actorBalance = await _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
+        var actorBalance = _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
         if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);

@@ -129,6 +129,24 @@ function NavBar() {
   const companyName = 'Cryoto';
   const sampleSearchResults = "I'm a search result";
 
+  const logoIcon = () => {
+    const logoUrl =
+      theme.palette.mode === 'dark'
+        ? 'images/svgIcons/CryotoIconDark.svg'
+        : 'images/svgIcons/CryotoIconLight.svg';
+    return (
+      <img
+        src={logoUrl}
+        alt={companyName}
+        style={{
+          height: '30px',
+          verticalAlign: 'text-middle',
+          marginRight: theme.margin.medium,
+        }}
+      />
+    );
+  };
+
   return (
     <AuthenticatedTemplate>
       <AppBar sx={{boxShadow: theme.interface.shadow}} position="sticky">
@@ -149,18 +167,29 @@ function NavBar() {
               textDecoration: 'none',
             }}
           >
-            <Typography
-              id="companyName"
-              variant="h6"
+            <Box
               sx={{
-                color: theme.palette.text.primary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
                 [theme.breakpoints.down('md')]: {
                   display: 'none',
                 },
               }}
             >
-              {companyName}
-            </Typography>
+              {logoIcon()}
+              <Typography
+                id="companyName"
+                variant="h6"
+                sx={{
+                  color: theme.palette.text.primary,
+                  lineHeight: 0,
+                }}
+              >
+                {companyName}
+              </Typography>
+            </Box>
           </Link>
           <Box sx={searchBoxStyle} data-testid="searchBox">
             <RoundedInput>

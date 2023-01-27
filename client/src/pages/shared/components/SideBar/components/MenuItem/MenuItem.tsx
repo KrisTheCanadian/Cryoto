@@ -20,12 +20,8 @@ function MenuItem(props: MenuItemProps) {
 
   const ItemListButtonStyle = {
     '&.Mui-selected': {
-      color:
-        theme.palette.mode === 'dark' ? 'none' : theme.palette.primary.main,
-      backgroundColor:
-        theme.palette.mode === 'dark'
-          ? theme.interface.contrastMain
-          : 'transparent',
+      color: theme.palette.primary.main,
+      backgroundColor: 'transparent',
     },
   };
 

@@ -10,7 +10,12 @@ import {
   ListItemText,
   Divider,
 } from '@mui/material';
-import {Home, Wallet, Storefront, LocalShipping} from '@mui/icons-material';
+import {
+  HomeOutlined,
+  WalletOutlined,
+  StorefrontOutlined,
+  LocalShippingOutlined,
+} from '@mui/icons-material';
 import {NavLink, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
@@ -80,7 +85,7 @@ function SideBar() {
               >
                 <Typography
                   variant="h6"
-                  fontWeight={theme.typography.fontWeightBold}
+                  fontWeight={theme.typography.fontWeightLight}
                   color={theme.palette.text.primary}
                 >
                   {t('layout.Menu')}
@@ -88,18 +93,26 @@ function SideBar() {
               </ListSubheader>
             }
           >
-            <MenuItem to={routeHome} icon={<Home />} text="layout.Home" />
+            <MenuItem
+              to={routeHome}
+              icon={<HomeOutlined />}
+              text="layout.Home"
+            />
             <MenuItem
               to={routeMarket}
-              icon={<Storefront />}
+              icon={<StorefrontOutlined />}
               text="layout.MarketPlace"
             />
             <MenuItem
               to={routeOrders}
-              icon={<LocalShipping />}
+              icon={<LocalShippingOutlined />}
               text="layout.Orders"
             />
-            <MenuItem to={routeWallet} icon={<Wallet />} text="layout.Wallet" />
+            <MenuItem
+              to={routeWallet}
+              icon={<WalletOutlined />}
+              text="layout.Wallet"
+            />
           </List>
         </nav>
       </StyledMenuBox>
@@ -124,7 +137,7 @@ function SideBar() {
                 >
                   <Typography
                     variant="h6"
-                    fontWeight={theme.typography.fontWeightBold}
+                    fontWeight={theme.typography.fontWeightLight}
                     color={theme.palette.text.primary}
                   >
                     {t('layout.MyBalance')}

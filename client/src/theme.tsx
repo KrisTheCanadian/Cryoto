@@ -26,6 +26,7 @@ declare module '@mui/material/styles' {
     };
     margin: {
       default: number;
+      medium: number;
     };
   }
   // allow configuration using `createTheme`
@@ -134,10 +135,18 @@ const getDesignTokens = (mode: PaletteMode) =>
     margin: {
       // margin between content, eg. between posts
       default: 2,
+      medium: 4,
     },
     palette: {
       primary: {
-        main: '#454CE1',
+        mode,
+        ...(mode === 'light'
+          ? {
+              main: '#454CE1',
+            }
+          : {
+              main: '#767DFD',
+            }),
         secondary: '#cc20e9',
       },
       mode,

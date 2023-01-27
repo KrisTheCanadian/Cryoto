@@ -9,6 +9,7 @@ import {
   Grid,
   Backdrop,
   CircularProgress,
+  Box,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {useEffect} from 'react';
@@ -114,9 +115,34 @@ function LandingPage() {
   return (
     <Stack height="100%">
       <Stack sx={headerStyle} direction="row" position="sticky">
-        <Typography variant="h4" sx={{color: theme.palette.text.primary}}>
-          {companyName}
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+          }}
+        >
+          <img
+            src="images/svgIcons/CryotoIconLight.svg"
+            alt={companyName}
+            style={{
+              height: theme.typography.h4.fontSize,
+              verticalAlign: 'text-middle',
+              marginRight: theme.spacing(1),
+            }}
+          />
+          <Typography
+            id="companyName"
+            variant="h5"
+            sx={{
+              color: theme.palette.text.primary,
+              lineHeight: 0,
+            }}
+          >
+            {companyName}
+          </Typography>
+        </Box>
         <Stack direction="row" spacing={2}>
           <SignInButton />
         </Stack>

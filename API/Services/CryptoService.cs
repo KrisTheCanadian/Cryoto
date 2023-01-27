@@ -121,11 +121,11 @@ public class CryptoService : ICryptoService
         await _userProfileService.GetOrAddUserProfileService(oid, user);
         double toAwardBalance;
         double toSpendBalance = -1;
-        toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
+        toSpendBalance = GetTokenBalanceAsync(oid, "toSpend");
         while (true)
             if (toSpendBalance != -1)
             {
-                toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");
+                toAwardBalance = GetTokenBalanceAsync(oid, "toAward");
                 break;
             }
 
@@ -134,10 +134,10 @@ public class CryptoService : ICryptoService
         return userWalletsModel;
     }
 
-    public async Task<double> GetTokenBalanceAsync(string oid, string walletType)
+    public double GetTokenBalanceAsync(string oid, string walletType)
     {
-        var walletModel = await GetOrCreateUserWallet(oid, walletType);
-        return walletModel?.TokenBalance ?? 0;
+        var walletModel = GetOrCreateUserWallet(oid, walletType);
+        return walletModel.Result?.TokenBalance ?? 0;
     }
 
     public async Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId)
