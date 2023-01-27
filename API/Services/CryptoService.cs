@@ -25,7 +25,6 @@ public class CryptoService : ICryptoService
     private readonly INotificationService _notificationService;
 
 
-
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
         QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService,
         INotificationService notificationService)
@@ -54,32 +53,31 @@ public class CryptoService : ICryptoService
     private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
     {
         WalletModel? walletModel = null;
-        
+
         using (var mutex = new Mutex(false, "WalletCreateAndNotificationMutex"))
         {
             try
             {
-                walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-                if (walletModel !=null)
-                    return walletModel;
-        
                 mutex.WaitOne();
+                walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+                if (walletModel != null)
+                    return walletModel;
+
                 // Creat new wallet if it does not exist.
                 var wallet = _solanaService.CreateWallet();
                 var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
                 var walletPublicKey = wallet.Account.PublicKey;
                 walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
-        
+
                 if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
 
                 var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
                 if (rpcTransactionResult.error == null)
                 {
-                    await UpdateTokenBalance(100, oid, "toSpend");
                     await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
                         "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
                 }
-                
+
                 var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
 
                 await SendNotification(oid, userProfileModel);
@@ -94,14 +92,13 @@ public class CryptoService : ICryptoService
         }
 
         QueueTokenUpdate(new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { oid, oid } });
+            { new() { "tokenUpdateQueue" }, new() { oid, oid } });
 
         // Register the user to receive the monthly tokens gift
         QueueMonthlyTokensGift(new List<List<string>>
-            { new List<string> { "monthlyTokenQueue" }, new List<string> { oid } });
+            { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
 
         return walletModel;
-
     }
 
     // sending notification to user using notification service
@@ -123,7 +120,7 @@ public class CryptoService : ICryptoService
     {
         // Create userProfile if it has not been created before.
         await _userProfileService.GetOrAddUserProfileService(oid, user);
-        
+
         var toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
         var toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");
         var userWalletsModel = new UserWalletsModel(toAwardBalance, toSpendBalance);
@@ -247,7 +244,7 @@ public class CryptoService : ICryptoService
     public async void QueueMonthlyTokensGift(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
-        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromDays(30), TimeSpan.FromSeconds(-1));
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromDays(7), TimeSpan.FromSeconds(-1));
     }
 
     public double GetSolanaAdminBalance()

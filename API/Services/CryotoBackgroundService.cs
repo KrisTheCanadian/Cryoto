@@ -14,7 +14,6 @@ public class CryotoBackgroundService : BackgroundService
     private readonly IConfiguration _configuration;
 
 
-
     public CryotoBackgroundService(QueueClient queueClient,
         IServiceProvider serviceProvider, IConfiguration configuration)
     {
@@ -55,24 +54,39 @@ public class CryotoBackgroundService : BackgroundService
                             var solanaAdminTokenBalance = cryptoService.GetSolanaAdminTokenBalance();
                             if (solanaAdminTokenBalance < double.Parse(_configuration["SolanaTokenBalanceLowLimit"]))
                             {
-                                const string messageHtml = "<h1>Solana token balance is too low</h1> <p>Hi " + "Cryoto Admin" +
-                                                           ",</p> <p>Solana token balance is less than 10000</p>";
+                                const string messageHtml =
+                                    "<h1>Solana token balance is too low</h1> <p>Hi " + "Cryoto Admin" +
+                                    ",</p> <p>Solana token balance is less than 10000</p>";
                                 await notificationService.SendEmailAsync(_configuration["LowBalanceAdminEmail"],
                                     "Solana token balance alert",
                                     messageHtml, true);
                             }
 
                             cryptoService.QueueSolUpdate(new List<List<string>>
-                                { new List<string> { "checkAdminBalanceQueue" }, new List<string> { "null" } });
+                                { new() { "checkAdminBalanceQueue" }, new() { "null" } });
                             break;
                         }
                         case "monthlyTokenQueue":
                         {
                             var oid = messageList[1][0];
-                            await cryptoService.SendMonthlyTokenBasedOnRole(oid);
+                            var weekNumber = int.Parse(messageList[1][1]);
+                            if (weekNumber == 4)
+                            {
+                                await cryptoService.SendMonthlyTokenBasedOnRole(oid);
+                                cryptoService.QueueMonthlyTokensGift(new List<List<string>>
+                                    { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
+                            }
+                            else
+                            {
+                                weekNumber += 1;
+                                cryptoService.QueueMonthlyTokensGift(new List<List<string>>
+                                {
+                                    new() { "monthlyTokenQueue" },
+                                    new() { oid, weekNumber.ToString() }
+                                });
+                            }
 
-                            cryptoService.QueueMonthlyTokensGift(new List<List<string>>
-                                { new List<string> { "monthlyTokenQueue" }, new List<string> { oid } });
+
                             break;
                         }
                         case "tokenUpdateQueue":

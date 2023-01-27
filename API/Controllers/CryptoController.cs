@@ -39,7 +39,7 @@ public class CryptoController : ControllerBase
         await _cryptoService.UpdateTokenBalance((amount), receiverOId, "toSpend");
         await _cryptoService.UpdateTokenBalance((-amount), _oId, "toAward");
         _cryptoService.QueueTokenUpdate(new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId, receiverOId } });
+            { new() { "tokenUpdateQueue" }, new() { _oId, receiverOId } });
 
         return Ok(rpcTransactionResult);
     }
@@ -57,7 +57,7 @@ public class CryptoController : ControllerBase
         await _transactionService.AddTransactionAsync(new TransactionModel("self", "toAward", _oId,
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
        _cryptoService.QueueTokenUpdate(new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId, _oId } });
+            { new() { "tokenUpdateQueue" }, new() { _oId, _oId } });
         return Ok(rpcTransactionResult);
     }
 
@@ -73,7 +73,7 @@ public class CryptoController : ControllerBase
 
 
         _cryptoService.QueueTokenUpdate(new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { _oId } });
+            { new() { "tokenUpdateQueue" }, new() { _oId } });
         return Ok(rpcTransactionResult);
     }
 
@@ -93,7 +93,7 @@ public class CryptoController : ControllerBase
     public void InitiateSolBalanceCheck()
     {
         _cryptoService.QueueSolUpdate(new List<List<string>>
-            { new List<string> { "checkAdminBalanceQueue" }, new List<string> { "null" } });
+            { new() { "checkAdminBalanceQueue" }, new() { "null" } });
     }
 
     [HttpGet]
@@ -101,6 +101,6 @@ public class CryptoController : ControllerBase
     {
         await _cryptoService.SendMonthlyTokenBasedOnRole(oid);
         _cryptoService.QueueMonthlyTokensGift(new List<List<string>>
-            { new List<string> { "monthlyTokenQueue" }, new List<string> { oid } });
+            { new() { "monthlyTokenQueue" }, new() { oid } });
     }
 }

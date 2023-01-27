@@ -101,7 +101,7 @@ public class PostsController : ControllerBase
         await _userProfileService.IncrementRecognitionsSent(_actorId);
 
         var oIdsList = new List<List<string>>
-            { new List<string> { "tokenUpdateQueue" }, new List<string> { _actorId } };
+            { new() { "tokenUpdateQueue" }, new() { _actorId } };
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
         {
             oIdsList[1].Add(recipientProfile.OId);
