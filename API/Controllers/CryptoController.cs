@@ -103,4 +103,11 @@ public class CryptoController : ControllerBase
         _cryptoService.QueueMonthlyTokensGift(new List<List<string>>
             { new() { "monthlyTokenQueue" }, new() { oid } });
     }
+    
+    [HttpGet]
+    public void InitiateAnniversaryBonusGifting()
+    {
+        _cryptoService.QueueAnniversaryBonus(new List<List<string>>
+            { new() { "anniversaryBonusQueue" }, new() { "null" } });
+    }
 }

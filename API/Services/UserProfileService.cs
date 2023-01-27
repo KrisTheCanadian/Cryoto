@@ -145,4 +145,9 @@ public class UserProfileService : IUserProfileService
     {
         return await _context.UpdateAsync(userProfileModel);
     }
+
+    public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
+    {
+        return await _context.GetAnniversaryUsersAsync();
+    }
 }

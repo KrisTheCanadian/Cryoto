@@ -23,4 +23,7 @@ public interface ICryptoService
     public void QueueMonthlyTokensGift(List<List<string>> message);
     public double GetSolanaAdminBalance();
     public double GetSolanaAdminTokenBalance();
+    public Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid);
+    public Task<bool> SendAnniversaryTokenByOId(string oid);
+    public void QueueAnniversaryBonus(List<List<string>> message);
 }

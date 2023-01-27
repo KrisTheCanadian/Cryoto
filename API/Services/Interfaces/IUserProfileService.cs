@@ -15,4 +15,5 @@ public interface IUserProfileService
     public Task UpdateUserProfilesRecognitionsCount();
 
     public Task<bool> UpdateAsync(UserProfileModel userProfileModel);
+    public Task<List<UserProfileModel>> GetAnniversaryUsersAsync();
 }

@@ -61,4 +61,17 @@ public class UserProfileRepository : IUserProfileRepository
         Context.UserProfiles.Update(userProfileModel);
         return await Context.SaveChangesAsync() > 0;
     }
+    
+    public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
+    {
+        List<UserProfileModel> userProfileModelList = Context.UserProfiles.AsNoTracking()
+            .Where(userProfile => 
+                userProfile.StartDate != null
+                && (userProfile.StartDate.Value.ToUniversalTime().Day == DateTime.UtcNow.Day)
+                && (userProfile.StartDate.Value.ToUniversalTime().Month == DateTime.UtcNow.Month)
+                && (userProfile.StartDate.Value.ToUniversalTime().Year < DateTime.UtcNow.Year)
+            )
+            .ToList();
+        return await Task.FromResult(userProfileModelList);
+    }
 }

@@ -264,4 +264,45 @@ public class CryptoService : ICryptoService
         var rpcClient = ClientFactory.GetClient(Cluster.DevNet);
         return Convert.ToDouble(rpcClient.GetBalance(publicKey).Result.Value);
     }
+
+    public async Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid)
+    {
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+        double amount;
+
+        // Edit below to change the amount of the anniversary gifted token based on the user role
+        // If a user has multiple roles they should receive the highest amount of only one role,
+        // so the order of the "if conditions matter
+        if (userProfileModel!.Roles.Contains("Admin"))
+            amount = 150;
+        else if (userProfileModel.Roles.Contains("AddNewRole"))
+            amount = 90;
+        else
+            amount = 30;
+        return amount;
+    }
+    public async Task<bool> SendAnniversaryTokenByOId(string oid)
+    {
+        const string walletType = "toSpend";
+        if (await _context.GetWalletModelByOIdAsync(oid, walletType) == null)
+        {
+            return false;
+        }
+        double amount = GetAnniversaryBonusAmountOfRoleByOIdAsync(oid).Result;
+
+        var rpcTransactionResult = await AddTokensAsync(amount, oid, walletType);
+        if (rpcTransactionResult.error != null) return false;
+
+        await UpdateTokenBalance(amount, oid, walletType);
+        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+            "master", amount, "AnniversaryGift", DateTimeOffset.UtcNow));
+
+        return true;
+    }
+    
+    public async void QueueAnniversaryBonus(List<List<string>> message)
+    {
+        var serializedMessage = JsonSerializer.Serialize(message);
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(24), TimeSpan.FromSeconds(-1));
+    }
 }

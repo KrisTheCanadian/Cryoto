@@ -13,4 +13,5 @@ public interface IUserProfileRepository
     public Task<bool> UpdateAsync(UserProfileModel userProfileModel);
     Task<UserProfileModel?> GetUserByIdAsync(string userId);
     public Task<int> UpdateUserProfile(UserProfileModel userProfile);
+    public Task<List<UserProfileModel>> GetAnniversaryUsersAsync();
 }

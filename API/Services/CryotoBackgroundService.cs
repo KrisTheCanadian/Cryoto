@@ -3,6 +3,9 @@ using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using static System.Threading.Tasks.Task;
 using System.Text.Json;
+using API.Models.Posts;
+using API.Models.Users;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
@@ -108,6 +111,39 @@ public class CryotoBackgroundService : BackgroundService
                                 }
                             }
 
+                            break;
+                        }
+                        case "anniversaryBonusQueue":
+                        {
+                            var userProfileService = scope.ServiceProvider.GetRequiredService<IUserProfileService>();
+                            var postService = scope.ServiceProvider.GetRequiredService<IPostService>();
+                            List<UserProfileModel> anniversaryUsers = await userProfileService.GetAnniversaryUsersAsync();
+                            foreach (UserProfileModel userProfileModel in anniversaryUsers)
+                            {
+                                double anniversaryBonus =
+                                    await cryptoService.GetAnniversaryBonusAmountOfRoleByOIdAsync(userProfileModel.OId);
+                                // One of these messages will be used randomly as a congratulation message in the post
+                                // Add your own messages to the array
+                                // Here are some examples form https://upjourney.com/happy-work-anniversary-quotes
+                                string[] anniversaryMessages =
+                                {
+                                    "Congratulations on this big occasion and many wishes for future success.",
+                                    "Wishing you many years of success and innovations. Happy anniversary!",
+                                    "Congratulations on this special day and many wishes for more great days ahead.",
+                                    "We are thinking of you on this important day and wishing good luck as you take on your new ventures!",
+                                    "Keep up the good work! Happy anniversary and here’s to many more.",
+                                    "Congratulations! I think all your hard work calls for a party!",
+                                    "If there were an award for the worker of the year – you’d win it! Congratulations and best wishes on your anniversary.",
+                                    "Thank you for being part of our company’s success over the years. We greatly appreciate and value your hard work and success. Happy Anniversary.",
+                                    "Thank you for being an essential part of our success. Happy Anniversary!",
+                                    "On your anniversary, we appreciate all your hard work and dedication. Best wishes for another successful year."
+                                };
+                                string anniversaryMessage = anniversaryMessages[new Random().NextInt64(anniversaryMessages.Length)];
+                                await postService.CreateAsync(new PostModel("da6e9ec4-6c5d-45b3-bf3c-22ad1c4b9800", anniversaryMessage, new []{userProfileModel.OId},new []{"Anniversary"},DateTimeOffset.UtcNow, "Anniversary", true, (ulong)Math.Round(Math.Abs(anniversaryBonus))));
+                                await cryptoService.SendAnniversaryTokenByOId(userProfileModel.OId);
+                            }
+                            cryptoService.QueueAnniversaryBonus(new List<List<string>>
+                                { new() { "anniversaryBonusQueue" }, new() { "null" } });
                             break;
                         }
                     }
