@@ -39,6 +39,7 @@ it('should render Posts', async () => {
         <I18nextProvider i18n={i18n}>
           <ThemeContextProvider>
             <Post
+              recipientId=""
               id=""
               hearts={[]}
               claps={[]}

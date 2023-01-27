@@ -24,6 +24,7 @@ interface PostProps {
   date: string;
   imageUrl?: string;
   recipient: string;
+  recipientId: string;
   message: string;
   coinsGiven: number;
   tags?: string[];
@@ -43,6 +44,7 @@ function Post(props: PostProps) {
     id,
     firstName,
     recipient,
+    recipientId,
     message,
     imageUrl,
     tags,
@@ -80,6 +82,10 @@ function Post(props: PostProps) {
 
   function handleAvatarClickAuthor() {
     navigate(`/profile/${authorId}`);
+  }
+
+  function handleAvatarClickRecipient() {
+    navigate(`/profile/${recipientId}`);
   }
 
   function stringAvatar(name: string) {
@@ -149,7 +155,12 @@ function Post(props: PostProps) {
                 {firstName}
               </b>
               {t('homePage.Recognized')}
-              <b>{recipient}</b>
+              <b
+                style={{cursor: 'pointer'}}
+                onClick={handleAvatarClickRecipient}
+              >
+                {recipient}
+              </b>
             </Typography>
             <Box sx={{display: 'flex', alignItems: 'center'}}>
               <Chip

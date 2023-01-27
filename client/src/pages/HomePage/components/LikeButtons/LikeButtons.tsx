@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {useTheme} from '@mui/material/styles';
-import {Box, ClickAwayListener, Typography} from '@mui/material';
+import {Box, ClickAwayListener, IconButton, Typography} from '@mui/material';
 import {ReactNode, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
@@ -68,9 +68,10 @@ function LikeButtons(props: ILikeButtonsProps) {
     borderRadius: '25%/50%',
     width: 'fit-content',
     display: 'flex',
-    marginY: '5px',
+    top: '-60px',
     padding: '5px',
-    marginLeft: '-20px',
+    marginLeft: '-32px',
+    position: 'absolute',
   };
 
   const EmojiReactionStyles = {
@@ -85,36 +86,38 @@ function LikeButtons(props: ILikeButtonsProps) {
     userSelect: 'none',
   };
 
-  async function handleReactionClick(type: number) {
+  async function handleReactionServer(type: number) {
     const res = await reactPost(type, id);
-
     // check if res is undefined
     if (!res) {
       // display error message
       dispatchAlert.error(t('error'));
-      return;
     }
+  }
 
+  async function handleReactionClick(type: number) {
     // check if user is logged in
     if (!accounts.length) {
       return;
     }
     let isRemoved = false;
-    if (res) {
-      switch (type) {
-        case 0:
-          isRemoved = updateHeart();
-          break;
-        case 1:
-          isRemoved = updateClaps();
-          break;
-        case 2:
-          isRemoved = updateCelebrations();
-          break;
-        default:
-          break;
-      }
+
+    switch (type) {
+      case 0:
+        isRemoved = updateHeart();
+        break;
+      case 1:
+        isRemoved = updateClaps();
+        break;
+      case 2:
+        isRemoved = updateCelebrations();
+        break;
+      default:
+        break;
     }
+
+    setShowReactions(false);
+    handleReactionServer(type);
     return isRemoved;
   }
 
@@ -189,7 +192,7 @@ function LikeButtons(props: ILikeButtonsProps) {
   };
 
   return (
-    <>
+    <Box sx={{position: 'relative'}}>
       <AnimatePresence mode="sync">
         {showReactions && (
           <ClickAwayListener
@@ -211,6 +214,8 @@ function LikeButtons(props: ILikeButtonsProps) {
                 whileHover={{scale: 1.2}}
                 whileTap={{scale: 0.9}}
                 onClick={() => handleReactionClick(0)}
+                onMouseOver={() => setShowReactions(true)}
+                onMouseOut={() => setShowReactions(false)}
                 layout
               >
                 ❤️
@@ -222,6 +227,8 @@ function LikeButtons(props: ILikeButtonsProps) {
                 whileHover={{scale: 1.5}}
                 whileTap={{scale: 0.9}}
                 onClick={() => handleReactionClick(1)}
+                onMouseOver={() => setShowReactions(true)}
+                onMouseOut={() => setShowReactions(false)}
                 layout
               >
                 👏
@@ -233,6 +240,8 @@ function LikeButtons(props: ILikeButtonsProps) {
                 whileHover={{scale: 1.5}}
                 whileTap={{scale: 0.9}}
                 onClick={() => handleReactionClick(2)}
+                onMouseOver={() => setShowReactions(true)}
+                onMouseOut={() => setShowReactions(false)}
                 layout
               >
                 🎉
@@ -252,22 +261,13 @@ function LikeButtons(props: ILikeButtonsProps) {
             whileTap={{scale: 0.9}}
             sx={{marginRight: '10px'}}
             onClick={() => setShowReactions(!showReactions)}
+            onMouseOver={() => setShowReactions(true)}
+            onMouseOut={() => setShowReactions(false)}
             layout
           >
-            <AddReactionIcon
-              component={motion.svg}
-              style={{marginRight: '5px'}}
-            />
-            <Typography
-              sx={{
-                fontWeight: theme.typography.fontWeightMedium,
-                userSelect: 'none',
-              }}
-              component={motion.span}
-              variant="body1"
-            >
-              {t('homePage.React')}
-            </Typography>
+            <IconButton sx={{marginRight: 0.5}}>
+              <AddReactionIcon component={motion.svg} />
+            </IconButton>
           </Box>
 
           {heartsCount.length > 0 && (
@@ -293,7 +293,7 @@ function LikeButtons(props: ILikeButtonsProps) {
           )}
         </Box>
       </AnimatePresence>
-    </>
+    </Box>
   );
 }
 

@@ -52,36 +52,35 @@ public class CryptoService : ICryptoService
 
     private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
     {
-        WalletModel? walletModel = null;
+        WalletModel? walletModel;
 
         using (var mutex = new Mutex(false, "WalletCreateAndNotificationMutex"))
         {
+            walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+            if (walletModel != null)
+                return walletModel;
+
+            // Creat new wallet if it does not exist.
+            var wallet = _solanaService.CreateWallet();
+            var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
+            var walletPublicKey = wallet.Account.PublicKey;
+            walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
+
+            if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
+
+            var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
+            if (rpcTransactionResult.error == null)
+            {
+                await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+                    "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
+            }
+
+            var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+
             try
             {
                 mutex.WaitOne();
-                walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-                if (walletModel != null)
-                    return walletModel;
-
-                // Creat new wallet if it does not exist.
-                var wallet = _solanaService.CreateWallet();
-                var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
-                var walletPublicKey = wallet.Account.PublicKey;
-                walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
-
-                if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
-
-                var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
-                if (rpcTransactionResult.error == null)
-                {
-                    await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-                        "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
-                }
-
-                var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
-
                 await SendNotification(oid, userProfileModel);
-
                 mutex.ReleaseMutex();
             }
             catch (Exception)
@@ -120,9 +119,16 @@ public class CryptoService : ICryptoService
     {
         // Create userProfile if it has not been created before.
         await _userProfileService.GetOrAddUserProfileService(oid, user);
+        double toAwardBalance;
+        double toSpendBalance = -1;
+        toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
+        while (true)
+            if (toSpendBalance != -1)
+            {
+                toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");
+                break;
+            }
 
-        var toSpendBalance = await GetTokenBalanceAsync(oid, "toSpend");
-        var toAwardBalance = await GetTokenBalanceAsync(oid, "toAward");
         var userWalletsModel = new UserWalletsModel(toAwardBalance, toSpendBalance);
 
         return userWalletsModel;

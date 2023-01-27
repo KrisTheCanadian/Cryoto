@@ -118,7 +118,14 @@ function ProductPage() {
               <Typography variant="h5">{item?.title}</Typography>
               <Typography
                 variant="body1"
-                sx={{fontSize: 17, fontWeight: 500, color: '#0000009c'}}
+                sx={{
+                  fontSize: 17,
+                  fontWeight: 500,
+                  color:
+                    theme.interface.type === 'light'
+                      ? '#0000009c'
+                      : theme.interface.icon,
+                }}
               >
                 {item?.points} {t<string>('marketplace.Coins')}
               </Typography>
@@ -128,7 +135,10 @@ function ProductPage() {
                 sx={{
                   mt: item?.description === undefined ? 6 : 3,
                   mb: 4,
-                  color: '#0000009c',
+                  color:
+                    theme.interface.type === 'light'
+                      ? '#0000009c'
+                      : theme.interface.icon,
                 }}
               >
                 {item?.description?.replace('&apos;', "'")}

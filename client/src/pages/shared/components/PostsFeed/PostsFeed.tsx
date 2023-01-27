@@ -75,7 +75,12 @@ function PostsFeed(props: PostsFeedProps) {
   useEffect(() => {
     if (!accounts) return;
     if (bottom) return;
-    if (status === 'success' && !isFetchingNextPage && !hasNextPage) {
+    if (
+      status === 'success' &&
+      !isFetchingNextPage &&
+      !hasNextPage &&
+      data?.pages.length < 1
+    ) {
       dispatchAlert.info(t('errors.NoMorePosts'));
       setBottom(true);
       return;
@@ -91,6 +96,7 @@ function PostsFeed(props: PostsFeedProps) {
     t,
     accounts,
     bottom,
+    data?.pages.length,
   ]);
 
   return (
@@ -113,6 +119,7 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={[]}
               claps={[]}
               celebrations={[]}
+              recipientId=""
             />
           ),
         )}
@@ -137,6 +144,7 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={post?.hearts || []}
               claps={post?.claps || []}
               celebrations={post?.celebrations || []}
+              recipientId={post?.recipientProfiles[0]?.oId}
             />
           )),
         )}
@@ -163,6 +171,7 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={[]}
               claps={[]}
               celebrations={[]}
+              recipientId=""
             />
           ),
         )}
