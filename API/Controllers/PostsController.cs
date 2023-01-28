@@ -23,11 +23,13 @@ public class PostsController : ControllerBase
     private readonly string _actorId;
     private readonly INotificationService _notificationService;
     private readonly IUserProfileService _userProfileService;
+    private readonly ILogger<PostsController> _logger;
+
 
 
     public PostsController(IPostService postService, ICryptoService cryptoService,
         ITransactionService transactionService, IHttpContextAccessor contextAccessor,
-        INotificationService notificationService, IUserProfileService userProfileService)
+        INotificationService notificationService, IUserProfileService userProfileService, ILogger<PostsController> logger)
     {
         _postService = postService;
         _cryptoService = cryptoService;
@@ -36,6 +38,7 @@ public class PostsController : ControllerBase
         _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
         _notificationService = notificationService;
         _userProfileService = userProfileService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -91,7 +94,6 @@ public class PostsController : ControllerBase
             return Ok(createdPostModel);
         }
 
-
         var actorBalance = _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
         if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
@@ -99,24 +101,45 @@ public class PostsController : ControllerBase
             return BadRequest("Your balance is not enough");
         }
 
-        await _userProfileService.IncrementRecognitionsSent(_actorId);
 
         var oIdsList = new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { _actorId } };
+        var successfulRecipients = new List<UserProfileModel>();
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
         {
-            oIdsList[1].Add(recipientProfile.OId);
-            await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
-            await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
-            await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
-            await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
-                _actorId,
-                "toAward", amount, "Recognition", postCreateModel.CreatedDate));
+            try
+            {
+                var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
+                if (rpcTransactionResult?.error != null) continue;
+                await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
+                await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
+                await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
+                    _actorId,
+                    "toAward", amount, "Recognition", postCreateModel.CreatedDate));
 
-            await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
-            await SendNotification(postCreateModel, recipientProfile, postModel, amount);
+                await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
+                await SendNotification(postCreateModel, recipientProfile, postModel, amount);
+                oIdsList[1].Add(recipientProfile.OId);
+                successfulRecipients.Add(recipientProfile);
+            }
+            catch
+            {
+                _logger.LogWarning("Failed to send tokens to {Name} with oId: {Id}", recipientProfile.Name, recipientProfile.OId);
+            }
         }
 
+        if (successfulRecipients.Count == 0)
+        {
+            await _postService.DeleteByIdAsync(createdPostModel.Id);
+            return BadRequest("Could not process any transaction and create the post");
+        }
+            
+        if (createdPostModel.RecipientProfiles.Count() > successfulRecipients.Count)
+        {
+            createdPostModel.RecipientProfiles = successfulRecipients;
+        }
+        
+        await _userProfileService.IncrementRecognitionsSent(_actorId);
         _cryptoService.QueueTokenUpdate(oIdsList);
 
         return Ok(createdPostModel);

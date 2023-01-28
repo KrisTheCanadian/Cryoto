@@ -61,6 +61,32 @@ public class PostModel
         UsersWhoReacted = Array.Empty<string>();
     }
 
+
+    public PostModel(string author, string message, string[] recipients, string[] tags, DateTimeOffset createdDate, List<UserProfileModel> userProfileModelList,
+        string postType = "General", bool isTransactable = false, ulong coins = 0, string imageUrl = "")
+    {
+        Id = Guid.NewGuid().ToString();
+        Author = author;
+        Message = message;
+        Recipients = recipients;
+        Tags = tags;
+
+        // TODO: Check this string against an enum of postTypes
+        PostType = postType;
+        CreatedDate = createdDate;
+        IsTransactable = isTransactable;
+
+        // if transactable is false, the coins should be 0
+        Coins = isTransactable ? coins : 0;
+
+        ImageUrl = imageUrl;
+        
+        Hearts = Array.Empty<string>();
+        Claps = Array.Empty<string>();
+        Celebrations = Array.Empty<string>();
+        UsersWhoReacted = Array.Empty<string>();
+        RecipientProfiles = userProfileModelList;
+    }
     public PostModel(PostCreateModel postCreateModel, string actor)
     {
         Id = Guid.NewGuid().ToString();

@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/jsx-no-complex-expressions */
 import {
   Box,
   List,
@@ -9,6 +10,7 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
+  CircularProgress,
 } from '@mui/material';
 import {
   HomeOutlined,
@@ -149,26 +151,40 @@ function SideBar() {
                 <ListItemIcon sx={{width: 100}}>
                   {t('layout.ToSpend')}
                 </ListItemIcon>
-                <ListItemText
-                  primaryTypographyProps={{
-                    fontSize: '18px',
-                    fontWeight: theme.typography.fontWeightMedium,
-                  }}
-                  primary={data?.toSpendBalance}
-                />
+                {status === 'loading' ? (
+                  <CircularProgress
+                    data-testid="awardCircularProgress"
+                    size="2rem"
+                  />
+                ) : (
+                  <ListItemText
+                    primaryTypographyProps={{
+                      fontSize: '18px',
+                      fontWeight: theme.typography.fontWeightMedium,
+                    }}
+                    primary={data?.toSpendBalance}
+                  />
+                )}
               </ListItemButton>
               <Divider variant="middle" />
               <ListItemButton component={NavLink} to={routeWallet}>
                 <ListItemIcon sx={{width: 100}}>
                   {t('layout.ToAward')}
                 </ListItemIcon>
-                <ListItemText
-                  primaryTypographyProps={{
-                    fontSize: '18px',
-                    fontWeight: theme.typography.fontWeightMedium,
-                  }}
-                  primary={data?.toAwardBalance}
-                />
+                {status === 'loading' ? (
+                  <CircularProgress
+                    data-testid="awardCircularProgress"
+                    size="2rem"
+                  />
+                ) : (
+                  <ListItemText
+                    primaryTypographyProps={{
+                      fontSize: '18px',
+                      fontWeight: theme.typography.fontWeightMedium,
+                    }}
+                    primary={data?.toAwardBalance}
+                  />
+                )}
               </ListItemButton>
             </List>
           </nav>

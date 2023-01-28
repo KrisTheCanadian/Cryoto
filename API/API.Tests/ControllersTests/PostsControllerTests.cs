@@ -2,14 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using API.Controllers;
+using API.Crypto.Solana.SolanaObjects;
 using API.Models.Posts;
+using API.Models.Users;
 using API.Services.Interfaces;
 using API.Utils;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace API.Tests.ControllersTests;
@@ -23,16 +27,19 @@ public class PostsControllerTests
     private readonly PostsController _controller;
     private readonly INotificationService _notificationService;
     private readonly IUserProfileService _userProfileService;
+    private readonly ILogger<PostsController> _logger;
+
 
     public PostsControllerTests()
     {
+         _logger = A.Fake<ILogger<PostsController>>();
         _cryptoService = A.Fake<ICryptoService>();
         _postService = A.Fake<IPostService>();
         _transactionService = A.Fake<ITransactionService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
         _notificationService = A.Fake<INotificationService>();
         _userProfileService = A.Fake<IUserProfileService>();
-        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService);
+        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _logger);
     }
 
     private List<PostModel> GetFakePosts()
@@ -63,23 +70,34 @@ public class PostsControllerTests
             post2
         };
     }
-
+    private static List<UserProfileModel> GetUserProfileModelList()
+    {
+        var roles1 = new[] { "roles1" };
+        var userProfileModelList = new List<UserProfileModel>
+        {
+            new("oid1", "name1", "email1", "en1", roles1),
+        };
+        return userProfileModelList;
+    }
     private PostModel GetFakePost()
     {
+        
         return new PostModel(
             "6aa88f64-5717-4562-b3fc-2c963e66afa6",
             "A Random Message",
             new[] { "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
             new[] { "efficiency", "productivity" },
             DateTimeOffset.Now,
+            GetUserProfileModelList(),
             "General",
             true,
             50);
+        
     }
 
     private PostsController GetControllerWithIodContext(string iod)
     {
-        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService)
+        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _logger)
         {
             ControllerContext = new ControllerContext
             {
@@ -186,11 +204,12 @@ public class PostsControllerTests
         // Arrange
         var post = GetFakePost();
         var balance = post.Coins * 10000;
+        var rpcTransactionResult = GetRpcTransactionResultSuccessful();
 
         A.CallTo(() => _postService.CreateAsync(A<PostModel>.Ignored)).Returns(true);
         A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
         A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>._, A<string>._)).Returns(balance);
-
+        A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))!.Returns(rpcTransactionResult);
         var postCreateModel = new PostCreateModel(post.Message, post.Recipients, post.Tags, post.CreatedDate,
             post.PostType, post.IsTransactable, post.Coins);
 
@@ -374,4 +393,14 @@ public class PostsControllerTests
         objectResult?.Value.Should().BeOfType(typeof(PostModel));
         Assert.Equal(objectResult?.Value, post);
     }
+    
+    private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()
+    {
+        var rpcTransactionResult = new RpcTransactionResult
+        {
+            result = A.Dummy<string>()
+        };
+        return Task.FromResult(rpcTransactionResult);
+    }
+
 }

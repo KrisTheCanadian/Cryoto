@@ -52,43 +52,29 @@ public class CryptoService : ICryptoService
 
     private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
     {
-        WalletModel? walletModel;
+        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+        if (walletModel != null)
+            return walletModel;
 
-        using (var mutex = new Mutex(false, "WalletCreateAndNotificationMutex"))
+        // Creat new wallet if it does not exist.
+        var wallet = _solanaService.CreateWallet();
+        var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
+        var walletPublicKey = wallet.Account.PublicKey;
+        walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
+
+        if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
+
+        var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
+        if (rpcTransactionResult.error == null)
         {
-            walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-            if (walletModel != null)
-                return walletModel;
-
-            // Creat new wallet if it does not exist.
-            var wallet = _solanaService.CreateWallet();
-            var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
-            var walletPublicKey = wallet.Account.PublicKey;
-            walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
-
-            if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
-
-            var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
-            if (rpcTransactionResult.error == null)
-            {
-                await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-                    "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
-            }
-
-            var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
-
-            try
-            {
-                mutex.WaitOne();
-                await SendNotification(oid, userProfileModel);
-                mutex.ReleaseMutex();
-            }
-            catch (Exception)
-            {
-                // making sure mutex is released in case of exception
-                mutex.ReleaseMutex();
-            }
+            await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+                "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
         }
+
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+
+
+        await SendNotification(oid, userProfileModel);
 
         QueueTokenUpdate(new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { oid, oid } });
@@ -100,34 +86,29 @@ public class CryptoService : ICryptoService
         return walletModel;
     }
 
-    // sending notification to user using notification service
-    private async Task SendNotification(string oid, UserProfileModel? userProfileModel)
-    {
-        var notifications = await _notificationService.GetUserNotificationsAsync(oid);
-        if (userProfileModel != null && !notifications.Any())
-        {
-            var messageHtml = "<h1>Welcome to the team!</h1> <p>Hi " + userProfileModel.Name +
-                              ",</p> <p>Thank you for joining our team. We are excited to have you on board!</p> <p>Best regards,</p> <p>Cryoto Team</p>";
-            await _notificationService.SendEmailAsync(userProfileModel.Email, "Welcome to the Cryoto!",
-                messageHtml, true);
-            await _notificationService.SendNotificationAsync(new Notification("System", oid,
-                "Welcome to the team!", "Kudos", 100));
-        }
-    }
-
     public async Task<UserWalletsModel> GetWalletsBalanceAsync(string oid, ClaimsIdentity? user = null)
     {
         // Create userProfile if it has not been created before.
         await _userProfileService.GetOrAddUserProfileService(oid, user);
-        double toAwardBalance;
-        double toSpendBalance = -1;
-        toSpendBalance = GetTokenBalanceAsync(oid, "toSpend");
-        while (true)
-            if (toSpendBalance != -1)
+        double toAwardBalance = 0;
+        double toSpendBalance = 0;
+        using (var mutex = new Mutex(false, "WalletCreateAndNotificationMutex"))
+        {
+            try
             {
+                mutex.WaitOne();
+                toSpendBalance = GetTokenBalanceAsync(oid, "toSpend");
+                mutex.ReleaseMutex();
+                mutex.WaitOne();
                 toAwardBalance = GetTokenBalanceAsync(oid, "toAward");
-                break;
+                mutex.ReleaseMutex();
             }
+            catch (Exception)
+            {
+                // making sure mutex is released in case of exception
+                mutex.ReleaseMutex();
+            }
+        }
 
         var userWalletsModel = new UserWalletsModel(toAwardBalance, toSpendBalance);
 
@@ -137,7 +118,7 @@ public class CryptoService : ICryptoService
     public double GetTokenBalanceAsync(string oid, string walletType)
     {
         var walletModel = GetOrCreateUserWallet(oid, walletType);
-        return walletModel.Result?.TokenBalance ?? 0;
+        return walletModel.Result!.TokenBalance;
     }
 
     public async Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId)
@@ -235,6 +216,49 @@ public class CryptoService : ICryptoService
         return true;
     }
 
+    public async Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid)
+    {
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+        double amount;
+
+        // Edit below to change the amount of the anniversary gifted token based on the user role
+        // If a user has multiple roles they should receive the highest amount of only one role,
+        // so the order of the "if conditions matter
+        if (userProfileModel!.Roles.Contains("Admin"))
+            amount = 150;
+        else if (userProfileModel.Roles.Contains("AddNewRole"))
+            amount = 90;
+        else
+            amount = 30;
+        return amount;
+    }
+
+    public async Task<bool> SendAnniversaryTokenByOId(string oid)
+    {
+        const string walletType = "toSpend";
+        if (await _context.GetWalletModelByOIdAsync(oid, walletType) == null)
+        {
+            return false;
+        }
+
+        var amount = GetAnniversaryBonusAmountOfRoleByOIdAsync(oid).Result;
+
+        var rpcTransactionResult = await AddTokensAsync(amount, oid, walletType);
+        if (rpcTransactionResult.error != null) return false;
+
+        await UpdateTokenBalance(amount, oid, walletType);
+        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+            "master", amount, "AnniversaryGift", DateTimeOffset.UtcNow));
+
+        return true;
+    }
+
+    public async void QueueAnniversaryBonus(List<List<string>> message)
+    {
+        var serializedMessage = JsonSerializer.Serialize(message);
+        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(24), TimeSpan.FromSeconds(-1));
+    }
+
     public async void QueueTokenUpdate(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
@@ -265,44 +289,18 @@ public class CryptoService : ICryptoService
         return Convert.ToDouble(rpcClient.GetBalance(publicKey).Result.Value);
     }
 
-    public async Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid)
+    // sending notification to user using notification service
+    private async Task SendNotification(string oid, UserProfileModel? userProfileModel)
     {
-        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
-        double amount;
-
-        // Edit below to change the amount of the anniversary gifted token based on the user role
-        // If a user has multiple roles they should receive the highest amount of only one role,
-        // so the order of the "if conditions matter
-        if (userProfileModel!.Roles.Contains("Admin"))
-            amount = 150;
-        else if (userProfileModel.Roles.Contains("AddNewRole"))
-            amount = 90;
-        else
-            amount = 30;
-        return amount;
-    }
-    public async Task<bool> SendAnniversaryTokenByOId(string oid)
-    {
-        const string walletType = "toSpend";
-        if (await _context.GetWalletModelByOIdAsync(oid, walletType) == null)
+        var notifications = await _notificationService.GetUserNotificationsAsync(oid);
+        if (userProfileModel != null && !notifications.Any())
         {
-            return false;
+            var messageHtml = "<h1>Welcome to the team!</h1> <p>Hi " + userProfileModel.Name +
+                              ",</p> <p>Thank you for joining our team. We are excited to have you on board!</p> <p>Best regards,</p> <p>Cryoto Team</p>";
+            await _notificationService.SendEmailAsync(userProfileModel.Email, "Welcome to the Cryoto!",
+                messageHtml, true);
+            await _notificationService.SendNotificationAsync(new Notification("System", oid,
+                "Welcome to the team!", "Kudos", 100));
         }
-        double amount = GetAnniversaryBonusAmountOfRoleByOIdAsync(oid).Result;
-
-        var rpcTransactionResult = await AddTokensAsync(amount, oid, walletType);
-        if (rpcTransactionResult.error != null) return false;
-
-        await UpdateTokenBalance(amount, oid, walletType);
-        await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-            "master", amount, "AnniversaryGift", DateTimeOffset.UtcNow));
-
-        return true;
-    }
-    
-    public async void QueueAnniversaryBonus(List<List<string>> message)
-    {
-        var serializedMessage = JsonSerializer.Serialize(message);
-        await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(24), TimeSpan.FromSeconds(-1));
     }
 }
