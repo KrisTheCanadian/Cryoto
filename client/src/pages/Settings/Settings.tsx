@@ -140,8 +140,8 @@ function Settings() {
         {
           name: t('settings.ShippingAddress'),
           data: {
-            unit: shippingAddressState?.apartment,
             streetNumber: shippingAddressState?.streetNumber,
+            unit: shippingAddressState?.apartment,
             street: shippingAddressState?.street,
             city: shippingAddressState?.city,
             province: shippingAddressState?.province,

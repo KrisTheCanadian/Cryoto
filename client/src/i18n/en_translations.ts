@@ -103,6 +103,7 @@ export const englishTranslations = {
       SelfTransfer: 'Self Transfer',
       WelcomeTransfer: 'Welcome Transfer',
       MarketPlacePurchase: 'Marketplace Purchase',
+      AnniversaryGift: 'Anniversary Tokens Gift',
     },
     creditCard: {
       Balance: 'Balance',

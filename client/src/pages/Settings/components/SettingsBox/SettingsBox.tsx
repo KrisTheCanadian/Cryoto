@@ -163,8 +163,8 @@ function formatAddress(data: AddressSettingsElement): string[] {
 
 const addressToArray = (data: AddressSettingsElement): string[] => {
   const address: string[] = [
-    data.unit ?? '',
     data.streetNumber ?? '',
+    data.unit ?? '',
     data.street ?? '',
     data.city ?? '',
     data.province ?? '',
@@ -177,8 +177,8 @@ const addressToArray = (data: AddressSettingsElement): string[] => {
 
 const arrayToAddress = (addressArray: (string | undefined)[]) => {
   return {
-    apartment: addressArray[0],
-    streetNumber: addressArray[1],
+    streetNumber: addressArray[0],
+    apartment: addressArray[1],
     street: addressArray[2],
     city: addressArray[3],
     province: addressArray[4],
@@ -258,12 +258,12 @@ function AddressFields(props: AddressFieldsProps) {
   const addressData = [
     {
       label: 'StreetNumber',
-      defaultValue: props.value[1],
+      defaultValue: props.value[0],
       gridWidth: 4,
     },
     {
       label: 'Unit',
-      defaultValue: props.value[0],
+      defaultValue: props.value[1],
       gridWidth: 4,
     },
     {

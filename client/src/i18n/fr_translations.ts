@@ -106,6 +106,7 @@ export const frenchTranslations = {
       SelfTransfer: 'Auto-transfert',
       WelcomeTransfer: 'Transfert de bienvenue',
       MarketPlacePurchase: 'Achats en ligne',
+      AnniversaryGift: "Transfer d'anniversaire",
     },
     creditCard: {
       Balance: 'Solde',
