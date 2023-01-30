@@ -2,12 +2,24 @@ describe('Marketplace', () => {
   beforeEach(() => {
     cy.login();
   });
-  it('check header title', () => {
+  it('check marketplace filter', () => {
     cy.visit('/market');
-    // cy.get('.css-2npek9 > .MuiBox-root').should('exist');
-    // cy.get('.css-2npek9 > .MuiBox-root').should('be.visible');
-    // cy.get('.css-2npek9 > .MuiBox-root').should('contain', 'Marketplace Route');
+    cy.get('[data-testid="filterButton"]').should('exist');
   });
+  it('check marketplace search', () => {
+    cy.visit('/market');
+    cy.get('[data-testid="search-results"]').should('exist');
+  });
+  it('check marketplace sortButton', () => {
+    cy.visit('/market');
+    cy.get('[data-testid="sort-button"]').should('exist');
+  });
+  it('check marketplace cartButton', () => {
+    cy.visit('/market');
+    cy.get('[data-testid="cartButton"]').should('exist');
+  });
+  
+  
 });
 
 export {};

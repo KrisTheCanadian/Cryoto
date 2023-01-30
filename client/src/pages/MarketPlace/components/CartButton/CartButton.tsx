@@ -39,6 +39,7 @@ function CartButton(props: ICartButtonProps) {
         backgroundColor: theme.interface.main,
         mr: '10%',
       }}
+      data-testid="cartButton"
     >
       <StyledBadge badgeContent={props.cartItemsQuantity} color="primary">
         <ShoppingCart sx={{color: theme.interface.icon, fontSize: 20, p: 0}} />

@@ -29,12 +29,22 @@ describe('Responsiveness', () => {
     cy.get('#new-post-input').should('exist');
   });
 
-  // it('Test post avatar responsiveness in iPhoneX', () => {
-  //   cy.viewport('iphone-x');
-  //   cy.visit('/');
-  //   cy.wait(100);
-  //   cy.get('.MuiAvatar-root').should('exist');
-  // });
+  it('Check if Burger Menu is visible on smaller screens', () => {
+    cy.viewport('iphone-x');
+    cy.visit('/');
+    cy.wait(100);
+    cy.get('[data-testid="MenuIcon"]').should('exist');
+  });
+
+  it('Check the visibility of cart & filter in Marketplace for smaller screens', () => {
+    cy.viewport('iphone-x');
+    cy.visit('/market');
+    cy.wait(100);
+    cy.get('[data-testid="cartButton"]').should('exist');
+    cy.get('[data-testid="filterButton"]').should('exist');
+    
+  });
+  
 });
 
 export {};

@@ -120,6 +120,7 @@ function MarketPlace() {
               >
                 <IconButton
                   edge="start"
+                  data-testid="filterButton"
                   color="inherit"
                   aria-label="open drawer"
                   onClick={toggleDrawer(true)}

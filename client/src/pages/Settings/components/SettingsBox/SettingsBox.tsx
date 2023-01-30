@@ -516,6 +516,7 @@ function SettingsBox(props: SettingsBoxProps) {
                       element.callback !== undefined && (
                         <IconButton
                           aria-label="edit"
+                          data-testid="editPencil"
                           color="primary"
                           onClick={() => handleOpen(element)}
                         >
