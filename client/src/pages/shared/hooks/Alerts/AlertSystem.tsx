@@ -4,13 +4,14 @@ import {useContext, useEffect, useState} from 'react';
 import {AlertType} from './AlertType';
 import {AlertContext} from './AlertContext';
 
-const AlertSystem = () => {
+function AlertSystem() {
   const alertContext = useContext(AlertContext);
   const [open, setOpen] = useState(false);
 
-  function SlideTransition(props: SlideProps) {
+  const SlideTransition = (props: SlideProps) => {
     return <Slide {...props} direction="up" />;
-  }
+  };
+
   useEffect(() => {
     if (alertContext.alertType !== AlertType.NONE) {
       setOpen(true);
@@ -44,6 +45,6 @@ const AlertSystem = () => {
     );
   }
   return <></>;
-};
+}
 
 export default AlertSystem;

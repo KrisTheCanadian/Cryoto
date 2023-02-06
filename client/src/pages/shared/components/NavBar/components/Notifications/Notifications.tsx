@@ -25,7 +25,7 @@ import {
   Typography,
 } from '@mui/material';
 import {useMsal} from '@azure/msal-react';
-import {useNotificationSignalRContext} from '@shared/context/NotificationSignalRContext';
+import {useNotificationSignalRContext} from '@shared/hooks/NotificationSignalRContext/NotificationSignalRContext';
 import {useInfiniteQuery, useMutation, useQueryClient} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import moment from 'moment';
@@ -52,7 +52,7 @@ function Notifications() {
   const [notificationsCount, setNotificationsCount] = useState(0);
   const notificationsQuery = ['notifications-query'];
 
-  function stringToColor(string: string) {
+  const stringToColor = (string: string) => {
     let hash = 0;
     let i;
 
@@ -68,16 +68,16 @@ function Notifications() {
     }
 
     return color;
-  }
+  };
 
-  function stringAvatar(name: string) {
+  const stringAvatar = (name: string) => {
     return {
       sx: {
         bgcolor: stringToColor(name),
       },
       children: `${name.split(' ')[0][0]}`,
     };
-  }
+  };
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useInfiniteQuery<INotificationPage, Error>(

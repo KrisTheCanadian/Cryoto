@@ -26,13 +26,16 @@ async function getTokenBalance(): Promise<IWalletsBalance> {
   const accessToken = await getAccessToken();
 
   // convert fetch to axios for consistency
-  const res = await axios.get<IWalletsBalance>(apiRouteCryptoGetTokenBalance, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Access-Control-Allow-Origin': `${apiEndpoint}`,
+  const response = await axios.get<IWalletsBalance>(
+    apiRouteCryptoGetTokenBalance,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
     },
-  });
-  return res.data;
+  );
+  return response.data;
 }
 
 export {selfTransferTokens, getTokenBalance};

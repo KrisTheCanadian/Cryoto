@@ -6,11 +6,10 @@ import {
   InputBase,
   IconButton,
   Box,
-  BoxProps,
   Drawer,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import {memo, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {AuthenticatedTemplate} from '@azure/msal-react';
@@ -21,8 +20,6 @@ import {RoundedInput} from '../interface-elements/RoundedInput';
 import {Notifications, ProfileMenu} from './components';
 
 import {routeHome, routeMarket} from '@/pages/routes';
-
-const ProfileMenuMemo = memo(ProfileMenu);
 
 function NavBar() {
   const {t} = useTranslation();
@@ -88,6 +85,7 @@ function NavBar() {
     display: (searchOpen && 'block') || 'none',
     color: theme.palette.text.primary,
   };
+
   const searchButtonStyle = {
     [theme.breakpoints.up('sm')]: {
       display: location.pathname === routeMarket ? 'block' : 'none',

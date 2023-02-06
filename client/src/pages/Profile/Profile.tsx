@@ -1,23 +1,24 @@
 /* eslint-disable @shopify/strict-component-boundaries */
 import PageFrame from '@shared/components/PageFrame';
 import {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import {MiddleColumn} from '@shared/components/MiddleColumn';
 import {RightBar} from '@shared/components/RightBar';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import LocationCityIcon from '@mui/icons-material/LocationCity';
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
-import OutboxIcon from '@mui/icons-material/Outbox';
-import CakeIcon from '@mui/icons-material/Cake';
+import {
+  AccessTime,
+  LocationCity,
+  WorkOutline,
+  CalendarMonth,
+  MoveToInbox,
+  Outbox,
+  Cake,
+} from '@mui/icons-material';
 import {
   Avatar,
   Box,
   Button,
   Card,
   CardHeader,
-  ClickAwayListener,
   List,
   ListItem,
   Typography,
@@ -30,7 +31,6 @@ import moment from 'moment';
 import {useQueryClient} from 'react-query';
 
 import {NewPostDialog} from '../HomePage/components/NewPost/components';
-import {postsQuery} from '../HomePage/HomePage';
 
 import {getUserById, getUserProfilePhoto} from '@/data/api/requests/users';
 import {IUser} from '@/data/api/types';
@@ -45,18 +45,12 @@ function Profile() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const {accounts} = useMsal();
   const {t} = useTranslation();
-
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const lang = i18n.language.substring(0, 2);
     moment.locale(lang);
   }, []);
-
-  function handleDialogOpen() {
-    setDialogOpen(true);
-  }
 
   useEffect(() => {
     // invalidate the cache
@@ -126,35 +120,35 @@ function Profile() {
                 <>
                   <List>
                     <ListItem>
-                      <WorkOutlineIcon sx={iconStyle} />
+                      <WorkOutline sx={iconStyle} />
                       {userProfile?.businessTitle}
                     </ListItem>
                     <ListItem>
-                      <LocationCityIcon sx={iconStyle} />
+                      <LocationCity sx={iconStyle} />
                       {userProfile?.city}
                     </ListItem>
                     <ListItem>
-                      <AccessTimeIcon sx={iconStyle} />
+                      <AccessTime sx={iconStyle} />
                       {userProfile?.timeZone}
                     </ListItem>
                     <ListItem>
-                      <CalendarMonthIcon sx={iconStyle} />
+                      <CalendarMonth sx={iconStyle} />
                       {t('profilePage.joinedIn')}
                       {moment(userProfile?.startDate).format('MMMM YYYY')}
                     </ListItem>
                     <ListItem>
-                      <CakeIcon sx={iconStyle} />
+                      <Cake sx={iconStyle} />
                       {moment(userProfile?.startDate).format('DD MMMM')}
                     </ListItem>
                     <ListItem>
-                      <OutboxIcon sx={iconStyle} />
+                      <Outbox sx={iconStyle} />
                       <Typography variant="body1" mr={0.5}>
                         <b>{userProfile?.recognitionsSent}</b>
                       </Typography>
                       {t('profilePage.recognitionsSent')}
                     </ListItem>
                     <ListItem>
-                      <MoveToInboxIcon sx={iconStyle} />
+                      <MoveToInbox sx={iconStyle} />
                       <Typography variant="body1" mr={0.5}>
                         <b>{userProfile?.recognitionsReceived}</b>
                       </Typography>
@@ -170,7 +164,7 @@ function Profile() {
                       aria-label="settings"
                       variant="outlined"
                       sx={iconStyle}
-                      onClick={handleDialogOpen}
+                      onClick={() => setDialogOpen(true)}
                     >
                       {t('profilePage.recognize')}
                     </Button>

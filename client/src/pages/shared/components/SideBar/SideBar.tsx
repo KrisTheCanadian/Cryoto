@@ -30,12 +30,6 @@ import {routeHome, routeMarket, routeOrders, routeWallet} from '@/pages/routes';
 
 export const walletBalanceQuery = 'walletsBalance';
 
-const StyledMenuBox = styled(Box)(({theme}) => ({
-  width: '100%',
-  boxSizing: 'border-box',
-  padding: theme.spacing(2),
-}));
-
 function SideBar() {
   const {t} = useTranslation();
   const location = useLocation();
@@ -45,6 +39,12 @@ function SideBar() {
     'walletsBalance',
     getTokenBalance,
   );
+
+  const StyledMenuBox = styled(Box)(({theme}) => ({
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: theme.spacing(2),
+  }));
 
   const sideBarStyle = {
     // to adjust to the navbar height

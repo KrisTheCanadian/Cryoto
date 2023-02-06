@@ -1,4 +1,4 @@
-import axios, {AxiosError} from 'axios';
+import axios from 'axios';
 
 import {getAccessToken, getGraphAccessToken} from '../helpers';
 import {
@@ -33,12 +33,12 @@ export async function getUserProfile() {
   const bearer = `Bearer ${accessToken}`;
 
   // convert fetch to axios for consistency
-  const res = await axios.get(apiRouteUserProfileGetUserProfile, {
+  const response = await axios.get(apiRouteUserProfileGetUserProfile, {
     headers: {
       Authorization: bearer,
     },
   });
-  return res.data;
+  return response.data;
 }
 
 export async function getUserProfilePhoto(oId: string) {
@@ -49,7 +49,7 @@ export async function getUserProfilePhoto(oId: string) {
   const graphBearer = `${graphAccessToken}`;
 
   // convert fetch to axios for consistency
-  const res = await axios.get(apiRouteUserProfileGetUserProfilePhoto, {
+  const response = await axios.get(apiRouteUserProfileGetUserProfilePhoto, {
     headers: {
       Authorization: bearer,
       MSGraphAccessToken: graphBearer,
@@ -57,7 +57,7 @@ export async function getUserProfilePhoto(oId: string) {
     },
   });
 
-  return res.data;
+  return response.data;
 }
 
 export async function updateUserProfile(
@@ -70,7 +70,7 @@ export async function updateUserProfile(
   headers.append('Authorization', bearer);
 
   // convert fetch to axios for consistency
-  const res = await axios.put<IUserProfile>(
+  const response = await axios.put<IUserProfile>(
     apiRouteUserProfileUpdate,
     JSON.stringify(updateUserProfileData),
     {
@@ -82,7 +82,7 @@ export async function updateUserProfile(
     },
   );
 
-  return res.data;
+  return response.data;
 }
 
 export async function getUserById(userId: string) {
@@ -93,7 +93,7 @@ export async function getUserById(userId: string) {
   headers.append('Authorization', bearer);
 
   // convert fetch to axios for consistency
-  const res = await axios.get(
+  const response = await axios.get(
     `${apiRouteUserProfileGetUserByID}?userId=${userId}`,
     {
       headers: {
@@ -102,5 +102,5 @@ export async function getUserById(userId: string) {
     },
   );
 
-  return res.data;
+  return response.data;
 }

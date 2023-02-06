@@ -36,7 +36,7 @@ export const englishTranslations = {
     MustSelectRecipient: 'Please select at least one recipient',
     Post: 'Post',
     React: 'React',
-    Recognized: ' recognized ',
+    Recognized: 'recognized ',
     UploadImageMessage: 'Drop image here',
   },
   sideBar: {
@@ -67,10 +67,10 @@ export const englishTranslations = {
     RewardsAlt: 'Rewards',
   },
   authenticationPage: {
-    loading: 'logging in...',
+    loading: 'Logging In...',
   },
   profilePage: {
-    joinedIn: 'Joined in ',
+    joinedIn: 'Joined In',
     recognize: 'Recognize',
     recognitions: 'Recognitions',
     recognitionsSent: ' Recognitions sent',

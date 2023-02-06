@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable promise/catch-or-return */
-import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import {useMsal} from '@azure/msal-react';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -11,6 +10,7 @@ import {useTranslation} from 'react-i18next';
 import {routeHome} from '@/pages/routes';
 import {getUserProfile} from '@/data/api/requests/users';
 
+// Loading Page (transition between landing page and protected pages)
 function Authentication() {
   const {t} = useTranslation();
   const [userProfileData, setUserProfileData] = useState();
@@ -32,7 +32,6 @@ function Authentication() {
     if (userProfileData) navigate(routeHome);
   }, [userProfileData]);
 
-  // position center on screen
   const centerBoxStyle = {
     position: 'absolute',
     top: '50%',

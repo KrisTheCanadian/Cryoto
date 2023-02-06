@@ -2,15 +2,7 @@
 /* eslint-disable @shopify/strict-component-boundaries */
 
 import {useMsal} from '@azure/msal-react';
-import {
-  Typography,
-  Button,
-  Stack,
-  Grid,
-  Backdrop,
-  CircularProgress,
-  Box,
-} from '@mui/material';
+import {Typography, Stack, Grid, Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {useEffect} from 'react';
 import {useTranslation} from 'react-i18next';

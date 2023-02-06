@@ -2,7 +2,6 @@
 import {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
-import {CircularProgress} from '@mui/material';
 
 import IMarketPlaceItem from '@/data/api/types/IMarketPlaceItem';
 import {getAllItems} from '@/data/api/requests/marketplace';
@@ -50,7 +49,7 @@ interface MarketplaceContextState {
 
 const MarketplaceContext = createContext({} as MarketplaceContextState);
 
-const MarketplaceProvider = (props: {children: any}) => {
+function MarketplaceProvider(props: {children: any}) {
   const {t, i18n} = useTranslation();
   const lang = i18n.language.substring(0, 2);
   const itemsJsonTranslated: Item[] = [];
@@ -149,9 +148,9 @@ const MarketplaceProvider = (props: {children: any}) => {
       {props.children}
     </MarketplaceContext.Provider>
   );
-};
+}
 
-function useMarketplaceContext() {
+const useMarketplaceContext = () => {
   const context = useContext(MarketplaceContext);
   if (context === undefined) {
     throw new Error(
@@ -159,6 +158,6 @@ function useMarketplaceContext() {
     );
   }
   return context;
-}
+};
 
 export {MarketplaceProvider, useMarketplaceContext};

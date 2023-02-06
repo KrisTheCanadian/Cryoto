@@ -34,3 +34,7 @@ cypress/downloads
 cypress/videos
 cypressCoverage
 .nyc_output
+
+# Ignore Mac DS_Store files
+.DS_Store
+**/.DS_Store

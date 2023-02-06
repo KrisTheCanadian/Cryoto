@@ -2,7 +2,7 @@ import {createContext, useContext, useMemo, useState} from 'react';
 
 import {AlertType} from './AlertType';
 
-const AlertProvider = (props: {children: any}) => {
+function AlertProvider(props: {children: any}) {
   const [alertType, setAlertType] = useState(AlertType.NONE);
   const [alertText, setAlertText] = useState('');
 
@@ -48,7 +48,7 @@ const AlertProvider = (props: {children: any}) => {
       {props.children}
     </AlertContext.Provider>
   );
-};
+}
 
 const AlertContext = createContext({
   alertType: AlertType.NONE,
@@ -60,12 +60,12 @@ const AlertContext = createContext({
   clear: () => {},
 });
 
-function useAlertContext() {
+const useAlertContext = () => {
   const context = useContext(AlertContext);
   if (context === undefined) {
     throw new Error('useAlertContext must be used within a AlertProvider');
   }
   return context;
-}
+};
 
 export {AlertProvider, useAlertContext, AlertContext};

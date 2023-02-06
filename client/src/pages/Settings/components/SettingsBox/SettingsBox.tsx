@@ -81,6 +81,18 @@ interface TextFieldInputProps {
   multiline: boolean;
 }
 
+interface LanguageSelectProps {
+  title: string;
+  value: string;
+  updateCallback: any;
+}
+
+interface AddressFieldsProps {
+  title: string;
+  value: string[];
+  updateCallback: any;
+}
+
 function TextFieldInput(props: TextFieldInputProps) {
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -141,70 +153,6 @@ function TextFieldInput(props: TextFieldInputProps) {
   );
 }
 
-interface LanguageSelectProps {
-  title: string;
-  value: string;
-  updateCallback: any;
-}
-
-function formatAddress(data: AddressSettingsElement): string[] {
-  const l1 = `${data.unit && data.streetNumber ? `${data.unit}-` : ''}${
-    data.streetNumber ? `${data.streetNumber} ` : ''
-  }${data.street}`;
-  const l2 = `${data.city ? `${data.city}` : ''}${
-    data.city && (data.province || data.postalCode) ? ', ' : ''
-  }${data.province ? `${data.province}` : ''}${
-    data.province && data.postalCode ? ', ' : ''
-  }${data.postalCode ? `${data.postalCode}` : ''}`;
-  const l3 = data.country ? `${data.country}` : '';
-  const l4 = data.additionalInfo ? `${data.additionalInfo}` : '';
-  return [l1, l2, l3, l4];
-}
-
-const addressToArray = (data: AddressSettingsElement): string[] => {
-  const address: string[] = [
-    data.streetNumber ?? '',
-    data.unit ?? '',
-    data.street ?? '',
-    data.city ?? '',
-    data.province ?? '',
-    data.country ?? '',
-    data.postalCode ?? '',
-    data.additionalInfo ?? '',
-  ];
-  return address;
-};
-
-const arrayToAddress = (addressArray: (string | undefined)[]) => {
-  return {
-    streetNumber: addressArray[0],
-    apartment: addressArray[1],
-    street: addressArray[2],
-    city: addressArray[3],
-    province: addressArray[4],
-    country: addressArray[5],
-    postalCode: addressArray[6],
-    additionalInfo: addressArray[7],
-  };
-};
-
-const keepChanged = (
-  oldArray: string[],
-  newArray: string[],
-): (string | undefined)[] => {
-  const result: (string | undefined)[] = [];
-  if (newArray.length === oldArray.length) {
-    for (let i = 0; i < newArray.length; i++) {
-      if (newArray[i] === oldArray[i]) {
-        result[i] = undefined;
-      } else {
-        result[i] = newArray[i];
-      }
-    }
-  }
-  return result;
-};
-
 function LanguageSelect(props: LanguageSelectProps) {
   const [selectedLanguage, setSelectedLanguage] = useState<string>(props.value);
   const theme = useTheme();
@@ -231,12 +179,6 @@ function LanguageSelect(props: LanguageSelectProps) {
       </Grid>
     </Grid>
   );
-}
-
-interface AddressFieldsProps {
-  title: string;
-  value: string[];
-  updateCallback: any;
 }
 
 function AddressFields(props: AddressFieldsProps) {
@@ -344,6 +286,64 @@ function SettingsBox(props: SettingsBoxProps) {
   const [modalSaveButtonDisabled, setModalSaveButtonDisabled] =
     useState<boolean>(false);
 
+  const formatAddress = (data: AddressSettingsElement): string[] => {
+    const l1 = `${data.unit && data.streetNumber ? `${data.unit}-` : ''}${
+      data.streetNumber ? `${data.streetNumber} ` : ''
+    }${data.street}`;
+    const l2 = `${data.city ? `${data.city}` : ''}${
+      data.city && (data.province || data.postalCode) ? ', ' : ''
+    }${data.province ? `${data.province}` : ''}${
+      data.province && data.postalCode ? ', ' : ''
+    }${data.postalCode ? `${data.postalCode}` : ''}`;
+    const l3 = data.country ? `${data.country}` : '';
+    const l4 = data.additionalInfo ? `${data.additionalInfo}` : '';
+    return [l1, l2, l3, l4];
+  };
+
+  const addressToArray = (data: AddressSettingsElement): string[] => {
+    const address: string[] = [
+      data.streetNumber ?? '',
+      data.unit ?? '',
+      data.street ?? '',
+      data.city ?? '',
+      data.province ?? '',
+      data.country ?? '',
+      data.postalCode ?? '',
+      data.additionalInfo ?? '',
+    ];
+    return address;
+  };
+
+  const arrayToAddress = (addressArray: (string | undefined)[]) => {
+    return {
+      streetNumber: addressArray[0],
+      apartment: addressArray[1],
+      street: addressArray[2],
+      city: addressArray[3],
+      province: addressArray[4],
+      country: addressArray[5],
+      postalCode: addressArray[6],
+      additionalInfo: addressArray[7],
+    };
+  };
+
+  const keepChanged = (
+    oldArray: string[],
+    newArray: string[],
+  ): (string | undefined)[] => {
+    const result: (string | undefined)[] = [];
+    if (newArray.length === oldArray.length) {
+      for (let i = 0; i < newArray.length; i++) {
+        if (newArray[i] === oldArray[i]) {
+          result[i] = undefined;
+        } else {
+          result[i] = newArray[i];
+        }
+      }
+    }
+    return result;
+  };
+
   const unifiedValue = (element: SettingsElement): (string | boolean)[] => {
     switch (element.inputType) {
       case SettingsElementInputType.TextField:
@@ -358,6 +358,7 @@ function SettingsBox(props: SettingsBoxProps) {
         return [''];
     }
   };
+
   const displayValue = (element: SettingsElement): string[] => {
     const value = element.data.value ? element.data.value[0] : '';
     switch (element.inputType) {
@@ -382,11 +383,13 @@ function SettingsBox(props: SettingsBoxProps) {
         return [''];
     }
   };
+
   const handleOpen = (element: SettingsElement) => {
     setModalSettingsElement(element);
     setModalSaveButtonDisabled(true);
     setOpen(true);
   };
+
   const handleClose = () => setOpen(false);
 
   const valueEquality = (

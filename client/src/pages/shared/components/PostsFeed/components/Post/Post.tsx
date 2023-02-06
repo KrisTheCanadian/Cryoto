@@ -80,15 +80,15 @@ function Post(props: PostProps) {
       .catch((err) => {});
   }, [authorId]);
 
-  function handleAvatarClickAuthor() {
+  const handleAvatarClickAuthor = () => {
     navigate(`/profile/${authorId}`);
-  }
+  };
 
-  function handleAvatarClickRecipient() {
+  const handleAvatarClickRecipient = () => {
     navigate(`/profile/${recipientId}`);
-  }
+  };
 
-  function stringAvatar(name: string) {
+  const stringAvatar = (name: string) => {
     return {
       sx: {
         bgcolor: stringToColor(name),
@@ -96,9 +96,9 @@ function Post(props: PostProps) {
       },
       children: `${name.split(' ')[0][0]}`,
     };
-  }
+  };
 
-  function stringToColor(string: string) {
+  const stringToColor = (string: string) => {
     let hash = 0;
     let i;
 
@@ -114,7 +114,7 @@ function Post(props: PostProps) {
     }
 
     return color;
-  }
+  };
 
   return (
     <Box
@@ -154,7 +154,7 @@ function Post(props: PostProps) {
               <b style={{cursor: 'pointer'}} onClick={handleAvatarClickAuthor}>
                 {firstName}
               </b>
-              {t('homePage.Recognized')}
+              {` ${t('homePage.Recognized')}`}
               <b
                 style={{cursor: 'pointer'}}
                 onClick={handleAvatarClickRecipient}

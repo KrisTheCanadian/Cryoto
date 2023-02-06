@@ -55,11 +55,12 @@ function ThemeContextProvider(props: ThemeContextProviderProps) {
 
 // hook to get and set the dark mode state
 // use colorMode.toggleColorMode() will toggle the dark mode
-function useThemeModeContext() {
+const useThemeModeContext = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error('useThemeModeContext must be used within a CountProvider');
   }
   return context;
-}
+};
+
 export {ThemeContextProvider, useThemeModeContext};

@@ -27,12 +27,10 @@ function LikeButtons(props: ILikeButtonsProps) {
   const dispatchAlert = useAlertContext();
 
   const {id, hearts, claps, celebrations} = props;
-  const [postsPerLoad, setPostsPerLoad] = useState(10);
 
   const [heartsCount, setHeartsCount] = useState(hearts);
   const [clapsCount, setClapsCount] = useState(claps);
   const [celebrationsCount, setCelebrationsCount] = useState(celebrations);
-
   const [showReactions, setShowReactions] = useState(false);
 
   const reactionVariance = {
@@ -86,16 +84,16 @@ function LikeButtons(props: ILikeButtonsProps) {
     userSelect: 'none',
   };
 
-  async function handleReactionServer(type: number) {
+  const handleReactionServer = async (type: number) => {
     const res = await reactPost(type, id);
     // check if res is undefined
     if (!res) {
       // display error message
       dispatchAlert.error(t('error'));
     }
-  }
+  };
 
-  async function handleReactionClick(type: number) {
+  const handleReactionClick = async (type: number) => {
     // check if user is logged in
     if (!accounts.length) {
       return;
@@ -119,9 +117,9 @@ function LikeButtons(props: ILikeButtonsProps) {
     setShowReactions(false);
     handleReactionServer(type);
     return isRemoved;
-  }
+  };
 
-  function updateHeart() {
+  const updateHeart = () => {
     const heartIndex = heartsCount.indexOf(accounts[0].localAccountId);
     const newHeartsCount = [...heartsCount];
     if (heartIndex > -1) {
@@ -132,9 +130,9 @@ function LikeButtons(props: ILikeButtonsProps) {
     setHeartsCount([...newHeartsCount, accounts[0].localAccountId]);
 
     return false;
-  }
+  };
 
-  function updateClaps() {
+  const updateClaps = () => {
     const clapIndex = clapsCount.indexOf(accounts[0].localAccountId);
     const newClapsCount = [...clapsCount];
     if (clapIndex > -1) {
@@ -144,9 +142,9 @@ function LikeButtons(props: ILikeButtonsProps) {
     }
     setClapsCount([...newClapsCount, accounts[0].localAccountId]);
     return false;
-  }
+  };
 
-  function updateCelebrations() {
+  const updateCelebrations = () => {
     const celebrationIndex = celebrationsCount.indexOf(
       accounts[0].localAccountId,
     );
@@ -158,9 +156,9 @@ function LikeButtons(props: ILikeButtonsProps) {
     }
     setCelebrationsCount([...newCelebrationsCount, accounts[0].localAccountId]);
     return false;
-  }
+  };
 
-  const EmojiContainer = (props: EmojiContainerProps) => {
+  function EmojiContainer(props: EmojiContainerProps) {
     const {type, emoji, text} = props;
 
     return (
@@ -189,7 +187,7 @@ function LikeButtons(props: ILikeButtonsProps) {
         </Box>
       </AnimatePresence>
     );
-  };
+  }
 
   return (
     <Box sx={{position: 'relative'}}>

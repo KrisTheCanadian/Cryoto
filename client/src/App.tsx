@@ -8,12 +8,13 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import {ReactQueryDevtools} from 'react-query/devtools';
 import {AlertProvider} from '@shared/hooks/Alerts/AlertContext';
 import AlertSystem from '@shared/hooks/Alerts/AlertSystem';
-import {NotifiSignalRContext} from '@shared/context/NotificationSignalRContext';
+import {NotifiSignalRContext} from '@shared/hooks/NotificationSignalRContext/NotificationSignalRContext';
 import {HubConnectionBuilder} from '@microsoft/signalr';
 import {NavBar} from '@shared/components/NavBar';
 import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
 import {ScrollToTop} from '@shared/components/ScrollToTop';
 
+import './App.css';
 import Role from './pages/roles';
 import {
   routeAuthentication,
@@ -33,12 +34,11 @@ import {MarketPlace} from './pages/MarketPlace';
 import {ProductPage} from './pages/MarketPlace/components/ProductPage';
 import {HomePage} from './pages/HomePage';
 import {Wallet} from './pages/Wallet';
-import './App.css';
 import {Profile} from './pages/Profile';
 import {Orders} from './pages/Orders';
 import {Settings} from './pages/Settings';
-import {apiEndpoint} from './data/api/routes';
 import {LandingPage} from './pages/LandingPage';
+import {apiEndpoint} from './data/api/routes';
 
 const queryClient = new QueryClient({
   defaultOptions: {

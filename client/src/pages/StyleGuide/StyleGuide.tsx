@@ -21,7 +21,11 @@ interface ColorBoxProps {
   title: string;
   description: string;
 }
-function ColorBox(props: ColorBoxProps) {
+interface CodeBlockProps {
+  children: ReactNode | string | ReactNode[];
+}
+
+const ColorBox = (props: ColorBoxProps) => {
   const {color, title, description} = props;
   const theme = useTheme();
   return (
@@ -49,11 +53,9 @@ function ColorBox(props: ColorBoxProps) {
       </CardContent>
     </Card>
   );
-}
-interface CodeBlockProps {
-  children: ReactNode | string | ReactNode[];
-}
-function CodeBlock(props: CodeBlockProps) {
+};
+
+const CodeBlock = (props: CodeBlockProps) => {
   const theme = useTheme();
   const {children} = props;
   return (
@@ -67,7 +69,7 @@ function CodeBlock(props: CodeBlockProps) {
       {children}
     </Box>
   );
-}
+};
 
 function StyleGuide() {
   const theme = useTheme();
@@ -296,6 +298,3 @@ function StyleGuide() {
 }
 
 export default StyleGuide;
-function brightnessIcon(): ReactNode {
-  throw new Error('Function not implemented.');
-}

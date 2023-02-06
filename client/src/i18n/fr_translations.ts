@@ -16,8 +16,8 @@ export const frenchTranslations = {
     MyBalance: 'Solde de Compte',
     ToSpend: 'À Dépenser',
     ToAward: 'À Donner',
-    DarkMode: 'Mode sombre',
-    LightMode: 'Mode claire',
+    DarkMode: 'Mode Sombre',
+    LightMode: 'Mode Claire',
   },
   errors: {
     PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
@@ -39,7 +39,7 @@ export const frenchTranslations = {
       "S'il vous plaît sélectionnez au moins un destinataire",
     Post: 'Poster',
     React: 'Réagir',
-    Recognized: ' a reconnu ',
+    Recognized: 'a reconnu ',
     UploadImageMessage: 'Déposez l’image ici',
   },
   sideBar: {
@@ -70,10 +70,10 @@ export const frenchTranslations = {
     RewardsAlt: 'Recompenses',
   },
   authenticationPage: {
-    loading: 'connexion en cours',
+    loading: 'Connexion En Cours',
   },
   profilePage: {
-    joinedIn: 'Rejoint en ',
+    joinedIn: 'Rejoint En ',
     recognize: 'Reconnaître',
     recognitions: 'Reconnaissances',
     recognitionsSent: ' Reconnaissances envoyées',

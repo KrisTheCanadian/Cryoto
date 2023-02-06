@@ -14,5 +14,5 @@ it('Sign out button should render', async () => {
       </MemoryRouter>
     </I18nextProvider>,
   );
-  expect(screen.getByText('Sign out')).toBeInTheDocument();
+  expect(screen.getByText('Logout')).toBeInTheDocument();
 });

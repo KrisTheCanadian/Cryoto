@@ -44,16 +44,16 @@ function MarketSearch() {
 
   const inputFieldRef = useRef<HTMLDivElement>(null);
 
-  function openSearch() {
+  const openSearch = () => {
     setOpen(true);
     setTimeout(() => {
       inputFieldRef.current?.focus();
     }, 1);
-  }
+  };
 
-  function closeSearch() {
+  const closeSearch = () => {
     setOpen(false);
-  }
+  };
 
   return (
     <div>

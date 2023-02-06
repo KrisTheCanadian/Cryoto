@@ -78,10 +78,6 @@ function Settings() {
       },
     });
 
-  const updateName = (newName: string) => {
-    mutateUserProfile({name: newName});
-  };
-
   const updateJobTitle = (newJobTitle: string) => {
     mutateUserProfile({businessTitle: newJobTitle});
   };

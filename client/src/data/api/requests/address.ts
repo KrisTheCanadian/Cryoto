@@ -20,20 +20,13 @@ export async function getDefaultAddress(): Promise<IAddress> {
     streetNumber: '',
   };
   const accessToken = await getAccessToken();
-  if (accessToken == null) {
-    return nullAddress;
-  }
-  const headers = new Headers();
-  const bearer = `Bearer ${accessToken}`;
 
-  headers.append('Authorization', bearer);
-
-  const res = await axios.get<IAddress>(apiRouteAddressGetDefaultAddress, {
+  const response = await axios.get<IAddress>(apiRouteAddressGetDefaultAddress, {
     headers: {
-      Authorization: bearer,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
-  return res.data;
+  return response.data;
 }
 
 export async function updateAddress(
@@ -41,22 +34,19 @@ export async function updateAddress(
   updateAddressData: IUpdateAddress,
 ): Promise<IAddress> {
   const accessToken = await getAccessToken();
-  const headers = new Headers();
-  const bearer = `Bearer ${accessToken}`;
 
-  headers.append('Authorization', bearer);
-
-  const res = await axios.put<IAddress>(
-    `${apiRouteAddressUpdate}?id=${id}`,
+  const url = `${apiRouteAddressUpdate}?id=${id}`;
+  const response = await axios.put<IAddress>(
+    url,
     JSON.stringify(updateAddressData),
     {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: bearer,
+        Authorization: `Bearer ${accessToken}`,
         'Access-Control-Allow-Origin': `${apiEndpoint}`,
       },
     },
   );
 
-  return res.data;
+  return response.data;
 }

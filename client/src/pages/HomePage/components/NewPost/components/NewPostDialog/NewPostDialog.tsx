@@ -48,7 +48,7 @@ interface FormValidation {
   companyValue: boolean;
 }
 
-const StyledTextareaAutosize = styled(TextareaAutosize)(({theme}) => ({
+const StyledTextAreaAutosize = styled(TextareaAutosize)(({theme}) => ({
   width: '100%',
   flex: 1,
   border: 'none',
@@ -272,7 +272,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           id="new-post-dialog-amount"
         />
 
-        <StyledTextareaAutosize
+        <StyledTextAreaAutosize
           onChange={handleMessageChange}
           key="message-field"
           aria-label={t<string>('homePage.WriteMessage')}

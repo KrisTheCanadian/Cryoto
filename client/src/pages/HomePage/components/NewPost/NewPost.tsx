@@ -26,17 +26,6 @@ function NewPost(props: NewPostProps) {
   const theme = useTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // get initials from name
-  const initials = props.name
-    ?.split(' ')
-    .map((name) => name[0])
-    .join('')
-    .toUpperCase();
-
-  function handleDialogOpen() {
-    setDialogOpen(true);
-  }
-
   const StyledInput = styled(InputBase)(({theme}) => ({
     width: '100%',
     marginLeft: theme.spacing(1),
@@ -55,16 +44,16 @@ function NewPost(props: NewPostProps) {
       .catch((err) => {});
   }, [props.oId]);
 
-  function stringAvatar(name: string) {
+  const stringAvatar = (name: string) => {
     return {
       sx: {
         bgcolor: stringToColor(name),
       },
       children: `${name.split(' ')[0][0]}`,
     };
-  }
+  };
 
-  function stringToColor(string: string) {
+  const stringToColor = (string: string) => {
     let hash = 0;
     let i;
 
@@ -80,7 +69,7 @@ function NewPost(props: NewPostProps) {
     }
 
     return color;
-  }
+  };
 
   return (
     <>
@@ -105,7 +94,7 @@ function NewPost(props: NewPostProps) {
               <RoundedInput>
                 <StyledInput
                   id="new-post-input"
-                  onClick={handleDialogOpen}
+                  onClick={() => setDialogOpen(true)}
                   placeholder={t('homePage.NewPost')}
                 />
               </RoundedInput>
