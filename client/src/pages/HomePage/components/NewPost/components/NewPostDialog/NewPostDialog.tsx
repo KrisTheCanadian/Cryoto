@@ -17,6 +17,7 @@ import {
   TextareaAutosize,
   TextField,
   IconButton,
+  ClickAwayListener,
 } from '@mui/material';
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
@@ -24,6 +25,8 @@ import {useQueryClient} from 'react-query';
 import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
 import {useMsal} from '@azure/msal-react';
 import PhotoIcon from '@mui/icons-material/Photo';
+import EmojiPicker, {Theme} from 'emoji-picker-react';
+import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 
 import {useMutationCreatePost} from './hooks/useMutationCreatePost';
 import {ImageUploader} from './components';
@@ -54,6 +57,7 @@ const StyledTextAreaAutosize = styled(TextareaAutosize)(({theme}) => ({
   border: 'none',
   outline: 'none',
   fontFamily: 'inherit',
+  resize: 'none',
   background: 'inherit',
   fontSize: theme.typography.subtitle2.fontSize,
   marginTop: theme.spacing(2),
@@ -80,6 +84,7 @@ function NewPostDialog(props: NewPostDialogProps) {
   const [message, setMessage] = useState<string>('');
   const [imageUploaderOpen, setImageUploaderOpen] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string>('');
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState<boolean>(false);
 
   const queryClient = useQueryClient();
 
@@ -179,6 +184,17 @@ function NewPostDialog(props: NewPostDialogProps) {
     setImageUploaderOpen(true);
   };
 
+  const handleEmojiButtonClick = () => {
+    setEmojiPickerOpen(!emojiPickerOpen);
+  };
+
+  const handleEmojiSelect = (clickedEmoji: any) => {
+    setMessage(message + clickedEmoji.emoji);
+    setEmojiPickerOpen(false);
+  };
+
+  const emojiTheme = theme.palette.mode === 'dark' ? Theme.DARK : Theme.LIGHT;
+
   const companyValues = [
     'ClientsAndValues',
     'PeopleAndKnowledge',
@@ -202,6 +218,8 @@ function NewPostDialog(props: NewPostDialogProps) {
       PaperProps={{
         style: {
           borderRadius: theme.borderRadius.large,
+          maxWidth: '500px',
+          overflow: 'visible',
         },
       }}
       aria-labelledby="responsive-dialog-title"
@@ -237,16 +255,16 @@ function NewPostDialog(props: NewPostDialogProps) {
           />
         </Box>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{pb: '0px!important'}}>
         <Box sx={{pt: theme.spacing(1)}} />
-        <FormControl>
+        <FormControl sx={{width: '60%'}}>
           <TextField
             error={!formValidity.companyValue}
             select
             value={companyValue}
             label={t<string>('homePage.SelectValue')}
             onChange={handleCompanyValueChange}
-            sx={{width: 300, mr: theme.spacing(1)}}
+            sx={{width: '100%', mr: theme.spacing(1)}}
             id="new-post-dialog-company-value"
             helperText={
               !formValidity.companyValue &&
@@ -261,6 +279,10 @@ function NewPostDialog(props: NewPostDialogProps) {
           </TextField>
         </FormControl>
         <TextField
+          sx={{
+            width: `calc(40% - ${theme.spacing(1)} )`,
+            marginLeft: theme.spacing(1),
+          }}
           type="number"
           InputProps={{
             inputProps: {min: 0},
@@ -273,7 +295,9 @@ function NewPostDialog(props: NewPostDialogProps) {
         />
 
         <StyledTextAreaAutosize
+          minRows={3}
           onChange={handleMessageChange}
+          value={message}
           key="message-field"
           aria-label={t<string>('homePage.WriteMessage')}
           placeholder={t<string>('homePage.WriteMessage')}
@@ -293,9 +317,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           </Fade>
         </Collapse>
       </DialogContent>
-      <DialogActions
-        sx={{mt: 1, mb: 1, mr: 2, ml: 2, justifyContent: 'space-between'}}
-      >
+      <DialogActions sx={{mt: 1, mb: 1, mr: 2, ml: 2, display: 'block'}}>
         <IconButton
           onClick={handleDropZoneClick}
           data-testid="remove-image-button"
@@ -303,10 +325,44 @@ function NewPostDialog(props: NewPostDialogProps) {
         >
           <PhotoIcon />
         </IconButton>
+        <ClickAwayListener onClickAway={() => setEmojiPickerOpen(false)}>
+          <Box sx={{position: 'relative', display: 'inline-block'}}>
+            <IconButton
+              onClick={handleEmojiButtonClick}
+              data-testid="add-emoji-button"
+            >
+              <AddReactionOutlinedIcon />
+            </IconButton>
+
+            <Box
+              sx={{
+                position: 'absolute',
+                zIndex: 99999999999,
+                top: -305,
+                overflow: 'hidden',
+                display: emojiPickerOpen ? 'block' : 'none',
+              }}
+            >
+              <EmojiPicker
+                searchDisabled
+                width={300}
+                theme={emojiTheme}
+                height={300}
+                previewConfig={{showPreview: false}}
+                onEmojiClick={handleEmojiSelect}
+              />
+            </Box>
+          </Box>
+        </ClickAwayListener>
 
         <Box />
 
-        <Button color="primary" variant="contained" onClick={handleSubmit}>
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleSubmit}
+          sx={{width: '100%', ml: '0!important', mt: 1}}
+        >
           {t<string>('homePage.Post')}
         </Button>
       </DialogActions>

@@ -3,12 +3,15 @@
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {useTheme} from '@mui/material/styles';
 import {Box, ClickAwayListener, IconButton, Typography} from '@mui/material';
-import {ReactNode, useState} from 'react';
+import {useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import AddReactionIcon from '@mui/icons-material/AddReaction';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import {useMsal} from '@azure/msal-react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {useAlertContext} from '@shared/hooks/Alerts';
+
+import {EmojiContainer} from './components';
 
 import {reactPost} from '@/data/api/requests/posts';
 
@@ -32,6 +35,9 @@ function LikeButtons(props: ILikeButtonsProps) {
   const [clapsCount, setClapsCount] = useState(claps);
   const [celebrationsCount, setCelebrationsCount] = useState(celebrations);
   const [showReactions, setShowReactions] = useState(false);
+  const [mainLikeButtonClicked, setMainLikeButtonClicked] = useState(false);
+  const showReactionTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+  const hideReactionTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const reactionVariance = {
     visible: {
@@ -42,25 +48,48 @@ function LikeButtons(props: ILikeButtonsProps) {
     },
   };
 
-  interface EmojiContainerProps {
-    type: number;
-    emoji: ReactNode;
-    text: string;
-  }
-
-  const EmojiContainerStyles = {
-    background: theme.interface.contrastMain,
-    border: theme.border.default,
-    borderRadius: '25%/50%',
-    display: 'flex',
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    alignItems: 'center',
-    height: '30px',
-    marginRight: theme.spacing(0.5),
+  const handleMouseOver = () => {
+    if (mainLikeButtonClicked) {
+      clearTimeout(showReactionTimeout.current!);
+      return;
+    }
+    showReactionTimeout.current = setTimeout(() => {
+      setShowReactions(true);
+    }, 500);
   };
 
-  const EmojiContainerReactionStyles = {
+  const handleMouseOut = () => {
+    clearTimeout(showReactionTimeout.current!);
+    setMainLikeButtonClicked(false);
+    hideReactionTimeout.current = setTimeout(() => {
+      setShowReactions(false);
+    }, 200);
+  };
+
+  const handleReactionsMouseEnter = () => {
+    clearTimeout(hideReactionTimeout.current);
+    setShowReactions(true);
+  };
+
+  const handleLikeButtonClick = () => {
+    setMainLikeButtonClicked(true);
+    if (isPostLiked()) {
+      // remove user reaction from all reactions
+      if (heartsCount.includes(accounts[0].localAccountId)) {
+        handleReactionClick(0);
+      }
+      if (clapsCount.includes(accounts[0].localAccountId)) {
+        handleReactionClick(1);
+      }
+      if (celebrationsCount.includes(accounts[0].localAccountId)) {
+        handleReactionClick(2);
+      }
+    } else {
+      handleReactionClick(0);
+    }
+  };
+
+  const emojiContainerReactionStyles = {
     background: theme.interface.contrastMain,
     border: theme.border.default,
     borderRadius: '25%/50%',
@@ -72,16 +101,11 @@ function LikeButtons(props: ILikeButtonsProps) {
     position: 'absolute',
   };
 
-  const EmojiReactionStyles = {
+  const emojiReactionStyles = {
     fontSize: '25px',
     marginRight: '5px',
     userSelect: 'none',
-  };
-
-  const EmojiStyles = {
-    fontSize: '20px',
-    marginRight: '5px',
-    userSelect: 'none',
+    cursor: 'pointer',
   };
 
   const handleReactionServer = async (type: number) => {
@@ -93,6 +117,14 @@ function LikeButtons(props: ILikeButtonsProps) {
     }
   };
 
+  const isPostLiked = () => {
+    return (
+      heartsCount.includes(accounts[0].localAccountId) ||
+      clapsCount.includes(accounts[0].localAccountId) ||
+      celebrationsCount.includes(accounts[0].localAccountId)
+    );
+  };
+
   const handleReactionClick = async (type: number) => {
     // check if user is logged in
     if (!accounts.length) {
@@ -102,92 +134,36 @@ function LikeButtons(props: ILikeButtonsProps) {
 
     switch (type) {
       case 0:
-        isRemoved = updateHeart();
+        isRemoved = updateEmotion(heartsCount, setHeartsCount);
         break;
       case 1:
-        isRemoved = updateClaps();
+        isRemoved = updateEmotion(clapsCount, setClapsCount);
         break;
       case 2:
-        isRemoved = updateCelebrations();
+        isRemoved = updateEmotion(celebrationsCount, setCelebrationsCount);
         break;
       default:
         break;
     }
 
-    setShowReactions(false);
     handleReactionServer(type);
     return isRemoved;
   };
 
-  const updateHeart = () => {
-    const heartIndex = heartsCount.indexOf(accounts[0].localAccountId);
-    const newHeartsCount = [...heartsCount];
-    if (heartIndex > -1) {
-      newHeartsCount.splice(heartIndex, 1);
-      setHeartsCount(newHeartsCount);
+  const updateEmotion = (
+    emotionCount: string[],
+    setEmotionCount: React.Dispatch<React.SetStateAction<string[]>>,
+  ) => {
+    const emotionIndex = emotionCount.indexOf(accounts[0].localAccountId);
+    const newEmotionCount = [...emotionCount];
+    if (emotionIndex > -1) {
+      newEmotionCount.splice(emotionIndex, 1);
+      setEmotionCount(newEmotionCount);
       return true;
     }
-    setHeartsCount([...newHeartsCount, accounts[0].localAccountId]);
-
+    setEmotionCount([...newEmotionCount, accounts[0].localAccountId]);
     return false;
   };
-
-  const updateClaps = () => {
-    const clapIndex = clapsCount.indexOf(accounts[0].localAccountId);
-    const newClapsCount = [...clapsCount];
-    if (clapIndex > -1) {
-      newClapsCount.splice(clapIndex, 1);
-      setClapsCount(newClapsCount);
-      return true;
-    }
-    setClapsCount([...newClapsCount, accounts[0].localAccountId]);
-    return false;
-  };
-
-  const updateCelebrations = () => {
-    const celebrationIndex = celebrationsCount.indexOf(
-      accounts[0].localAccountId,
-    );
-    const newCelebrationsCount = [...celebrationsCount];
-    if (celebrationIndex > -1) {
-      newCelebrationsCount.splice(celebrationIndex, 1);
-      setCelebrationsCount(newCelebrationsCount);
-      return true;
-    }
-    setCelebrationsCount([...newCelebrationsCount, accounts[0].localAccountId]);
-    return false;
-  };
-
-  function EmojiContainer(props: EmojiContainerProps) {
-    const {type, emoji, text} = props;
-
-    return (
-      <AnimatePresence mode="sync">
-        <Box
-          key={`reaction-${type}-{id}-{text}`}
-          component={motion.div}
-          whileHover={{scale: 1.2}}
-          whileTap={{scale: 0.9}}
-          onClick={() => handleReactionClick(type)}
-          sx={EmojiContainerStyles}
-          layout
-        >
-          <Box component={motion.div} sx={EmojiStyles}>
-            {emoji}
-          </Box>
-          {text.length > 0 && (
-            <Typography
-              component={motion.span}
-              sx={{fontWeight: theme.typography.fontWeightMedium}}
-              variant="body1"
-            >
-              {text}
-            </Typography>
-          )}
-        </Box>
-      </AnimatePresence>
-    );
-  }
 
   return (
     <Box sx={{position: 'relative'}}>
@@ -197,17 +173,18 @@ function LikeButtons(props: ILikeButtonsProps) {
             onClickAway={() => setShowReactions(!showReactions)}
           >
             <Box
+              onMouseEnter={handleReactionsMouseEnter}
               key={`reaction-container-${id}`}
               component={motion.div}
-              sx={EmojiContainerReactionStyles}
+              sx={emojiContainerReactionStyles}
               variants={reactionVariance}
-              initial="hidden"
-              animate={showReactions ? 'visible' : 'hidden'}
-              exit="hidden"
+              initial={{y: 10, opacity: 0}}
+              animate={{y: 0, opacity: 1}}
+              exit={{y: -10, opacity: 0}}
             >
               <Typography
                 key={`reaction-heart-${id}`}
-                sx={EmojiReactionStyles}
+                sx={emojiReactionStyles}
                 component={motion.div}
                 whileHover={{scale: 1.2}}
                 whileTap={{scale: 0.9}}
@@ -216,11 +193,11 @@ function LikeButtons(props: ILikeButtonsProps) {
                 onMouseOut={() => setShowReactions(false)}
                 layout
               >
-                ❤️
+                &#x1F49C;
               </Typography>
               <Typography
                 key={`reaction-clap-${id}`}
-                sx={EmojiReactionStyles}
+                sx={emojiReactionStyles}
                 component={motion.div}
                 whileHover={{scale: 1.5}}
                 whileTap={{scale: 0.9}}
@@ -229,11 +206,11 @@ function LikeButtons(props: ILikeButtonsProps) {
                 onMouseOut={() => setShowReactions(false)}
                 layout
               >
-                👏
+                &#x1f44f;
               </Typography>
               <Typography
                 key={`reaction-celebrate-${id}`}
-                sx={EmojiReactionStyles}
+                sx={emojiReactionStyles}
                 component={motion.div}
                 whileHover={{scale: 1.5}}
                 whileTap={{scale: 0.9}}
@@ -242,7 +219,7 @@ function LikeButtons(props: ILikeButtonsProps) {
                 onMouseOut={() => setShowReactions(false)}
                 layout
               >
-                🎉
+                &#x1f389;
               </Typography>
             </Box>
           </ClickAwayListener>
@@ -259,36 +236,41 @@ function LikeButtons(props: ILikeButtonsProps) {
             whileTap={{scale: 0.9}}
             sx={{marginRight: '10px'}}
             onClick={() => setShowReactions(!showReactions)}
-            onMouseOver={() => setShowReactions(true)}
-            onMouseOut={() => setShowReactions(false)}
             layout
           >
-            <IconButton sx={{marginRight: 0.5}}>
-              <AddReactionIcon component={motion.svg} />
+            <IconButton
+              sx={{marginRight: 0.5, color: theme.interface.icon}}
+              onClick={handleLikeButtonClick}
+              onMouseEnter={() => handleMouseOver()}
+              onMouseLeave={() => handleMouseOut()}
+            >
+              {isPostLiked() ? (
+                <FavoriteIcon component={motion.svg} />
+              ) : (
+                <FavoriteBorderIcon component={motion.svg} />
+              )}
             </IconButton>
           </Box>
 
-          {heartsCount.length > 0 && (
-            <EmojiContainer
-              type={0}
-              emoji={<>❤️</>}
-              text={heartsCount.length.toString()}
-            />
-          )}
-          {clapsCount.length > 0 && (
-            <EmojiContainer
-              type={1}
-              emoji={<>👏</>}
-              text={clapsCount.length.toString()}
-            />
-          )}
-          {celebrationsCount.length > 0 && (
-            <EmojiContainer
-              type={2}
-              emoji={<>🎉</>}
-              text={celebrationsCount.length.toString()}
-            />
-          )}
+          <EmojiContainer
+            likes={heartsCount}
+            type={0}
+            emoji={<>&#x1F49C;</>}
+            handleReactionClick={handleReactionClick}
+          />
+
+          <EmojiContainer
+            likes={clapsCount}
+            type={1}
+            emoji={<>&#x1f44f;</>}
+            handleReactionClick={handleReactionClick}
+          />
+          <EmojiContainer
+            likes={celebrationsCount}
+            type={2}
+            emoji={<>&#x1f389;</>}
+            handleReactionClick={handleReactionClick}
+          />
         </Box>
       </AnimatePresence>
     </Box>

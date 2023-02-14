@@ -34,6 +34,7 @@ function ProductCard(props: IProductCardProps) {
       MuiCard: {
         styleOverrides: {
           root: {
+            cursor: 'pointer',
             '& .hidden-button': {
               display: 'none',
             },
@@ -52,7 +53,9 @@ function ProductCard(props: IProductCardProps) {
   const cardStyle = {
     maxWidth: 245,
     marginRight: 1,
+    transition: 'transform 0.15s ease-in-out',
     '&:hover': {transform: 'scale3d(1.10, 1.10, 1)'},
+    minHeight: 225,
     [theme.breakpoints.between(1850, 1950)]: {
       minHeight: 212,
     },
@@ -64,6 +67,23 @@ function ProductCard(props: IProductCardProps) {
     },
     [theme.breakpoints.between(750, 950)]: {
       minHeight: 184,
+    },
+  };
+
+  const cardContainerStyle = {
+    overflow: 'show',
+    height: 225,
+    [theme.breakpoints.between(1850, 1950)]: {
+      height: 212,
+    },
+    [theme.breakpoints.between(1500, 1850)]: {
+      height: 190,
+    },
+    [theme.breakpoints.between(950, 1180)]: {
+      height: 205,
+    },
+    [theme.breakpoints.between(750, 950)]: {
+      height: 184,
     },
   };
 
@@ -106,139 +126,141 @@ function ProductCard(props: IProductCardProps) {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Card sx={cardStyle}>
-        <Box
-          sx={{
-            mt: theme.spacing(),
-            mb: theme.spacing(),
-            mr: 1.5,
-            ml: 1.5,
-            maxHeight: 140,
-          }}
-          onClick={routeChange}
-        >
-          <CardMedia
+      <Box sx={cardContainerStyle}>
+        <Card sx={cardStyle}>
+          <Box
             sx={{
-              maxHeight: 130,
-              borderRadius: 2,
+              mt: theme.spacing(),
+              mb: theme.spacing(),
+              mr: 1.5,
+              ml: 1.5,
+              maxHeight: 140,
             }}
-            component="img"
-            image={props.image}
-          />
-        </Box>
-        <CardContent
-          sx={{
-            paddingTop: 0,
-            '&:last-child': {
-              paddingBottom: 2,
-            },
-          }}
-        >
-          <Box onClick={routeChange}>
-            <Typography
-              gutterBottom
-              variant="body1"
-              component="div"
-              className="title"
-              sx={titleStyle}
-            >
-              {props.title}
-            </Typography>
-
-            <Typography variant="body2" color="text.secondary">
-              {props.points} {t<string>('marketplace.Coins')}
-            </Typography>
-          </Box>
-          {props.size && (
-            <Box
+            onClick={routeChange}
+          >
+            <CardMedia
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                ml: 1,
-                mr: 0.8,
+                maxHeight: 130,
+                borderRadius: 2,
               }}
-            >
-              {props.size.map((i) => (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  className="hidden-button"
-                  sx={{
-                    fontSize: 10,
-                    mt: 1,
-                    minWidth: '25px !important',
-                    borderRadius: 20,
-                    [theme.breakpoints.between(0, 600)]: {
-                      mr: 0.6,
-                    },
-                    [theme.breakpoints.between(600, 1000)]: {
-                      mr: 0.2,
-                    },
-                    [theme.breakpoints.up(1000)]: {
-                      mr: 1,
-                    },
-                    [theme.breakpoints.between(600, 750)]: {
-                      minWidth: '20px !important',
-                    },
-                    backgroundColor:
-                      selectedSize === i
-                        ? theme.palette.primary.main
-                        : theme.interface.main,
-                    color:
-                      selectedSize === i
-                        ? theme.interface.main
-                        : theme.palette.primary.main,
-                    '&:hover': {
-                      color:
-                        selectedSize === i
-                          ? theme.interface.main
-                          : theme.palette.primary.main,
+              component="img"
+              image={props.image}
+            />
+          </Box>
+          <CardContent
+            sx={{
+              paddingTop: 0,
+              '&:last-child': {
+                paddingBottom: 2,
+              },
+            }}
+          >
+            <Box onClick={routeChange}>
+              <Typography
+                gutterBottom
+                variant="body1"
+                component="div"
+                className="title"
+                sx={titleStyle}
+              >
+                {props.title}
+              </Typography>
+
+              <Typography variant="body2" color="text.secondary">
+                {props.points} {t<string>('marketplace.Coins')}
+              </Typography>
+            </Box>
+            {props.size && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  ml: 1,
+                  mr: 0.8,
+                }}
+              >
+                {props.size.map((i) => (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className="hidden-button"
+                    sx={{
+                      fontSize: 10,
+                      mt: 1,
+                      minWidth: '25px !important',
+                      borderRadius: 20,
+                      [theme.breakpoints.between(0, 600)]: {
+                        mr: 0.6,
+                      },
+                      [theme.breakpoints.between(600, 1000)]: {
+                        mr: 0.2,
+                      },
+                      [theme.breakpoints.up(1000)]: {
+                        mr: 1,
+                      },
+                      [theme.breakpoints.between(600, 750)]: {
+                        minWidth: '20px !important',
+                      },
                       backgroundColor:
                         selectedSize === i
                           ? theme.palette.primary.main
                           : theme.interface.main,
-                    },
-                  }}
-                  key={i}
-                  onClick={() => {
-                    if (selectedSize === i) setSelectedSize('');
-                    else setSelectedSize(i);
-                    setAddCartValidity(true);
-                  }}
-                >
-                  {t<string>(`marketplace.sizes.${i}`)}
-                </Button>
-              ))}
-            </Box>
-          )}
-          {!addCartValidity && (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              <Typography
-                className="hidden-button"
-                sx={{fontSize: 13, color: theme.palette.error.dark}}
+                      color:
+                        selectedSize === i
+                          ? theme.interface.main
+                          : theme.palette.primary.main,
+                      '&:hover': {
+                        color:
+                          selectedSize === i
+                            ? theme.interface.main
+                            : theme.palette.primary.main,
+                        backgroundColor:
+                          selectedSize === i
+                            ? theme.palette.primary.main
+                            : theme.interface.main,
+                      },
+                    }}
+                    key={i}
+                    onClick={() => {
+                      if (selectedSize === i) setSelectedSize('');
+                      else setSelectedSize(i);
+                      setAddCartValidity(true);
+                    }}
+                  >
+                    {t<string>(`marketplace.sizes.${i}`)}
+                  </Button>
+                ))}
+              </Box>
+            )}
+            {!addCartValidity && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
               >
-                {t<string>('marketplace.sizes.selectSize')}
-              </Typography>
+                <Typography
+                  className="hidden-button"
+                  sx={{fontSize: 13, color: theme.palette.error.dark}}
+                >
+                  {t<string>('marketplace.sizes.selectSize')}
+                </Typography>
+              </Box>
+            )}
+            <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+              <Button
+                variant="outlined"
+                size="small"
+                className="hidden-button"
+                sx={{marginTop: 1, fontSize: 12}}
+                onClick={() => addToCart()}
+              >
+                {t<string>('marketplace.AddToCart')}
+              </Button>
             </Box>
-          )}
-          <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-            <Button
-              variant="outlined"
-              size="small"
-              className="hidden-button"
-              sx={{marginTop: 1, fontSize: 12}}
-              onClick={() => addToCart()}
-            >
-              {t<string>('marketplace.AddToCart')}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Box>
     </ThemeProvider>
   );
 }

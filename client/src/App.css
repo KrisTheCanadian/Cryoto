@@ -1,0 +1,4 @@
+/* Hide the emoji category label */
+.epr-emoji-category-label {
+  display: none !important;
+}
