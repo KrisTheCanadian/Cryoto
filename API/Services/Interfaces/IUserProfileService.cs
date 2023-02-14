@@ -6,6 +6,7 @@ namespace API.Services.Interfaces;
 public interface IUserProfileService
 {
     public Task<List<UserProfileModel>> GetAllUsersService();
+    public Task<bool> UpdateUserRolesService(string oid, string[] roles);
     public Task<List<UserProfileModel>> GetSearchResultServiceAsync(string keywords);
     public Task<UserProfileModel?> GetOrAddUserProfileService(string oid, ClaimsIdentity? user);
     Task<UserProfileModel?> GetUserByIdAsync(string userId);

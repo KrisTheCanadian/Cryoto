@@ -6,7 +6,6 @@ import {
   apiRouteUserSearch,
   apiRouteUserProfileGetUserProfile,
   apiRouteUserProfileGetUserProfilePhoto,
-  apiRouteUserProfileGetUserByID,
   apiRouteUserProfileUpdate,
 } from '../routes';
 import IUser, {IUserProfile, IUpdateUserProfile} from '../types/IUser';
@@ -78,26 +77,6 @@ export async function updateUserProfile(
         'Content-Type': 'application/json',
         Authorization: bearer,
         'Access-Control-Allow-Origin': `${apiEndpoint}`,
-      },
-    },
-  );
-
-  return response.data;
-}
-
-export async function getUserById(userId: string) {
-  const accessToken = await getAccessToken();
-  const headers = new Headers();
-  const bearer = `Bearer ${accessToken}`;
-
-  headers.append('Authorization', bearer);
-
-  // convert fetch to axios for consistency
-  const response = await axios.get(
-    `${apiRouteUserProfileGetUserByID}?userId=${userId}`,
-    {
-      headers: {
-        Authorization: bearer,
       },
     },
   );

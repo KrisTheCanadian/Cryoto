@@ -8,3 +8,4 @@ export const routeOrders = '/orders';
 export const routeSettings = '/settings';
 export const routeStyleGuide = '/style-guide';
 export const routeAuthentication = '/authentication';
+export const routeAdmin = '/admin';

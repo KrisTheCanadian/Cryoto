@@ -19,6 +19,15 @@ export const englishTranslations = {
     DarkMode: 'Dark mode',
     LightMode: 'Light mode',
   },
+  userPermissions: {
+    Admin: 'Admin',
+    Contractor: 'Contractor',
+    Intern: 'Intern',
+    RegularFTE: 'Regular FTE',
+    TeamLead: 'Team Lead',
+    Partner: 'Partner',
+    SeniorPartner: 'Senior Partner',
+  },
   errors: {
     PermissionError: 'You do not have permission to access this page.',
     AuthenticationError: 'Please log in to view this page.',
@@ -167,5 +176,17 @@ export const englishTranslations = {
     Notifications: 'Notifications',
     EmailNotifications: 'Email Notifications',
     ErrorEmptyJobTitle: 'Job title cannot be empty.',
+  },
+  adminDashboard: {
+    pageTitle: 'Admin Dashboard',
+    userManagementTable: {
+      userId: 'User ID',
+      userName: 'User Name',
+      userRoles: 'User Roles',
+      rowsPage: 'Rows per page',
+      of: 'of',
+      modify: 'Modify',
+      roleModificationLabel: 'Assign Roles for:',
+    },
   },
 };

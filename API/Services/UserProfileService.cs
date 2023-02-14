@@ -74,19 +74,26 @@ public class UserProfileService : IUserProfileService
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
         userProfileModel!.RecognitionsSent = userProfileModel.RecognitionsSent + 1;
-        return await _context.UpdateUserProfile(userProfileModel) > 1;
+        return await _context.UpdateUserProfile(userProfileModel) >0;
     }
 
     public async Task<bool> IncrementRecognitionsReceived(string oid)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
         userProfileModel!.RecognitionsReceived = userProfileModel.RecognitionsReceived + 1;
-        return await _context.UpdateUserProfile(userProfileModel) > 1;
+        return await _context.UpdateUserProfile(userProfileModel) >0;
     }
 
     public async Task<List<UserProfileModel>> GetAllUsersService()
     {
         return await _context.GetAllUsersAsync();
+    }
+    public async Task<bool> UpdateUserRolesService(string oid, string[] roles)
+    {
+        var userProfileModel = await _context.GetUserByIdAsync(oid);
+        userProfileModel!.Roles = roles;
+        return await _context.UpdateUserProfile(userProfileModel) >0;
+        
     }
 
     public async Task<List<UserProfileModel>> GetSearchResultServiceAsync(string keywords)

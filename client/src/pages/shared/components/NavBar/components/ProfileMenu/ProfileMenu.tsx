@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   Brightness7,
   Settings,
   Logout,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {NavLink, useLocation} from 'react-router-dom';
@@ -24,11 +26,13 @@ import {useTheme} from '@mui/material/styles';
 
 import {getUserId} from '@/data/api/helpers';
 import {getUserProfilePhoto} from '@/data/api/requests/users';
-import {routeProfile, routeSettings} from '@/pages/routes';
+import {routeAdmin, routeProfile, routeSettings} from '@/pages/routes';
+import Role from '@/pages/roles';
 
 function ProfileMenu() {
   const {colorMode} = useThemeModeContext();
   const theme = useTheme();
+  const {accounts} = useMsal();
   const location = useLocation();
   const {t} = useTranslation();
   const {instance} = useMsal();
@@ -161,6 +165,18 @@ function ProfileMenu() {
           </ListItemIcon>
           {t('layout.Settings')}
         </MenuItem>
+        {accounts[0]?.idTokenClaims?.roles?.includes(Role.Admin) && (
+          <MenuItem
+            component={NavLink}
+            to={routeAdmin}
+            selected={location.pathname === '/admin'}
+          >
+            <ListItemIcon>
+              <AdminPanelSettings fontSize="small" />
+            </ListItemIcon>
+            {t('adminDashboard.pageTitle')}
+          </MenuItem>
+        )}
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />

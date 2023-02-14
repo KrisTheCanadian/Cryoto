@@ -24,8 +24,6 @@ export const apiRoutePostsReactPost = `${apiRoutePosts}/React`;
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;
 export const apiRouteUserProfileGetUserProfile = `${apiRouteUserProfile}/GetUserProfile`;
 export const apiRouteUserProfileGetUserProfilePhoto = `${apiRouteUserProfile}/GetUserProfilePhoto`;
-export const apiRouteUserProfileGetUserByID = `${apiRouteUserProfile}/GetUserById`;
-export const apiRouteUserGetAllUsers = `${apiRouteUserProfile}/GetAllUsers`;
 export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
 export const apiRouteUserProfileUpdate = `${apiRouteUserProfile}/Update`;
 
@@ -59,3 +57,10 @@ export const apiRouteMarketPlace = `${apiEndpoint}MarketPlace`;
 export const apiRouteMarketPlaceGetAllItems = `${apiRouteMarketPlace}/GetAllItems`;
 export const apiRouteMarketPlaceGetItemById = `${apiRouteMarketPlace}/GetItemById`;
 export const apiRouteMarketPlaceCompletePurchase = `${apiRouteMarketPlace}/CompletePurchase`;
+
+// Admin
+export const apiRouteAdmin = `${apiEndpoint}Admin`;
+export const apiRouteAdminUserProfile = `${apiRouteAdmin}/UserProfile`;
+export const apiRouteAdminUserProfileGetAllUsers = `${apiRouteAdminUserProfile}/GetAllUsers`;
+export const apiRouteAdminUserProfileUpdateUserRoles = `${apiRouteAdminUserProfile}/UpdateUserRoles`;
+export const apiRouteAdminUserProfileGetUserByID = `${apiRouteAdminUserProfile}/GetUserById`;

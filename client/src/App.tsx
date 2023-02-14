@@ -27,6 +27,7 @@ import {
   routeSettings,
   routeStyleGuide,
   routeWallet,
+  routeAdmin,
 } from './pages/routes';
 import {StyleGuide} from './pages/StyleGuide';
 import {AuthenticationPage} from './pages/Authentication';
@@ -37,6 +38,7 @@ import {Wallet} from './pages/Wallet';
 import {Profile} from './pages/Profile';
 import {Orders} from './pages/Orders';
 import {Settings} from './pages/Settings';
+import {Admin} from './pages/Admin';
 import {LandingPage} from './pages/LandingPage';
 import {apiEndpoint} from './data/api/routes';
 
@@ -94,6 +96,7 @@ function App() {
                 </Route>
                 <Route element={<RequireAuth {...[Role.Admin]} />}>
                   <Route path={routeStyleGuide} element={<StyleGuide />} />
+                  <Route path={routeAdmin} element={<Admin />} />
                 </Route>
                 <Route
                   path={routeAuthentication}

@@ -32,10 +32,11 @@ import {useQueryClient} from 'react-query';
 
 import {NewPostDialog} from '../HomePage/components/NewPost/components';
 
-import {getUserById, getUserProfilePhoto} from '@/data/api/requests/users';
+import {getUserProfilePhoto} from '@/data/api/requests/users';
 import {IUser} from '@/data/api/types';
 import {getNextPageUserProfile} from '@/data/api/requests/posts';
 import i18n from '@/i18n/i18n';
+import {getUserById} from '@/data/api/requests/admin';
 
 function Profile() {
   const {id} = useParams();

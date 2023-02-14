@@ -18,7 +18,7 @@ interface Recipient {
 const tempUserFields = {
   email: '',
   language: '',
-  role: [],
+  roles: [],
   businessTitle: '',
   city: '',
   timeZone: '',

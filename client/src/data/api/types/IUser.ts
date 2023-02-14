@@ -3,7 +3,7 @@ interface IUser {
   name: string;
   email: string;
   language: string;
-  role: string[];
+  roles: string[];
   businessTitle: string;
   city: string;
   timeZone: string;

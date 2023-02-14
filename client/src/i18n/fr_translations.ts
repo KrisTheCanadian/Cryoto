@@ -19,6 +19,15 @@ export const frenchTranslations = {
     DarkMode: 'Mode Sombre',
     LightMode: 'Mode Claire',
   },
+  userPermissions: {
+    Admin: 'Admin',
+    Contractor: 'Contracteur',
+    Intern: 'Stagiaire',
+    RegularFTE: 'FTE Régulier',
+    TeamLead: 'Chargé d’Équipe',
+    Partner: 'Partenaire',
+    SeniorPartner: 'Partenaire Senior',
+  },
   errors: {
     PermissionError: "Vous n'avez pas l’autorisation d'accéder à cette page.",
     AuthenticationError:
@@ -170,5 +179,17 @@ export const frenchTranslations = {
     Notifications: 'Notifications',
     EmailNotifications: 'Notifications Par Courriel',
     ErrorEmptyJobTitle: 'Le titre du poste ne peut pas être vide.',
+  },
+  adminDashboard: {
+    pageTitle: 'Tableau de Bord - Administration',
+    userManagementTable: {
+      userId: 'User ID de l’utilisateur',
+      userName: 'Nom d’utilisateur',
+      userRoles: 'Rôles de l’utilisateur',
+      rowsPage: 'Rangées par page',
+      of: 'de',
+      modify: 'Modifier',
+      roleModificationLabel: 'Assigner des rôles pour:',
+    },
   },
 };
