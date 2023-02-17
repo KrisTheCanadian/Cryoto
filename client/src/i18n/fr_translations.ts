@@ -74,9 +74,13 @@ export const frenchTranslations = {
     LandingPage1: 'Tendez la main, soyez récompensé,',
     LandingPage2: 'Sentez-vous reconnus.',
     LandingPageSubText:
-      'Cryoto vous permet de reconnaître et célébrer les personnes que vous côtoyez chaque jour au travail avec le pouvoir de la cryptomonaie.',
-    FeatureDescription:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'Cryoto vous permet de reconnaître et célébrer les personnes que vous côtoyez chaque jour au travail avec le pouvoir de la cryptomonnaie.',
+    RecognitionFeatureDescription:
+      "Prenez un moment pour reconnaître le travail acharné et l'engagement de vos collègues avec une publication de reconnaissance. Partagez un message et une photo pour montrer votre appréciation, et améliorez l'offre avec quelques Cryoto Coins pour montrer à quel point vous appréciez leurs efforts.",
+    CelebrationFeatureDescription:
+      "Montrez votre appréciation pour le dévouement et le travail acharné de vos collègues en les félicitant pour leur anniversaire de travail avec un message sincère et un cadeau spécial de Cryoto Coins. C'est une merveilleuse façon de démontrer votre soutien, célébrer leurs réalisations et reconnaître leur engagement continu envers l'entreprise.",
+    RewardsFeatureDescription:
+      "Utilisez vos Cryoto Coins pour vous offrir une variété de récompenses disponibles sur le marché. Des cartes-cadeaux aux articles exclusifs de l'entreprise, vous trouverez de nombreuses façons de profiter au maximum de vos Cryoto Coins.",
     RecognizeAlt: 'Reconnaissez',
     CelebrateAlt: 'Célébrez',
     RewardsAlt: 'Recompenses',

@@ -116,7 +116,7 @@ const getDesignTokens = (mode: PaletteMode) =>
     borderRadius: {
       default: 2,
       medium: 4,
-      large: 16,
+      large: 8,
     },
     border: {
       mode,

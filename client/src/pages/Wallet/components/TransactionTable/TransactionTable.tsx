@@ -281,6 +281,7 @@ export default function TransactionTable() {
           width: '100%',
           mb: 2,
           backgroundColor: theme.interface.offBackground,
+          borderRadius: theme.borderRadius.default,
         }}
       >
         <EnhancedTableToolbar />

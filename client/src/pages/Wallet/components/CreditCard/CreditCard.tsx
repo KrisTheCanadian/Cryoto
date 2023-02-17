@@ -79,7 +79,7 @@ function CreditCard() {
                   variant="body1"
                   sx={{color: theme.palette.common.white, fontWeight: 'light'}}
                 >
-                  $ {data?.toAwardBalance.toFixed(2)}
+                  {data?.toAwardBalance.toFixed(2)}
                 </Typography>
               </Grid>
 
@@ -100,7 +100,7 @@ function CreditCard() {
                   variant="body1"
                   sx={{color: theme.palette.common.white, fontWeight: 'light'}}
                 >
-                  $ {data?.toSpendBalance.toFixed(2)}
+                  {data?.toSpendBalance.toFixed(2)}
                 </Typography>
               </Grid>
             </Box>

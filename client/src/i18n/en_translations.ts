@@ -72,8 +72,12 @@ export const englishTranslations = {
     LandingPage2: 'Feel Recognized.',
     LandingPageSubText:
       'Cryoto allows you to recognize and celebrate the people you work everyday, with the power of crypto.',
-    FeatureDescription:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+    RecognitionFeatureDescription:
+      "Take a moment to recognize your coworkers' hard work and dedication with a recognition post. Share a message and photo to show your appreciation, and sweeten the deal with some Cryoto Coins to show how much you value their efforts.",
+    CelebrationFeatureDescription:
+      "Show your appreciation for your coworkers' dedication and hard work by congratulating them on their work anniversaries with a heartfelt message and a special gift of Cryoto Coins. This is a wonderful way to demonstrate your support, celebrate their accomplishments, and recognize their ongoing commitment to the company.",
+    RewardsFeatureDescription:
+      "Use your Cryoto coins to treat yourself to a variety of rewards available in the marketplace. From gift cards to exclusive company swag, you'll find plenty of ways to make the most of your Cryoto Coins.",
     RecognizeAlt: 'Recognize',
     CelebrateAlt: 'Celebrate',
     RewardsAlt: 'Rewards',
@@ -82,7 +86,7 @@ export const englishTranslations = {
     loading: 'Logging In...',
   },
   profilePage: {
-    joinedIn: 'Joined In',
+    joinedIn: 'Joined In ',
     recognize: 'Recognize',
     recognitions: 'Recognitions',
     recognitionsSent: ' Recognitions sent',

@@ -53,6 +53,7 @@ function ProductCard(props: IProductCardProps) {
   const cardStyle = {
     maxWidth: 245,
     marginRight: 1,
+    borderRadius: theme.borderRadius.default,
     transition: 'transform 0.15s ease-in-out',
     '&:hover': {transform: 'scale3d(1.10, 1.10, 1)'},
     minHeight: 225,

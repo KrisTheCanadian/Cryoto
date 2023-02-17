@@ -10,12 +10,12 @@ describe('Wallet', () => {
     cy.get('#to-award-balance')
       .should('exist')
       .should('be.visible')
-      .should('contain', '$');
+      .should('contain', '.');
 
     cy.get('#to-spend-balance')
       .should('exist')
       .should('be.visible')
-      .should('contain', '$');
+      .should('contain', '.');
 
     cy.get('#brand-name')
       .should('exist')

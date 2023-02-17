@@ -5,12 +5,11 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 
 import * as React from 'react';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import {NotificationsNone, VolunteerActivism} from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import {useTranslation} from 'react-i18next';
-import TollIcon from '@mui/icons-material/Toll';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Avatar,
@@ -31,6 +30,7 @@ import {useAlertContext} from '@shared/hooks/Alerts';
 import moment from 'moment';
 import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
 import {stringAvatar} from '@shared/utils/colorUtils';
+import {useTheme} from '@mui/material/styles';
 
 import INotification from '@/data/api/types/INotification';
 import {
@@ -42,6 +42,7 @@ import {postsQuery} from '@/pages/HomePage/HomePage';
 import {getUserProfilePhoto} from '@/data/api/requests/users';
 
 function Notifications() {
+  const theme = useTheme();
   const {t} = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const loader = useRef();
@@ -228,6 +229,7 @@ function Notifications() {
   const paperProps = {
     elevation: 0,
     sx: {
+      borderRadius: theme.borderRadius.default,
       overflow: 'visible',
       filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
       mt: 1.5,
@@ -262,7 +264,7 @@ function Notifications() {
         aria-expanded={open ? 'true' : undefined}
       >
         <Badge color="secondary" badgeContent={notificationsCount}>
-          <NotificationsNoneIcon />
+          <NotificationsNone />
         </Badge>
       </IconButton>
       <Menu
@@ -302,7 +304,10 @@ function Notifications() {
                           .fromNow()}`}
                       </Typography>
                     </Box>
-                    <Chip icon={<TollIcon />} label={n.amount.toString()} />
+                    <Chip
+                      icon={<VolunteerActivism />}
+                      label={n.amount.toString()}
+                    />
                   </Box>
                 </ListItem>
               ))}
@@ -345,10 +350,31 @@ function Notifications() {
                                 .fromNow()}`}
                             </Typography>
                           </Box>
-                          <Chip
-                            icon={<TollIcon />}
-                            label={n.amount.toString()}
-                          />
+                          {n.amount !== null && (
+                            <Chip
+                              sx={{
+                                backgroundColor: theme.interface.contrastMain,
+                                border: '3px solid',
+                                borderColor: theme.palette.primary.main,
+                                fontSize: '1rem',
+                                fontWeight: theme.typography.fontWeightMedium,
+                                marginRight: theme.spacing(1),
+                                '& .MuiChip-label': {
+                                  color: theme.palette.primary.main,
+                                },
+                              }}
+                              icon={
+                                <VolunteerActivism
+                                  style={{
+                                    fill: theme.palette.primary.main,
+                                    fontSize: '1.2rem',
+                                    marginLeft: '10px',
+                                  }}
+                                />
+                              }
+                              label={n.amount.toString()}
+                            />
+                          )}
                         </Box>
                       </ListItem>
                     ))}

@@ -5,8 +5,7 @@ import {useTheme} from '@mui/material/styles';
 import {Box, ClickAwayListener, IconButton, Typography} from '@mui/material';
 import {useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import {AddReaction, AddReactionOutlined} from '@mui/icons-material';
 import {useMsal} from '@azure/msal-react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {useAlertContext} from '@shared/hooks/Alerts';
@@ -228,7 +227,10 @@ function LikeButtons(props: ILikeButtonsProps) {
       <AnimatePresence mode="wait">
         <Box
           component={motion.div}
-          sx={{display: 'flex', alignItems: 'center'}}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
         >
           <Box
             component={motion.div}
@@ -239,15 +241,18 @@ function LikeButtons(props: ILikeButtonsProps) {
             layout
           >
             <IconButton
-              sx={{marginRight: 0.5, color: theme.interface.icon}}
+              sx={{
+                marginRight: 0.5,
+                color: theme.interface.icon,
+              }}
               onClick={handleLikeButtonClick}
               onMouseEnter={() => handleMouseOver()}
               onMouseLeave={() => handleMouseOut()}
             >
               {isPostLiked() ? (
-                <FavoriteIcon component={motion.svg} />
+                <AddReaction component={motion.svg} />
               ) : (
-                <FavoriteBorderIcon component={motion.svg} />
+                <AddReactionOutlined component={motion.svg} />
               )}
             </IconButton>
           </Box>

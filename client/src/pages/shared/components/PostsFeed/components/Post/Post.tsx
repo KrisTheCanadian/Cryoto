@@ -6,7 +6,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import {Avatar, Typography, Box, Chip, Stack} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import TollIcon from '@mui/icons-material/Toll';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
@@ -146,10 +146,30 @@ function Post(props: PostProps) {
                 {recipient}
               </b>
             </Typography>
-            <Box sx={{display: 'flex', alignItems: 'center'}}>
+            <Box
+              sx={{display: 'flex', alignItems: 'center', mt: 0.25, mb: 0.25}}
+            >
               <Chip
-                sx={ChipStyles}
-                icon={<TollIcon style={{fill: theme.palette.text.primary}} />}
+                sx={{
+                  backgroundColor: theme.interface.contrastMain,
+                  border: '3px solid',
+                  borderColor: theme.palette.primary.main,
+                  fontSize: '1rem',
+                  fontWeight: theme.typography.fontWeightMedium,
+                  marginRight: theme.spacing(1),
+                  '& .MuiChip-label': {
+                    color: theme.palette.primary.main,
+                  },
+                }}
+                icon={
+                  <VolunteerActivismIcon
+                    style={{
+                      fill: theme.palette.primary.main,
+                      fontSize: '1.2rem',
+                      marginLeft: '10px',
+                    }}
+                  />
+                }
                 key={coinsGiven}
                 label={coinsGiven.toString()}
               />

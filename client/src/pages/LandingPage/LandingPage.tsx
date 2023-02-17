@@ -162,17 +162,17 @@ function LandingPage() {
         <Infographic
           image="/images/svgIcons/1.svg"
           imgAlt={t('landingPage.RecognizeAlt')}
-          text={t('landingPage.FeatureDescription')}
+          text={t('landingPage.RecognitionFeatureDescription')}
         />
         <Infographic
           image="/images/svgIcons/2.svg"
           imgAlt={t('landingPage.CelebrateAlt')}
-          text={t('landingPage.FeatureDescription')}
+          text={t('landingPage.CelebrationFeatureDescription')}
         />
         <Infographic
           image="/images/svgIcons/3.svg"
           imgAlt={t('landingPage.RewardsAlt')}
-          text={t('landingPage.FeatureDescription')}
+          text={t('landingPage.RewardsFeatureDescription')}
         />
       </Grid>
     </Stack>

@@ -55,7 +55,14 @@ function NewPost(props: NewPostProps) {
         />
       )}
       <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-        <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>
+        <Card
+          sx={{
+            maxWidth: 600,
+            mb: 2,
+            flex: 1,
+            borderRadius: theme.borderRadius.default,
+          }}
+        >
           <CardContent>
             <Box sx={{display: 'flex', alignItems: 'center'}}>
               <ListItemAvatar>
