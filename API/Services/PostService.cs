@@ -1,3 +1,4 @@
+using API.Models.Comments;
 using API.Models.Posts;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
@@ -61,5 +62,10 @@ public class PostService : IPostService
     public async Task<bool> ReactAsync(int type, string guid, string actorId)
     {
         return await _postRepository.ReactAsync(type, guid, actorId);
+    }
+
+    public async Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel)
+    {
+        return await _postRepository.CommentOnPostAsync(postModel, commentModel); 
     }
 }

@@ -1,7 +1,7 @@
 import {MiddleColumn} from '@shared/components/MiddleColumn';
 import PageFrame from '@shared/components/PageFrame';
 import {RightBar} from '@shared/components/RightBar';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useMsal, AuthenticatedTemplate} from '@azure/msal-react';
 import {useAlertContext} from '@shared/hooks/Alerts/AlertContext';
 import {useLocation} from 'react-router-dom';
@@ -37,6 +37,8 @@ function HomePage() {
               />
             )}
             <PostsFeed
+              name={accounts[0].name}
+              oId={accounts[0].idTokenClaims?.oid}
               queryKey={postsQuery}
               getNextPage={getNextPage}
               userId={accounts[0].idTokenClaims?.oid!}

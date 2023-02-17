@@ -10,6 +10,7 @@ import {
   PublicClientApplication,
 } from '@azure/msal-browser';
 import {MsalProvider} from '@azure/msal-react';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
 import Post from './Post';
 
@@ -86,24 +87,38 @@ it('should render Posts', async () => {
     authorId: 'authorId',
   };
 
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5,
+        cacheTime: 1000 * 60 * 5,
+      },
+    },
+  });
+
   await act(async () => {
     render(
-      <MsalProvider instance={pca}>
-        <MemoryRouter initialEntries={['/']}>
-          <I18nextProvider i18n={i18n}>
-            <ThemeContextProvider>
-              <Post
-                recipientId=""
-                id=""
-                hearts={[]}
-                claps={[]}
-                celebrations={[]}
-                {...postProps}
-              />
-            </ThemeContextProvider>
-          </I18nextProvider>
-        </MemoryRouter>
-      </MsalProvider>,
+      <QueryClientProvider client={queryClient}>
+        <MsalProvider instance={pca}>
+          <MemoryRouter initialEntries={['/']}>
+            <I18nextProvider i18n={i18n}>
+              <ThemeContextProvider>
+                <Post
+                  name={undefined}
+                  oId={undefined}
+                  comments={[]}
+                  recipientId=""
+                  id=""
+                  hearts={[]}
+                  claps={[]}
+                  celebrations={[]}
+                  {...postProps}
+                />
+              </ThemeContextProvider>
+            </I18nextProvider>
+          </MemoryRouter>
+        </MsalProvider>
+      </QueryClientProvider>,
     );
   });
 

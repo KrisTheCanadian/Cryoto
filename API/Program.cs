@@ -77,6 +77,9 @@ internal static class Program
 
         builder.Services.AddScoped<IPostRepository, PostRepository>();
         builder.Services.AddScoped<IPostService, PostService>();
+        
+        builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+        builder.Services.AddScoped<ICommentService, CommentService>();
 
         builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
         builder.Services.AddScoped<ITransactionService, TransactionService>();

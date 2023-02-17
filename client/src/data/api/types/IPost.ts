@@ -1,5 +1,6 @@
 import {PostType} from '../enums';
 
+import IComment from './IComment';
 import IUser from './IUser';
 
 interface IPost {
@@ -18,6 +19,8 @@ interface IPost {
   hearts: string[];
   claps: string[];
   celebrations: string[];
+  commentIds: string[];
+  comments: IComment[];
 }
 
 export default IPost;

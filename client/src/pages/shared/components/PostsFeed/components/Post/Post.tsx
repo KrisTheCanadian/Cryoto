@@ -11,14 +11,23 @@ import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import {stringAvatar} from '@shared/utils/colorUtils';
+import Divider from '@mui/material/Divider';
 
 import {LikeButtons} from '../../../../../HomePage/components/LikeButtons';
 
 import {LoadingPostSkeleton} from './components';
 
 import {getUserProfilePhoto} from '@/data/api/requests/users';
+import NewComment from '@/pages/HomePage/components/Comments/Components/NewComment';
+import IComment from '@/data/api/types/IComment';
+import PreviewCommentSection from '@/pages/HomePage/components/Comments/Components/PreviewCommentSection';
 
 interface PostProps {
+  name: string | undefined;
+  oId: string | undefined;
   id: string;
   firstName: string;
   date: string;
@@ -33,6 +42,7 @@ interface PostProps {
   hearts: string[];
   claps: string[];
   celebrations: string[];
+  comments: IComment[];
 }
 
 function Post(props: PostProps) {
@@ -72,6 +82,8 @@ function Post(props: PostProps) {
 
   const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
 
+  const [showAllComments, setShowAllComments] = useState(false);
+
   useEffect(() => {
     getUserProfilePhoto(authorId)
       .then((response) => {
@@ -86,34 +98,6 @@ function Post(props: PostProps) {
 
   const handleAvatarClickRecipient = () => {
     navigate(`/profile/${recipientId}`);
-  };
-
-  const stringAvatar = (name: string) => {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-        cursor: 'pointer',
-      },
-      children: `${name.split(' ')[0][0]}`,
-    };
-  };
-
-  const stringToColor = (string: string) => {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
   };
 
   return (
@@ -201,6 +185,28 @@ function Post(props: PostProps) {
           claps={claps}
           celebrations={celebrations}
         />
+        <Divider sx={{my: theme.spacing(1)}} />
+        <NewComment name={props.name} oId={props.oId} postid={props.id} />
+        <PreviewCommentSection
+          id={id}
+          postId={props.id}
+          max={3}
+          comments={props.comments || []}
+          showAllComments={showAllComments}
+        />
+        {props.comments?.length > 3 && (
+          <Box sx={{display: 'flex', justifyContent: 'center'}}>
+            {showAllComments ? (
+              <ExpandLessIcon
+                onClick={() => setShowAllComments(!showAllComments)}
+              />
+            ) : (
+              <ExpandMoreIcon
+                onClick={() => setShowAllComments(!showAllComments)}
+              />
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );

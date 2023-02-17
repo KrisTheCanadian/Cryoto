@@ -51,6 +51,9 @@ export const frenchTranslations = {
     Recognized: 'a reconnu ',
     UploadImageMessage: 'Déposez l’image ici',
   },
+  comments: {
+    Delete: 'Supprimer',
+  },
   sideBar: {
     navTitle: 'Navigation principale',
   },

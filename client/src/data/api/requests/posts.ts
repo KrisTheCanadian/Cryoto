@@ -3,6 +3,7 @@ import axios, {AxiosError} from 'axios';
 import {getAccessToken, getUserId} from '../helpers';
 import {
   apiEndpoint,
+  apiRoutePostsCommentOnPost,
   apiRoutePostsCreatePost,
   apiRoutePostsGetUserFeed,
   apiRoutePostsGetUserProfileFeed,
@@ -95,4 +96,37 @@ async function reactPost(
   return response.data;
 }
 
-export {getNextPage, createPost, getNextPageUserProfile, reactPost};
+async function commentOnPost(
+  postId: string,
+  message: string,
+  imageUrl: string,
+): Promise<IPost | AxiosError> {
+  const accessToken = await getAccessToken();
+  const url = `${apiRoutePostsCommentOnPost}/${postId}`;
+
+  const response = await axios.post<IPost>(
+    url,
+    {
+      message,
+      imageUrl,
+    },
+    {
+      // add CORS headers to request
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export {
+  commentOnPost,
+  getNextPage,
+  createPost,
+  getNextPageUserProfile,
+  reactPost,
+};

@@ -74,7 +74,7 @@ public class MarketPlaceController : ControllerBase
         var ordersList = JsonConvert.DeserializeObject<List<Order>>(jsonData)
                          ?? new List<Order>();
 
-        ordersList.Add(new Order(order.Items, subtotal, _actorId, order.Email, order.Address, DateTimeOffset.Now));
+        ordersList.Add(new Order(order.Items, subtotal, _actorId, order.Email, order.Address, DateTimeOffset.UtcNow));
 
         jsonData = JsonConvert.SerializeObject(ordersList);
         System.IO.File.WriteAllText(filePath, jsonData);

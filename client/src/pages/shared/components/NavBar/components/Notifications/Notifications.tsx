@@ -30,6 +30,7 @@ import {useInfiniteQuery, useMutation, useQueryClient} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import moment from 'moment';
 import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
+import {stringAvatar} from '@shared/utils/colorUtils';
 
 import INotification from '@/data/api/types/INotification';
 import {
@@ -51,33 +52,6 @@ function Notifications() {
   const [notificationsPerLoad, setNotificationsPerLoad] = useState(5);
   const [notificationsCount, setNotificationsCount] = useState(0);
   const notificationsQuery = ['notifications-query'];
-
-  const stringToColor = (string: string) => {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  };
-
-  const stringAvatar = (name: string) => {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(' ')[0][0]}`,
-    };
-  };
 
   const {data, status, fetchNextPage, hasNextPage, isFetchingNextPage} =
     useInfiniteQuery<INotificationPage, Error>(

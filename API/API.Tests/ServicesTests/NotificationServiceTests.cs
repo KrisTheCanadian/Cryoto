@@ -23,7 +23,6 @@ public class NotificationServiceTests
     private readonly ILogger<NotificationService> _logger;
     private readonly IUserProfileRepository _userProfileRepository;
     private readonly IConfiguration _configuration;
-    private readonly string _emailConnectionString;
     private readonly NotificationService _controller;
 
     public NotificationServiceTests()

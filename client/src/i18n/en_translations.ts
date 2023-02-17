@@ -48,6 +48,9 @@ export const englishTranslations = {
     Recognized: 'recognized ',
     UploadImageMessage: 'Drop image here',
   },
+  comments: {
+    Delete: 'Delete',
+  },
   sideBar: {
     navTitle: 'Main Navigation',
   },

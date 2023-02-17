@@ -1,3 +1,4 @@
+using API.Models.Comments;
 using API.Models.Posts;
 using API.Utils;
 
@@ -14,4 +15,5 @@ public interface IPostService
     public Task<PaginationWrapper<PostModel>> GetUserProfileFeedPaginatedAsync(string userId, int page, int pageCount);
     public Task<IEnumerable<PostModel>> GetAllAsync();
     Task<bool> ReactAsync(int type, string guid, string actorId);
+    Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
 }

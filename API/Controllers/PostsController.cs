@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Security.Claims;
+using API.Models.Comments;
 using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Posts;
@@ -69,6 +70,23 @@ public class PostsController : ControllerBase
         if (postModel == null) return NotFound();
 
         return Ok(postModel);
+    }
+
+    [HttpPost("{postId:guid}")]
+    public async Task<ActionResult<CommentModel>> CommentOnPost(CommentCreateModel commentCreateModel, Guid postId)
+    {
+        var commentModel = new CommentModel(commentCreateModel, _actorId, postId.ToString(), "Post");
+        
+        var postModel = await _postService.GetByIdAsync(postId.ToString());
+        if (postModel == null) return NotFound();
+        
+        var created = await _postService.CommentOnPostAsync(postModel, commentModel);
+        if (!created) return BadRequest("Could not comment on the post");
+        
+        // TODO
+        // await SendNotification(commentCreateModel, postModel.AuthorProfile, postModel, commentModel, 0);
+        
+        return Ok(commentModel);
     }
 
     [HttpPost]
@@ -175,6 +193,8 @@ public class PostsController : ControllerBase
     {
         var existingPost = await _postService.GetByIdAsync(postUpdateModel.Id);
         if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
+        
+        if(_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
 
         var postModel = new PostModel(postUpdateModel, _actorId);
         var updated = await _postService.UpdateAsync(postModel);
@@ -189,6 +209,8 @@ public class PostsController : ControllerBase
     {
         var existingPost = await _postService.GetByIdAsync(guid);
         if (existingPost == null) return Conflict("Cannot delete the post because it does not exist.");
+        
+        if(_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
 
         await _postService.DeleteAsync(existingPost);
 

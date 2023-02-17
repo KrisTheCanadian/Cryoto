@@ -65,6 +65,8 @@ export const useMutationCreatePost = (
         hearts: [],
         claps: [],
         celebrations: [],
+        commentIds: [],
+        comments: [],
       };
 
       // Snapshot the previous value

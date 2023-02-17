@@ -19,6 +19,7 @@ export const apiRoutePostsCreatePost = `${apiRoutePosts}/Create`;
 export const apiRoutePostsUpdatePost = `${apiRoutePosts}/Update`;
 export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
 export const apiRoutePostsReactPost = `${apiRoutePosts}/React`;
+export const apiRoutePostsCommentOnPost = `${apiRoutePosts}/CommentOnPost`;
 
 // UserProfile
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;
@@ -64,3 +65,8 @@ export const apiRouteAdminUserProfile = `${apiRouteAdmin}/UserProfile`;
 export const apiRouteAdminUserProfileGetAllUsers = `${apiRouteAdminUserProfile}/GetAllUsers`;
 export const apiRouteAdminUserProfileUpdateUserRoles = `${apiRouteAdminUserProfile}/UpdateUserRoles`;
 export const apiRouteAdminUserProfileGetUserByID = `${apiRouteAdminUserProfile}/GetUserById`;
+
+// Comments
+export const apiRouteComments = `${apiEndpoint}Comment`;
+export const apiRouteCommentsGetCommentsById = `${apiRouteComments}/GetById`;
+export const apiRouteCommentsDelete = `${apiRouteComments}/Delete`;

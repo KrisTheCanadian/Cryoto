@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using API.Models;
 using API.Models.Address;
+using API.Models.Comments;
 using API.Models.Notifications;
 using API.Models.Posts;
 using API.Models.Transactions;
@@ -23,5 +24,6 @@ public class DataContext : DbContext, IDataContext
     public virtual DbSet<AddressModel> Addresses { get; set; } = null!;
     public virtual DbSet<TransactionModel> Transactions { get; set; } = null!;
     public virtual DbSet<PostModel> Posts { get; set; } = null!;
+    public virtual DbSet<CommentModel> Comments { get; set; } = null!;
     public virtual DbSet<Notification> Notifications { get; set; } = null!;
 }

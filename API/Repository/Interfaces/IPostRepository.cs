@@ -1,3 +1,4 @@
+using API.Models.Comments;
 using API.Models.Posts;
 using API.Utils;
 
@@ -15,4 +16,5 @@ public interface IPostRepository
     public Task<int> GetSentPostsCountAsync(string oid );
     public Task<int> GetReceivedPostsCountAsync(string oid);
     Task<bool> ReactAsync(int type, string guid, string actorId);
+    Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
 }

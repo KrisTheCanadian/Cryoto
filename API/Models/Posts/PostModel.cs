@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using API.Models.Comments;
 using API.Models.Users;
 
 namespace API.Models.Posts;
@@ -30,9 +31,12 @@ public class PostModel
     public string[] Celebrations { get; set; }
     
     public string[] UsersWhoReacted { get; set; }
+    
+    public string[] CommentIds { get; set; }
 
     [NotMapped] public IEnumerable<UserProfileModel> RecipientProfiles { get; set; }
     [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
+    [NotMapped] public IEnumerable<CommentModel> Comments { get; set; }
 
 
     public PostModel(string author, string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
@@ -59,6 +63,9 @@ public class PostModel
         Claps = Array.Empty<string>();
         Celebrations = Array.Empty<string>();
         UsersWhoReacted = Array.Empty<string>();
+        
+        CommentIds = Array.Empty<string>();
+        Comments = new List<CommentModel>();
     }
 
 
@@ -86,6 +93,9 @@ public class PostModel
         Celebrations = Array.Empty<string>();
         UsersWhoReacted = Array.Empty<string>();
         RecipientProfiles = userProfileModelList;
+        
+        CommentIds = Array.Empty<string>();
+        Comments = new List<CommentModel>();
     }
     public PostModel(PostCreateModel postCreateModel, string actor)
     {
@@ -109,6 +119,9 @@ public class PostModel
         Claps = Array.Empty<string>();
         Celebrations = Array.Empty<string>();
         UsersWhoReacted = Array.Empty<string>();
+        
+        CommentIds = Array.Empty<string>();
+        Comments = new List<CommentModel>();
     }
 
     public PostModel(PostUpdateModel postUpdateModel, string actor)
@@ -132,5 +145,8 @@ public class PostModel
         Claps = postUpdateModel.Claps;
         Celebrations = postUpdateModel.Celebrations;
         UsersWhoReacted = postUpdateModel.UsersWhoReacted;
+        
+        CommentIds = postUpdateModel.CommentIds;
+        Comments = new List<CommentModel>();
     }
 }

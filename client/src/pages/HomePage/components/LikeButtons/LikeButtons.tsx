@@ -113,7 +113,7 @@ function LikeButtons(props: ILikeButtonsProps) {
     // check if res is undefined
     if (!res) {
       // display error message
-      dispatchAlert.error(t('error'));
+      dispatchAlert.error(t('errors.BackendError'));
     }
   };
 

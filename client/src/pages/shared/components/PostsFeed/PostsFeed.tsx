@@ -11,6 +11,8 @@ import {IPage, IPost} from '@/data/api/types';
 import {Post} from '@/pages/HomePage/components';
 
 interface PostsFeedProps {
+  name: string | undefined;
+  oId: string | undefined;
   queryKey: string[];
   getNextPage: (
     page: number,
@@ -21,7 +23,7 @@ interface PostsFeedProps {
 }
 
 function PostsFeed(props: PostsFeedProps) {
-  const {queryKey, getNextPage, userId} = props;
+  const {name, oId, queryKey, getNextPage, userId} = props;
   const {accounts} = useMsal();
   const dispatchAlert = useAlertContext();
   const [postsPerLoad, setPostsPerLoad] = useState(10);
@@ -120,6 +122,9 @@ function PostsFeed(props: PostsFeedProps) {
               claps={[]}
               celebrations={[]}
               recipientId=""
+              name={undefined}
+              oId={undefined}
+              comments={[]}
             />
           ),
         )}
@@ -145,6 +150,9 @@ function PostsFeed(props: PostsFeedProps) {
               claps={post?.claps || []}
               celebrations={post?.celebrations || []}
               recipientId={post?.recipientProfiles[0]?.oId}
+              name={name}
+              oId={oId}
+              comments={post?.comments || []}
             />
           )),
         )}
@@ -172,6 +180,9 @@ function PostsFeed(props: PostsFeedProps) {
               claps={[]}
               celebrations={[]}
               recipientId=""
+              name={undefined}
+              oId={undefined}
+              comments={[]}
             />
           ),
         )}

@@ -1,5 +1,5 @@
-﻿using API.Models;
-using API.Models.Address;
+﻿using API.Models.Address;
+using API.Models.Comments;
 using API.Models.Notifications;
 using API.Models.Posts;
 using API.Models.Transactions;
@@ -12,6 +12,7 @@ public interface IDataContext
 {
     public DbSet<UserProfileModel> UserProfiles { get; set; }
     public DbSet<PostModel> Posts { get; set; }
+    public DbSet<CommentModel> Comments { get; set; }
     public DbSet<WalletModel> Wallets { get; set; }
     public DbSet<AddressModel> Addresses { get; set; }
     public DbSet<TransactionModel> Transactions { get; set; }

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using API.Models.Comments;
 using API.Models.Notifications;
 using API.Models.Posts;
 using API.Models.Users;
@@ -30,6 +31,8 @@ public class PostRepository : IPostRepository
         {
             return null;
         }
+
+        await GetAllComments(post);
         
         return await GetAllProfiles(post);
     }
@@ -66,6 +69,7 @@ public class PostRepository : IPostRepository
         foreach (var post in posts)
         {
             await GetAllProfiles(post);
+            await GetAllComments(post);
         }
 
         return posts;
@@ -94,6 +98,7 @@ public class PostRepository : IPostRepository
         foreach (var post in posts)
         {
             await GetAllProfiles(post);
+            await GetAllComments(post);
         }
 
         return new PaginationWrapper<PostModel>(posts, page, pageCount, totalNumberOfPages);
@@ -101,7 +106,7 @@ public class PostRepository : IPostRepository
 
     public async Task<int> GetSentPostsCountAsync(string oid)
     {
-        return await Context.Posts.Where(postModel => postModel.Author == oid ).CountAsync();
+        return await Context.Posts.Where(postModel => postModel.Author == oid).CountAsync();
     }
     public async Task<int> GetReceivedPostsCountAsync(string oid)
     {
@@ -147,6 +152,18 @@ public class PostRepository : IPostRepository
         return await Context.SaveChangesAsync() > 0;
     }
 
+    public async Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel)
+    {
+        postModel.CommentIds = postModel.CommentIds.Append(commentModel.Id).ToArray();
+        
+        // add comment to db as well
+        Context.Comments.Add(commentModel);
+        // add the comment to the post
+        Context.Posts.Update(postModel);
+        
+        return await Context.SaveChangesAsync() > 0;
+    }
+
     private async Task SendReactNotificationAsync(string actorId, UserProfileModel? user, PostModel post)
     {
         if (user == null)
@@ -171,6 +188,17 @@ public class PostRepository : IPostRepository
 
         // send email notification
         await NotificationService.SendEmailAsync(post.Author, "New Reaction", $"<h1>{user.Name} Reacted to your post</h1>");
+    }
+    
+    private async Task GetAllComments(PostModel postModel)
+    {
+        var comments = await Context.Comments.AsNoTracking().Where(x => x.ParentType == "Post" && x.ParentId == postModel.Id).OrderByDescending(x=> x.CreatedDate).ToListAsync();
+        foreach (var comment in comments)
+        {
+            comment.AuthorProfile = await Context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OId.Equals(comment.Author));
+        }
+        postModel.Comments = comments;
     }
 
     private async Task<PostModel> GetAllProfiles(PostModel postModel)

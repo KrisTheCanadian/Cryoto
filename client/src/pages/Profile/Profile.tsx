@@ -182,6 +182,8 @@ function Profile() {
             queryKey={[`profile-${id}`]}
             getNextPage={getNextPageUserProfile}
             userId={id!}
+            name={accounts[0].name}
+            oId={id!}
           />
         </Box>
       </MiddleColumn>
