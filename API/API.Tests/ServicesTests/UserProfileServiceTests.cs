@@ -93,6 +93,21 @@ public class UserProfileServicesTests
         actionResult2?.Language.Should().Be(updatedUserProfile.Language);
     }
 
+    [Fact]
+    public async void UserProfileService_UpdateUserRolesService_ReturnsTrue()
+    {
+        //Arrange
+        var userProfileModelList = GetUserProfileModelList();
+        A.CallTo(() => _context.GetUserByIdAsync(A<string>._)).Returns(userProfileModelList.Result[0]);
+        A.CallTo(() => _context.UpdateUserProfile(A<UserProfileModel>._)).Returns(1);
+
+        //Act
+        var actionResult = await _controller.UpdateUserRolesService("oid", new[] { "role3", "role4" });
+
+        //Assert
+        actionResult.Should().BeTrue();
+    }
+
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
     {
         var roles1 = new[] { "roles1" };

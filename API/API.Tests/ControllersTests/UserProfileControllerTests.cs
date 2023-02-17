@@ -261,6 +261,21 @@ public class UserProfileControllerTests
         objectResultValue?.Language.Should().Be(updatedUserProfileModel.Language);
     }
 
+    [Fact]
+    public async void UserProfileController_Update_ReturnsOK()
+    {
+        //Arrange
+        A.CallTo(() => _userProfileService.UpdateUserRolesService(A<string>._, A<string[]>._)).Returns(true);
+
+        //Act
+        var actionResult = await _controller.UpdateUserRoles(new[] { "role3", "role4" }, "oid");
+        var objectResult = actionResult.Result as ObjectResult;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+    }
+
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
     {
         var roles1 = new[] { "roles1" };
