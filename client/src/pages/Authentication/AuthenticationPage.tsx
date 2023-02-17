@@ -12,13 +12,16 @@ import {getUserProfile} from '@/data/api/requests/users';
 
 // Loading Page (transition between landing page and protected pages)
 function Authentication() {
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const [userProfileData, setUserProfileData] = useState();
   const {inProgress} = useMsal();
 
   const loadUserProfile = async () => {
     if (inProgress === InteractionStatus.None) {
-      getUserProfile().then((response: any) => setUserProfileData(response));
+      getUserProfile().then((response: any) => {
+        setUserProfileData(response);
+        i18n.changeLanguage(response.language);
+      });
     }
   };
 
