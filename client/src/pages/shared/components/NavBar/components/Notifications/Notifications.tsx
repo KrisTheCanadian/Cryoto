@@ -304,10 +304,12 @@ function Notifications() {
                           .fromNow()}`}
                       </Typography>
                     </Box>
-                    <Chip
-                      icon={<VolunteerActivism />}
-                      label={n.amount.toString()}
-                    />
+                    {n.amount !== null && (
+                      <Chip
+                        icon={<VolunteerActivism />}
+                        label={n.amount.toString()}
+                      />
+                    )}
                   </Box>
                 </ListItem>
               ))}

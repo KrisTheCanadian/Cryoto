@@ -1,4 +1,5 @@
 using API.Models.Notifications;
+using API.Models.Posts;
 using API.Utils;
 
 namespace API.Services.Interfaces;
@@ -13,4 +14,6 @@ public interface INotificationService
     Task<bool> UpdateReadAsync(string id);
     Task<bool> DeleteAsync(string id);
     Task<PaginationWrapper<Notification>> GetNotificationsPaginatedAsync(string actorId, int page, int pageSize);
+    public Task<bool> SendReactionNotification(string actorId, string guid, int type, PostModel post);
+    public Task<bool> SendCommentNotification(string actorId, string postId, PostModel post);
 }

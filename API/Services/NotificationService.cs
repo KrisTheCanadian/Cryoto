@@ -1,5 +1,6 @@
 using API.Hub;
 using API.Models.Notifications;
+using API.Models.Posts;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
 using API.Utils;
@@ -19,7 +20,9 @@ public class NotificationService : INotificationService
     private readonly string _emailConnectionString;
 
 
-    public NotificationService(IHubContext<NotificationsHub> hubContext, INotificationRepository repository, ILogger<NotificationService> logger, IUserProfileRepository userProfileRepository, IConfiguration configuration)
+    public NotificationService(IHubContext<NotificationsHub> hubContext, INotificationRepository repository,
+        ILogger<NotificationService> logger, IUserProfileRepository userProfileRepository, 
+        IConfiguration configuration)
     {
         _hubContext = hubContext;
         _repository = repository;
@@ -104,5 +107,140 @@ public class NotificationService : INotificationService
     public async Task<PaginationWrapper<Notification>> GetNotificationsPaginatedAsync(string actorId, int page, int pageSize)
     {
         return await _repository.GetNotificationsPaginatedAsync(actorId, page, pageSize);
+    }
+
+    public async Task<bool> SendReactionNotification(string actorId, string postId, int type, PostModel post)
+    {
+        var react = true;
+        switch (type)
+        {
+            case 0:
+                react = post.Hearts.Contains(actorId);
+                break;
+            case 1:
+                react = post.Claps.Contains(actorId);
+                break;
+            case 2:
+                react = post.Claps.Contains(actorId);
+                break;
+        }
+        
+        if (react)
+        {
+            string ReactionMessage(int reactionType)
+            {
+                switch (reactionType)
+                {
+                    case 0:
+                        return "loved";
+                    case 1:
+                        return "clapped to";
+                    case 2:
+                        return "celebrated";
+                }
+                return "";
+            }
+        
+            var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
+            // Send Notification to Post Author
+            if (post.Author != actorId)
+            {
+                // public Notification(string senderId, string receiverId, string message, string type, double amount)
+                var notification = new Notification(
+                    actorId,
+                    post.Author,
+                    $"{actorProfile!.Name} {ReactionMessage(type)} your post.",
+                    "Reaction",
+                    null
+                );
+        
+                await SendNotificationAsync(notification);
+        
+                // send email notification
+                if (post.AuthorProfile!.EmailNotifications)
+                    await SendEmailAsync(post.Author, "New Reaction",
+                        $"<h1>{actorProfile!.Name} {ReactionMessage(type)} your post.</h1>");
+            }
+        
+            foreach (var postRecipient in post.RecipientProfiles)
+                if (postRecipient.OId != actorId)
+                {
+                    // Send Notification to Post Recipients
+                    // public Notification(string senderId, string receiverId, string message, string type, double amount)
+                    var notificationToPostRecipient = new Notification(
+                        actorId,
+                        postRecipient.OId,
+                        $"{actorProfile!.Name} {ReactionMessage(type)} a post you are recognized in.",
+                        "Reaction",
+                        null
+                    );
+        
+                    await SendNotificationAsync(notificationToPostRecipient);
+        
+                    // send email notification
+                    if (postRecipient!.EmailNotifications)
+                        await SendEmailAsync(postRecipient.OId, "New Reaction",
+                            $"<h1>{actorProfile!.Name} {ReactionMessage(type)} a post you are recognized in.</h1>");
+                }
+        }
+
+        return true;
+    }
+    
+    public async Task<bool> SendCommentNotification(string actorId, string postId, PostModel post)
+    { 
+        var commentAuthor = await _userProfileRepository.GetUserByIdAsync(actorId);
+        if (commentAuthor == null)
+        {
+            _logger.LogError("Could not retrieve user profile of user '{actorId}'", actorId);
+            return false;
+        }
+        var postAuthor = post.AuthorProfile;
+        if (postAuthor == null)
+        {
+            _logger.LogError("Could not retrieve author profile of post '{postId}'", postId);
+            return false;
+        }
+        // Send Notification to Post Author
+        if (post.Author != actorId)
+        {
+            // public Notification(string senderId, string receiverId, string message, string type, double? amount)
+            var notification = new Notification(
+                actorId,
+                post.Author,
+                $"{commentAuthor.Name} commented on your post.",
+                "Comment",
+                null
+            );
+        
+            await SendNotificationAsync(notification);
+        
+            // send email notification
+            if (postAuthor.EmailNotifications)
+                await SendEmailAsync(post.Author, "New Comment",
+                    $"<h1>{commentAuthor.Name} commented on your post.</h1>");
+        }
+        
+        // Send Notification to Post Recipients
+        foreach (var postRecipient in post.RecipientProfiles)
+            if (postRecipient.OId != actorId)
+            {
+                var notificationToPostRecipient = new Notification(
+                    actorId,
+                    postRecipient.OId,
+                    $"{commentAuthor.Name} commented on a post you are recognized in.",
+                    "Comment",
+                    null
+                );
+        
+                await SendNotificationAsync(notificationToPostRecipient);
+        
+                // send email notification
+                if (postRecipient.EmailNotifications)
+                    await SendEmailAsync(postRecipient.OId, "New Comment",
+                        $"<h1>{commentAuthor.Name} commented on a post you are recognized in.</h1>");
+            }
+
+        return true;
     }
 }

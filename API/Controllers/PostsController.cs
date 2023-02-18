@@ -2,8 +2,8 @@ using System.Collections;
 using System.Security.Claims;
 using API.Models.Comments;
 using API.Models.Notifications;
-using API.Models.Transactions;
 using API.Models.Posts;
+using API.Models.Transactions;
 using API.Models.Users;
 using API.Services.Interfaces;
 using API.Utils;
@@ -18,19 +18,19 @@ namespace API.Controllers;
 [Route("[controller]/[action]")]
 public class PostsController : ControllerBase
 {
+    private readonly string _actorId;
     private readonly ICryptoService _cryptoService;
+    private readonly ILogger<PostsController> _logger;
+    private readonly INotificationService _notificationService;
     private readonly IPostService _postService;
     private readonly ITransactionService _transactionService;
-    private readonly string _actorId;
-    private readonly INotificationService _notificationService;
     private readonly IUserProfileService _userProfileService;
-    private readonly ILogger<PostsController> _logger;
-
 
 
     public PostsController(IPostService postService, ICryptoService cryptoService,
         ITransactionService transactionService, IHttpContextAccessor contextAccessor,
-        INotificationService notificationService, IUserProfileService userProfileService, ILogger<PostsController> logger)
+        INotificationService notificationService, IUserProfileService userProfileService,
+        ILogger<PostsController> logger)
     {
         _postService = postService;
         _cryptoService = cryptoService;
@@ -76,16 +76,18 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<CommentModel>> CommentOnPost(CommentCreateModel commentCreateModel, Guid postId)
     {
         var commentModel = new CommentModel(commentCreateModel, _actorId, postId.ToString(), "Post");
-        
+
         var postModel = await _postService.GetByIdAsync(postId.ToString());
         if (postModel == null) return NotFound();
-        
+
         var created = await _postService.CommentOnPostAsync(postModel, commentModel);
         if (!created) return BadRequest("Could not comment on the post");
-        
-        // TODO
-        // await SendNotification(commentCreateModel, postModel.AuthorProfile, postModel, commentModel, 0);
-        
+
+        var notificationSent = await _notificationService.SendCommentNotification(_actorId, postId.ToString(), postModel);
+        if (!notificationSent)
+        {
+            _logger.LogWarning("Failed to send reaction notification on post '{guid}' by user {_actorId}", postId.ToString(), _actorId);
+        }
         return Ok(commentModel);
     }
 
@@ -124,7 +126,6 @@ public class PostsController : ControllerBase
             { new() { "tokenUpdateQueue" }, new() { _actorId } };
         var successfulRecipients = new List<UserProfileModel>();
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
-        {
             try
             {
                 var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
@@ -142,21 +143,19 @@ public class PostsController : ControllerBase
             }
             catch
             {
-                _logger.LogWarning("Failed to send tokens to {Name} with oId: {Id}", recipientProfile.Name, recipientProfile.OId);
+                _logger.LogWarning("Failed to send tokens to {Name} with oId: {Id}", recipientProfile.Name,
+                    recipientProfile.OId);
             }
-        }
 
         if (successfulRecipients.Count == 0)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);
             return BadRequest("Could not process any transaction and create the post");
         }
-            
+
         if (createdPostModel.RecipientProfiles.Count() > successfulRecipients.Count)
-        {
             createdPostModel.RecipientProfiles = successfulRecipients;
-        }
-        
+
         await _userProfileService.IncrementRecognitionsSent(_actorId);
         _cryptoService.QueueTokenUpdate(oIdsList);
 
@@ -174,10 +173,7 @@ public class PostsController : ControllerBase
 
         var senderName = "a Team Member";
 
-        if (actorProfile != null)
-        {
-            senderName = actorProfile.Name;
-        }
+        if (actorProfile != null) senderName = actorProfile.Name;
 
 
         var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
@@ -193,8 +189,8 @@ public class PostsController : ControllerBase
     {
         var existingPost = await _postService.GetByIdAsync(postUpdateModel.Id);
         if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
-        
-        if(_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
+
+        if (_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
 
         var postModel = new PostModel(postUpdateModel, _actorId);
         var updated = await _postService.UpdateAsync(postModel);
@@ -209,8 +205,8 @@ public class PostsController : ControllerBase
     {
         var existingPost = await _postService.GetByIdAsync(guid);
         if (existingPost == null) return Conflict("Cannot delete the post because it does not exist.");
-        
-        if(_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
+
+        if (_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
 
         await _postService.DeleteAsync(existingPost);
 
@@ -221,11 +217,16 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PostModel>> React(int type, string guid)
     {
         var existingPost = await _postService.GetByIdAsync(guid);
-        if (existingPost == null) return Conflict("Cannot like the post because it does not exist.");
+        if (existingPost == null) return Conflict("Cannot react to the post because it does not exist.");
 
         var liked = await _postService.ReactAsync(type, guid, _actorId);
         if (!liked) return BadRequest("Could not like the post");
 
+        var notificationSent = await _notificationService.SendReactionNotification(_actorId, guid, type, existingPost);
+        if (!notificationSent)
+        {
+            _logger.LogWarning("Failed to send reaction notification on post '{guid}' by user {_actorId}", guid, _actorId);
+        }
         return Ok(await _postService.GetByIdAsync(guid));
     }
 }

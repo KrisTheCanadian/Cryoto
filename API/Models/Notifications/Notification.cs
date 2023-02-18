@@ -7,23 +7,7 @@ namespace API.Models.Notifications;
 [ExcludeFromCodeCoverage]
 public class Notification
 {
-    [Key]
-    public Guid Id { get; set; }
-    public string SenderId { get; set; }
-    public string ReceiverId { get; set; }
-    public string Message { get; set; }
-    public string Type { get; set; }
-    public DateTimeOffset Created { get; set; }
-    public bool Seen { get; set; }
-    public double Amount { get; set; }
-    
-    [NotMapped]
-    public string? SenderName { get; set; }
-    [NotMapped]
-    public string? ReceiverName { get; set; }
-    
-
-    public Notification(string senderId, string receiverId, string message, string type, double amount)
+    public Notification(string senderId, string receiverId, string message, string type, double? amount)
     {
         Id = Guid.NewGuid();
         SenderId = senderId;
@@ -34,4 +18,18 @@ public class Notification
         Seen = false;
         Amount = amount;
     }
+
+    [Key] public Guid Id { get; set; }
+
+    public string SenderId { get; set; }
+    public string ReceiverId { get; set; }
+    public string Message { get; set; }
+    public string Type { get; set; }
+    public DateTimeOffset Created { get; set; }
+    public bool Seen { get; set; }
+    public double? Amount { get; set; }
+
+    [NotMapped] public string? SenderName { get; set; }
+
+    [NotMapped] public string? ReceiverName { get; set; }
 }
