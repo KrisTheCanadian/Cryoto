@@ -2,7 +2,7 @@ describe('Navbar', () => {
   beforeEach(() => {
     cy.login();
   });
-  it('check header title', () => {
+  it('Test Header Title', () => {
     cy.visit('/');
 
     cy.get('#companyName').should('contain', 'Cryoto');
@@ -36,13 +36,15 @@ describe('Navbar', () => {
     cy.get('[data-testid="NotificationsNoneIcon"]').should('exist');
   });
 
-  it('Test profile button', () => {
+  it('Test Profile Button', () => {
     cy.visit('/');
     cy.get('[data-testid="AccountCircleIcon"]').should('exist');
   });
 
-  it('Test search bar', () => {
+  it('Test Search Bar', () => {
     cy.visit('/');
+    cy.get('[data-testid="SearchIcon"]').should('exist');
+    cy.get('[data-testid="search-field"]').should('exist');
     cy.get('[data-testid="searchBox"]').should('exist');
     cy.get('[data-testid="searchBox"]').click({force: true});
     cy.wait(100);

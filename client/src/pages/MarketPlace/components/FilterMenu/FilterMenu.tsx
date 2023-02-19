@@ -95,7 +95,7 @@ function FilterMenuItems() {
             mr: 1,
           }}
         >
-          <Button
+          <Button data-testid="remove-all-filters"  
             sx={{fontSize: 11}}
             style={{textTransform: 'none'}}
             onClick={() => {
@@ -163,7 +163,8 @@ function FilterMenuItems() {
               <FormControlLabel
                 key={t}
                 control={
-                  <Checkbox
+                  <Checkbox 
+                    // id={"types-"+t}
                     name={t}
                     onChange={() => handleSelectedFilterChange(t, 2)}
                     checked={isSelectedFilter(t)}
@@ -177,9 +178,9 @@ function FilterMenuItems() {
         </FormControl>
       )}
       <Divider sx={{ml: 2, mr: 2}} />
-      <MenuItem
+      <MenuItem data-testid="brand-button"
         onClick={() => setOpenBrand(!openBrand)}
-        sx={{diplay: 'flex', justifyContent: 'space-between'}}
+        sx={{display: 'flex', justifyContent: 'space-between'}}
       >
         {t<string>('marketplace.filter.brand')}
         {openBrand && <KeyboardArrowUp fontSize="small" />}
@@ -199,7 +200,7 @@ function FilterMenuItems() {
               <FormControlLabel
                 key={b}
                 control={
-                  <Checkbox
+                  <Checkbox id={"checkbox-"+b}
                     name={b}
                     onChange={() => handleSelectedFilterChange(b, 1)}
                     checked={isSelectedFilter(b)}
@@ -325,7 +326,7 @@ function FilterMenu() {
   };
   return (
     <Box>
-      <Button
+      <Button data-testid="mFilterButton"
         onClick={handleFilterButtonClick}
         sx={{
           mr: 1,

@@ -144,6 +144,7 @@ function ProductCard(props: IProductCardProps) {
                 maxHeight: 130,
                 borderRadius: 2,
               }}
+              data-testid="cardMediaPic"
               component="img"
               image={props.image}
             />

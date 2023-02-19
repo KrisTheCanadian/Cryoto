@@ -133,7 +133,7 @@ function ProfileMenu() {
         transformOrigin={{horizontal: 'right', vertical: 'top'}}
         anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
       >
-        <MenuItem
+        <MenuItem data-testid="profile"
           component={NavLink}
           to={`/profile/${oId}`}
           selected={location.pathname === `/profile/${oId}}`}
@@ -172,14 +172,14 @@ function ProfileMenu() {
             selected={location.pathname === '/admin'}
           >
             <ListItemIcon>
-              <AdminPanelSettings fontSize="small" />
+              <AdminPanelSettings fontSize="small" data-testid="admin-panel-settings"/>
             </ListItemIcon>
             {t('adminDashboard.pageTitle')}
           </MenuItem>
         )}
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout fontSize="small" data-testid="logout"/>
           </ListItemIcon>
           {t('layout.Logout')}
         </MenuItem>
