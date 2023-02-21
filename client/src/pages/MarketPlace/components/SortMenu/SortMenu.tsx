@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import {
   Box,
   useTheme,
@@ -81,7 +83,6 @@ function SortMenu() {
 
   useEffect(() => {
     handleSort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectSort]);
 
   useEffect(() => {
@@ -89,7 +90,6 @@ function SortMenu() {
       handleSort();
     }
     setUpdateSortedItems(Boolean(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateSortedItems]);
 
   const isSelected = () => {

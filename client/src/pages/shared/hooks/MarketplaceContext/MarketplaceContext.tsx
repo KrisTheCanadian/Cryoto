@@ -4,6 +4,7 @@ import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
 
 import IMarketPlaceItem from '@/data/api/types/IMarketPlaceItem';
+import {ICartItem, IItem} from '@/data/api/types/ICart';
 import {getAllItems} from '@/data/api/requests/marketplace';
 
 interface Filter {
@@ -12,39 +13,22 @@ interface Filter {
   min?: number;
   max?: number;
 }
-
-interface Item {
-  id: string;
-  image: any;
-  title: string;
-  type: string;
-  size?: string[];
-  brand: string;
-  points: number;
-  description?: string;
-}
-
-interface CartItem {
-  id: string;
-  image: any;
-  title: string;
-  points: number;
-  size?: string;
-  quantity: number;
-}
-
 interface MarketplaceContextState {
-  allItems: Item[];
+  allItems: IItem[];
   selectedFilters: Filter[];
   setSelectedFilters: any;
   selectSort: string;
   setSelectSort: any;
-  itemsDisplayed: Item[];
+  itemsDisplayed: IItem[];
   setItemsDisplayed: any;
   updateSortedItems: boolean;
   setUpdateSortedItems: any;
+  cartItems: ICartItem[];
+  setCartItems: any;
   addCartItems: any;
+  setCartItemsQuantity: any;
   cartItemsQuantity: number;
+  updateCartItemQuantity: any;
 }
 
 const MarketplaceContext = createContext({} as MarketplaceContextState);
@@ -52,7 +36,7 @@ const MarketplaceContext = createContext({} as MarketplaceContextState);
 function MarketplaceProvider(props: {children: any}) {
   const {t, i18n} = useTranslation();
   const lang = i18n.language.substring(0, 2);
-  const itemsJsonTranslated: Item[] = [];
+  const itemsJsonTranslated: IItem[] = [];
 
   const {data, status} = useQuery<IMarketPlaceItem[]>(
     'getAllItems',
@@ -83,17 +67,47 @@ function MarketplaceProvider(props: {children: any}) {
   itemsJsonTranslated.sort((item1, item2) => item1.points - item2.points);
 
   const allItems = itemsJsonTranslated;
-  const [itemsDisplayed, setItemsDisplayed] = useState<Item[]>([]);
+  const [itemsDisplayed, setItemsDisplayed] = useState<IItem[]>([]);
   const [selectedFilters, setSelectedFilters] = useState<Filter[]>([]);
   const [updateSortedItems, setUpdateSortedItems] = useState(false);
   const [selectSort, setSelectSort] = useState<string>('');
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<ICartItem[]>([]);
   const [cartItemsQuantity, setCartItemsQuantity] = useState(0);
 
   useEffect(() => {
     if (status === 'success') setItemsDisplayed([...allItems]);
+    const storedCartItems = JSON.parse(
+      localStorage.getItem('cartItems') || '[]',
+    );
+    if (storedCartItems.length > 0) {
+      setCartItems(storedCartItems);
+      let quantity = 0;
+      cartItems.forEach((item: ICartItem) => {
+        quantity += item.quantity;
+      });
+      setCartItemsQuantity(quantity);
+    }
   }, [data]);
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems, cartItemsQuantity]);
+
+  const updateCartItemQuantity = (
+    id: string,
+    operation: string,
+    size?: number,
+  ) => {
+    const item = cartItems.find((i) => i.id === id && i.size === size);
+    if (item && operation === 'add') {
+      item.quantity += 1;
+      setCartItemsQuantity(cartItemsQuantity + 1);
+    } else if (item && operation === 'minus') {
+      item.quantity -= 1;
+      setCartItemsQuantity(cartItemsQuantity - 1);
+    }
+  };
 
   const addCartItems = (
     id: string,
@@ -103,10 +117,8 @@ function MarketplaceProvider(props: {children: any}) {
     size: string,
     quantity: number,
   ) => {
-    if (size === '') {
-      const item = cartItems.find((i) => i.id === id);
-      if (item) item.quantity += quantity;
-      else setCartItems([...cartItems, {id, title, image, points, quantity}]);
+    if (cartItems.length === 0) {
+      setCartItems([{id, title, image, points, size, quantity}]);
     } else {
       const item = cartItems.find((i) => i.id === id && i.size === size);
       if (item) item.quantity += quantity;
@@ -132,6 +144,10 @@ function MarketplaceProvider(props: {children: any}) {
       setUpdateSortedItems,
       addCartItems,
       cartItemsQuantity,
+      setCartItems,
+      cartItems,
+      setCartItemsQuantity,
+      updateCartItemQuantity,
     };
   }, [
     addCartItems,
@@ -141,6 +157,7 @@ function MarketplaceProvider(props: {children: any}) {
     selectedFilters,
     updateSortedItems,
     cartItemsQuantity,
+    cartItems,
   ]);
 
   return (
@@ -160,4 +177,4 @@ const useMarketplaceContext = () => {
   return context;
 };
 
-export {MarketplaceProvider, useMarketplaceContext};
+export {MarketplaceProvider, MarketplaceContext, useMarketplaceContext};

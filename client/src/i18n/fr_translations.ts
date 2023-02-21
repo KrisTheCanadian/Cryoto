@@ -186,6 +186,34 @@ export const frenchTranslations = {
     Notifications: 'Notifications',
     EmailNotifications: 'Notifications Par Courriel',
     ErrorEmptyJobTitle: 'Le titre du poste ne peut pas être vide.',
+    SaveDefault: 'Enregistrer comme adresse par défaut',
+  },
+  cart: {
+    Cart: 'Votre panier',
+    OrderSummary: 'Résumé de commande',
+    Checkout: 'Commander',
+    ShippingAddress: 'Adresse de livraison',
+    Total: 'Total',
+    PlaceOrder: 'Passer votre commande',
+    ItemDescription: "Description de l'article",
+    Quantity: 'Quantité',
+    Price: 'Prix',
+    ContinueShopping: 'Continuer vos achats',
+    ProceedCheckout: 'Valider la commande',
+    EmptyCart: 'Votre panier est vide',
+    EmptyCartLongMessage:
+      "Il semble que vous n'ayez rien ajouté à votre panier. Allez explorer nos produits !",
+    EmptyCartCheckoutMessage:
+      'Vous ne pouvez pas passer de commande avec un panier vide. Veuillez ajouter des articles à votre panier et réessayer.',
+    TermsCondition:
+      'En continuant, vous acceptez les conditions générales de Cryoto.',
+  },
+  order: {
+    OrderReceived: 'Votre commande a été reçue.',
+    ThankYou:
+      "Merci pour votre commande. Nous commencerons à la traiter immédiatement. Vous recevrez sous peu une confirmation de commande à l'adresse courriel ",
+    OrderDate: 'Date de la commande',
+    OrderNumber: 'Numéro de commande',
   },
   adminDashboard: {
     pageTitle: 'Tableau de Bord - Administration',

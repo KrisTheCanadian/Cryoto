@@ -23,7 +23,7 @@ function ProductPage() {
 
   const {id} = useParams();
   const [quantity, setQuantity] = useState<number>(1);
-  const {allItems, addCartItems, cartItemsQuantity} = useMarketplaceContext();
+  const {allItems, addCartItems} = useMarketplaceContext();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addCartValidity, setAddCartValidity] = useState(true);
 
@@ -64,7 +64,7 @@ function ProductPage() {
               mr: '10%',
             }}
           >
-            <CartButton cartItemsQuantity={cartItemsQuantity} />
+            <CartButton />
           </Box>
           <Paper
             sx={{

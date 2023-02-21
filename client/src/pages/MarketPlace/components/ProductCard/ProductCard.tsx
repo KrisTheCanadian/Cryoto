@@ -50,42 +50,65 @@ function ProductCard(props: IProductCardProps) {
     },
   });
 
+  const minHeightBreakpoints = [
+    {range: [1850, 1950], value: 212},
+    {range: [1500, 1850], value: 190},
+    {range: [1080, 1180], value: 200},
+    {range: [960, 1080], value: 184},
+    {range: [795, 900], value: 184},
+    {range: [710, 795], value: 205},
+    {range: [620, 710], value: 194},
+  ];
+
+  const heightBreakpoints = [
+    {range: [1300, 1536], value: 210},
+    {range: [1170, 1300], value: 190},
+    {range: [900, 960], value: 170},
+    {range: [790, 900], value: 200},
+    {range: [600, 620], value: 180},
+    {range: [200, 600], value: 210},
+  ];
+
   const cardStyle = {
     maxWidth: 245,
     marginRight: 1,
     borderRadius: theme.borderRadius.default,
     transition: 'transform 0.15s ease-in-out',
     '&:hover': {transform: 'scale3d(1.10, 1.10, 1)'},
-    minHeight: 225,
-    [theme.breakpoints.between(1850, 1950)]: {
-      minHeight: 212,
-    },
-    [theme.breakpoints.between(1500, 1850)]: {
-      minHeight: 190,
-    },
-    [theme.breakpoints.between(950, 1180)]: {
-      minHeight: 205,
-    },
-    [theme.breakpoints.between(750, 950)]: {
-      minHeight: 184,
-    },
+    ...minHeightBreakpoints.reduce((acc, {range, value}) => {
+      const [start, end] = range;
+      return {
+        ...acc,
+        [theme.breakpoints.between(start, end)]: {
+          minHeight: value,
+        },
+      };
+    }, {}),
   };
 
   const cardContainerStyle = {
     overflow: 'show',
     height: 225,
-    [theme.breakpoints.between(1850, 1950)]: {
-      height: 212,
-    },
-    [theme.breakpoints.between(1500, 1850)]: {
-      height: 190,
-    },
-    [theme.breakpoints.between(950, 1180)]: {
-      height: 205,
-    },
-    [theme.breakpoints.between(750, 950)]: {
-      height: 184,
-    },
+
+    ...minHeightBreakpoints.reduce((acc, {range, value}) => {
+      const [start, end] = range;
+      return {
+        ...acc,
+        [theme.breakpoints.between(start, end)]: {
+          height: value,
+        },
+      };
+    }, {}),
+
+    ...heightBreakpoints.reduce((acc, {range, value}) => {
+      const [start, end] = range;
+      return {
+        ...acc,
+        [theme.breakpoints.between(start, end)]: {
+          height: value,
+        },
+      };
+    }, {}),
   };
 
   const titleStyle = {
@@ -95,10 +118,13 @@ function ProductCard(props: IProductCardProps) {
     WebkitLineClamp: '1',
     WebkitBoxOrient: 'vertical',
     mr: 0.6,
-    [theme.breakpoints.between(1530, 1950)]: {
+    [theme.breakpoints.between(1536, 1950)]: {
       WebkitLineClamp: '2',
     },
-    [theme.breakpoints.between(600, 1180)]: {
+    [theme.breakpoints.between(900, 1180)]: {
+      WebkitLineClamp: '2',
+    },
+    [theme.breakpoints.between(600, 800)]: {
       WebkitLineClamp: '2',
     },
   };

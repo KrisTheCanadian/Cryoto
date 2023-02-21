@@ -16,7 +16,6 @@ import {
   HomeOutlined,
   WalletOutlined,
   StorefrontOutlined,
-  LocalShippingOutlined,
 } from '@mui/icons-material';
 import {NavLink, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
@@ -105,11 +104,7 @@ function SideBar() {
               icon={<StorefrontOutlined />}
               text="layout.MarketPlace"
             />
-            <MenuItem
-              to={routeOrders}
-              icon={<LocalShippingOutlined />}
-              text="layout.Orders"
-            />
+
             <MenuItem
               to={routeWallet}
               icon={<WalletOutlined />}

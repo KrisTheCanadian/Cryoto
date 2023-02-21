@@ -2,23 +2,14 @@
 import {Badge, BadgeProps, IconButton} from '@mui/material';
 import {ShoppingCart} from '@mui/icons-material';
 import {styled, useTheme} from '@mui/material/styles';
-import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 
-interface CartItem {
-  id: string;
-  image: any;
-  title: string;
-  points: number;
-  size?: string;
-  quantity: number;
-}
+import {routeShoppingCart} from '../../../routes';
 
-interface ICartButtonProps {
-  cartItemsQuantity: number;
-}
-
-function CartButton(props: ICartButtonProps) {
+function CartButton() {
   const theme = useTheme();
+  const {cartItemsQuantity} = useMarketplaceContext();
   const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
     '& .MuiBadge-badge': {
       right: -3,
@@ -27,6 +18,11 @@ function CartButton(props: ICartButtonProps) {
       padding: '0 4px',
     },
   }));
+
+  const navigate = useNavigate();
+  const routeChange = () => {
+    navigate(routeShoppingCart);
+  };
 
   return (
     <IconButton
@@ -39,9 +35,10 @@ function CartButton(props: ICartButtonProps) {
         backgroundColor: theme.interface.main,
         mr: '10%',
       }}
+      onClick={routeChange}
       data-testid="cartButton"
     >
-      <StyledBadge badgeContent={props.cartItemsQuantity} color="primary">
+      <StyledBadge badgeContent={cartItemsQuantity} color="primary">
         <ShoppingCart sx={{color: theme.interface.icon, fontSize: 20, p: 0}} />
       </StyledBadge>
     </IconButton>

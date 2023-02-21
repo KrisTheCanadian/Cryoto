@@ -35,7 +35,7 @@ interface Item {
 
 function MarketPlace() {
   const theme = useTheme();
-  const {itemsDisplayed, cartItemsQuantity} = useMarketplaceContext();
+  const {itemsDisplayed} = useMarketplaceContext();
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -173,7 +173,7 @@ function MarketPlace() {
                 xs={3}
                 sx={{display: 'flex', justifyContent: 'flex-end'}}
               >
-                <CartButton cartItemsQuantity={cartItemsQuantity} />
+                <CartButton />
               </Grid>
             </Grid>
           </Grid>

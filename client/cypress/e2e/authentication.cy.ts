@@ -16,8 +16,9 @@ describe('Authentication', () => {
     // check wallet
     cy.visit('/wallet');
     cy.get('#sign-in-button').should('exist');
-    // check orders
-    cy.visit('/orders');
+
+    // check checkout
+    cy.visit('/checkout');
     cy.get('#sign-in-button').should('exist');
 
     // check homepage

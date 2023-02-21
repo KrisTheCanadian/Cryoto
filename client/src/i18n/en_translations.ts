@@ -167,7 +167,7 @@ export const englishTranslations = {
     JobTitle: 'Job Title',
     Bio: 'Bio',
     Personal: 'Personal',
-    Email: 'E-mail',
+    Email: 'Email',
     ShippingAddress: 'Shipping Address',
     DefaultSippingAddress: 'Default Shipping Address',
     Language: 'Language',
@@ -183,6 +183,35 @@ export const englishTranslations = {
     Notifications: 'Notifications',
     EmailNotifications: 'Email Notifications',
     ErrorEmptyJobTitle: 'Job title cannot be empty.',
+    SaveDefault: 'Save as default address',
+  },
+  cart: {
+    Cart: 'Your Cart',
+    OrderSummary: 'Order Summary',
+    Checkout: 'Checkout',
+    ShippingAddress: 'Shipping Address',
+    Total: 'Total',
+    PlaceOrder: 'Place Order',
+    ItemDescription: 'Item Description',
+    Quantity: 'Quantity',
+    Price: 'Price',
+    ContinueShopping: 'Continue Shopping',
+    ProceedCheckout: 'Proceed to Checkout',
+    EmptyCart: 'Your Cart is Empty',
+    EmptyCartLongMessage:
+      'Looks like you have not added anything to your cart. Go ahead and explore our products!',
+    EmptyCartCheckoutMessage:
+      'You cannot place an order with an empty cart. Please add items to your cart and try again.',
+
+    TermsCondition:
+      "By continuing, you agree to Cryoto's General Terms and Conditions.",
+  },
+  order: {
+    OrderReceived: 'Your order has been received.',
+    ThankYou:
+      'Thank you for your order. We will begin processing it right away. You will receive an order confirmation shortly at ',
+    OrderDate: 'Order Date',
+    OrderNumber: 'Order #',
   },
   adminDashboard: {
     pageTitle: 'Admin Dashboard',

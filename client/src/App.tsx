@@ -1,5 +1,5 @@
 /* eslint-disable @shopify/strict-component-boundaries */
-import {Suspense, useState} from 'react';
+import {Suspense} from 'react';
 import {CssBaseline} from '@mui/material';
 import {Routes, Route} from 'react-router-dom';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
@@ -27,6 +27,8 @@ import {
   routeSettings,
   routeStyleGuide,
   routeWallet,
+  routeShoppingCart,
+  routeCheckout,
   routeAdmin,
 } from './pages/routes';
 import {StyleGuide} from './pages/StyleGuide';
@@ -35,6 +37,8 @@ import {MarketPlace} from './pages/MarketPlace';
 import {ProductPage} from './pages/MarketPlace/components/ProductPage';
 import {HomePage} from './pages/HomePage';
 import {Wallet} from './pages/Wallet';
+import {ShoppingCart} from './pages/ShoppingCart';
+import {Checkout} from './pages/Checkout';
 import {Profile} from './pages/Profile';
 import {Orders} from './pages/Orders';
 import {Settings} from './pages/Settings';
@@ -87,6 +91,22 @@ function App() {
                     element={
                       <MarketplaceProvider>
                         <ProductPage />
+                      </MarketplaceProvider>
+                    }
+                  />
+                  <Route
+                    path={routeShoppingCart}
+                    element={
+                      <MarketplaceProvider>
+                        <ShoppingCart />
+                      </MarketplaceProvider>
+                    }
+                  />
+                  <Route
+                    path={routeCheckout}
+                    element={
+                      <MarketplaceProvider>
+                        <Checkout />
                       </MarketplaceProvider>
                     }
                   />

@@ -116,18 +116,6 @@ describe('Authentication and Permission tests', () => {
     expect(screen.queryByText(SignIn)).toBeInTheDocument();
   });
 
-  it('should ensure the orders page is protected', async () => {
-    render(
-      <MemoryRouter initialEntries={['/orders']}>
-        <I18nextProvider i18n={i18n}>
-          <App />
-        </I18nextProvider>
-      </MemoryRouter>,
-    );
-
-    expect(screen.queryByText(SignIn)).toBeInTheDocument();
-  });
-
   it('should ensure the settings page is protected', async () => {
     render(
       <MemoryRouter initialEntries={['/settings']}>

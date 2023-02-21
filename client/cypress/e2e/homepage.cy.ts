@@ -11,14 +11,10 @@ describe('HomePage', () => {
     cy.get('[data-testid="HomeOutlinedIcon"]').should('be.visible');
     cy.get('[data-testid="HomeOutlinedIcon"]').should('exist');
     cy.get('.Mui-selected').should('contain', 'Home');
-    
+
     cy.get('[data-testid="StorefrontOutlinedIcon"]').should('be.visible');
     cy.get('[data-testid="StorefrontOutlinedIcon"]').should('exist');
     cy.get('[href="/market"]').should('contain', 'Marketplace');
-
-    cy.get('[data-testid="LocalShippingOutlinedIcon"]').should('be.visible');
-    cy.get('[data-testid="LocalShippingOutlinedIcon"]').should('exist');
-    cy.get('[href="/orders"]').should('contain', 'My Orders');
 
     cy.get('[data-testid="WalletOutlinedIcon"]').should('be.visible');
     cy.get('[data-testid="WalletOutlinedIcon"]').should('exist');
