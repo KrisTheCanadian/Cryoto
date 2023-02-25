@@ -6,7 +6,7 @@ import {
   apiRouteMarketPlaceGetItemById,
   apiRouteMarketPlaceCompletePurchase,
 } from '../routes';
-import IOrder from '../types/IOrder';
+import {IOrder} from '../types/ICart';
 
 import {getAllItems, getItemById, completePurchase} from './marketplace';
 
@@ -47,14 +47,24 @@ it('getItemById returns success', async () => {
 it('completePurchase returns success', async () => {
   const data = {response: true};
   const order: IOrder = {
+    id: '1',
     items: [
       {
-        id: 'afd380c1-c643-4c6f-8454-60cb22585582',
+        id: 'afd380c1',
         quantity: 1,
       },
     ],
     email: 'test@test.com',
-    address: '123 Test St',
+    shippingAddress: {
+      id: 1,
+      streetNumber: '20',
+      street: 'Test Street',
+      city: 'Test City',
+      province: 'Test Province',
+      country: 'Test Country',
+      postalCode: 'Test Postal Code',
+    },
+    date: new Date(),
   };
 
   const url = `${apiRouteMarketPlaceCompletePurchase}`;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Crypto.Solana.SolanaObjects;
+using API.Models.Address;
 using API.Models.MarketPlace;
 using API.Services.Interfaces;
 using FakeItEasy;
@@ -18,6 +19,7 @@ public class MarketPlaceControllerTests
 {
     private readonly IMarketPlaceService _marketPlaceService;
     private readonly ICryptoService _cryptoService;
+    private readonly INotificationService _notificationService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly MarketPlaceController _controller;
 
@@ -25,8 +27,9 @@ public class MarketPlaceControllerTests
     {
         _marketPlaceService = A.Fake<IMarketPlaceService>();
         _cryptoService = A.Fake<ICryptoService>();
+        _notificationService = A.Fake<INotificationService>();
         _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new MarketPlaceController(_marketPlaceService, _cryptoService, _contextAccessor);
+        _controller = new MarketPlaceController(_marketPlaceService, _cryptoService, _notificationService, _contextAccessor);
     }
     private List<MarketPlaceItem> GetFakeMarketPlaceItems()
     {
@@ -84,10 +87,12 @@ public class MarketPlaceControllerTests
     private Order GetFakeOrder()
     {
         List<OrderItem> orderItems = new List<OrderItem>
-            { new OrderItem("26b80e6e-9690-4748-b6ef-869d72b5e4ec", 1), new OrderItem("afd380c1-c643-4c6f-8454-60cb22585582", 1) };
-
-        return new Order(orderItems, 50, "userID", "test@test.com", "123 Test St",
-            DateTimeOffset.Now);
+            { new ("26b80e6e-9690-4748-b6ef-869d72b5e4ec", 1), new ("afd380c1-c643-4c6f-8454-60cb22585582", 1) };
+        
+        var mockAddress = new AddressCreateModel("1", "20", "Test Street", "Test City", "Test Province",
+            "Test Country", "Test Postal Code");
+        
+        return new Order("123456",orderItems, 50, "userID", "test@test.com", mockAddress, DateTimeOffset.Now);
     }
     
     private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()
@@ -160,7 +165,7 @@ public class MarketPlaceControllerTests
         Assert.Equal(order.UserId, objectResultValue?.UserId);
         Assert.Equal(order.Items, objectResultValue?.Items);
         Assert.Equal(order.Total, objectResultValue?.Total);
-        Assert.Equal(order.Address, objectResultValue?.Address);
+        Assert.Equal(order.ShippingAddress, objectResultValue?.ShippingAddress);
         Assert.Equal(order.Timestamp, objectResultValue?.Timestamp);
     }
 }

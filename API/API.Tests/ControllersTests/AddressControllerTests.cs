@@ -156,7 +156,7 @@ public class AddressControllerTests
     {
         //Arrange
         var addressModel = GetAddressModel();
-        AddressCreateModel addressCreateModel = new AddressCreateModel("oid", "sn", "st", "c", "p", "c", "pc");
+        AddressCreateModel addressCreateModel = new AddressCreateModel("id", "sn", "st", "c", "p", "c", "pc");
         A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(true));
         A.CallTo(() => _addressService.GetAddressByIdAsync(A<long>._))
             .Returns(Task.FromResult<AddressModel?>(addressModel.Result));
@@ -182,7 +182,7 @@ public class AddressControllerTests
     public async void AddressController_Add_ReturnsBadRequest()
     {
         //Arrange
-        AddressCreateModel addressCreateModel = new AddressCreateModel("oid", "sn", "st", "c", "p", "c", "pc");
+        AddressCreateModel addressCreateModel = new AddressCreateModel("id", "sn", "st", "c", "p", "c", "pc");
         A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(false));
 
         //Act

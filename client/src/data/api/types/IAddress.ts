@@ -1,14 +1,14 @@
 interface IAddress {
+  id: number;
+  streetNumber: string;
+  street: string;
+  city: string;
+  province: string;
+  country: string;
+  postalCode: string;
   additionalInfo?: string;
   apartment?: string;
-  city: string;
-  country: string;
-  id: number;
   isDefault?: boolean;
-  postalCode: string;
-  province: string;
-  street: string;
-  streetNumber: string;
 }
 
 export interface IUpdateAddress {

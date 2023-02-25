@@ -17,9 +17,11 @@ public class AddressCreateModel
     public string PostalCode { get; set; }
     public string Country { get; set; }
     public bool? IsDefault { get; set; }
+    public string Id { get; set; }
 
-    public AddressCreateModel(string oid, string streetNumber, string street, string city, string province, string country, string postalCode, string? apartment=null, string? additionalInfo=null, bool? isDefault=null)
+    public AddressCreateModel(string id, string streetNumber, string street, string city, string province, string country, string postalCode, string? apartment=null, string? additionalInfo=null, bool? isDefault=null)
     {
+        Id = id;
         StreetNumber = streetNumber;
         Street = street;
         Apartment = apartment;

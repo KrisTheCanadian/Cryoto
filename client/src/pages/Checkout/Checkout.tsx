@@ -15,18 +15,20 @@ import {Check, CheckCircle, Edit, ArrowBackIosNew} from '@mui/icons-material';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 import {useTheme} from '@mui/material/styles';
 import {useTranslation} from 'react-i18next';
-import {useEffect, useState} from 'react';
-import {useQuery} from 'react-query';
+import {useContext, useEffect, useState} from 'react';
+import {useMutation, useQuery, useQueryClient} from 'react-query';
 import PageFrame from '@shared/components/PageFrame';
 import {useMsal} from '@azure/msal-react';
 import {useNavigate} from 'react-router-dom';
 import {motion} from 'framer-motion';
+import {AlertContext} from '@shared/hooks/Alerts/AlertContext';
 
 import {Cart} from '../ShoppingCart/components/Cart';
 import {routeMarket, routeShoppingCart} from '../routes';
 
 import {EditAddressDialog} from './components';
 
+import {completePurchase} from '@/data/api/requests/marketplace';
 import IAddress from '@/data/api/types/IAddress';
 import {ICartItem, IOrder, IOrderItem} from '@/data/api/types/ICart';
 import {getDefaultAddress} from '@/data/api/requests/address';
@@ -36,7 +38,8 @@ import {IUserProfile} from '@/data/api/types/IUser';
 function Checkout() {
   const theme = useTheme();
   const {t} = useTranslation();
-
+  const dispatch = useContext(AlertContext);
+  const queryClient = useQueryClient();
   const {accounts} = useMsal();
   const username = accounts[0] && accounts[0].name;
 
@@ -108,9 +111,27 @@ function Checkout() {
     }
   };
 
+  const {mutate: buyItems} = useMutation(
+    (order: IOrder) => completePurchase(order),
+    {
+      onSuccess() {
+        if (order) {
+          navigate(`/orders/${order.id}`, {state: {data: order}});
+        }
+      },
+      onError: (err: any) => {
+        dispatch.error(err.response.data);
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries(['transactions']);
+        queryClient.invalidateQueries(['walletsBalance']);
+      },
+    },
+  );
+
   useEffect(() => {
     if (order) {
-      navigate(`/orders/${order.id}`, {state: {data: order}});
+      buyItems(order);
     }
   }, [order]);
 

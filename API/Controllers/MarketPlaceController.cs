@@ -15,13 +15,15 @@ public class MarketPlaceController : ControllerBase
 {
     private readonly IMarketPlaceService _marketPlaceService;
     private readonly ICryptoService _cryptoService;
+    private readonly INotificationService _notificationService;
     private readonly string _actorId;
 
-    public MarketPlaceController(IMarketPlaceService marketPlaceService, ICryptoService cryptoService,
+    public MarketPlaceController(IMarketPlaceService marketPlaceService, ICryptoService cryptoService,  INotificationService notificationService,
         IHttpContextAccessor contextAccessor)
     {
         _marketPlaceService = marketPlaceService;
         _cryptoService = cryptoService;
+        _notificationService = notificationService;
         var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
@@ -74,10 +76,27 @@ public class MarketPlaceController : ControllerBase
         var ordersList = JsonConvert.DeserializeObject<List<Order>>(jsonData)
                          ?? new List<Order>();
 
-        ordersList.Add(new Order(order.Items, subtotal, _actorId, order.Email, order.Address, DateTimeOffset.UtcNow));
+        ordersList.Add(new Order(order.Id, order.Items, subtotal, _actorId, order.Email, order.ShippingAddress, order.Timestamp));
 
         jsonData = JsonConvert.SerializeObject(ordersList);
         System.IO.File.WriteAllText(filePath, jsonData);
+        
+        // send email confirmation
+        var subject = "You have successfully placed an order!";
+        var htmlContent = "<h1>We got your order!" + "</h1>" +
+                          "<h3>" + "Order #" + order.Id + "<h3><br>" +
+                          "<h3>" + "<u>Shipping Address</u>" + "<h3>" +
+                          
+                          "<p>" + order.ShippingAddress.StreetNumber + " " + order.ShippingAddress.Street + " " + order.ShippingAddress.Apartment + "</p>" +
+                          "<p>" + order.ShippingAddress.City + ", " + order.ShippingAddress.Province + " " + order.ShippingAddress.Country + "</p>" +
+                          "<p>" + order.ShippingAddress.PostalCode + "</p><br>" +
+                          
+                          "<p>" + "You used " + subtotal + " coins for this purchase." + "<p>" +
+                          
+                          "<p>" + "The shipping provider will send you more details on when you can expect your delivery " +
+                          "as well as provide you with tracking information." + "</p>";
+
+        await _notificationService.SendEmailAsync(order.Email, subject, htmlContent, true);
 
         return Ok(order);
     }

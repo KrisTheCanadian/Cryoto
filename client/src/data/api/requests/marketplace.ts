@@ -8,7 +8,7 @@ import {
 } from '../routes';
 import {getAccessToken} from '../helpers';
 import IMarketPlaceItem from '../types/IMarketPlaceItem';
-import IOrder from '../types/IOrder';
+import {IOrder} from '../types/ICart';
 
 export async function getAllItems(): Promise<IMarketPlaceItem[]> {
   const accessToken = await getAccessToken();
@@ -46,6 +46,7 @@ export async function completePurchase(order: IOrder): Promise<IOrder> {
     {
       // add CORS headers to request
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
         'Access-Control-Allow-Origin': `${apiEndpoint}`,
       },

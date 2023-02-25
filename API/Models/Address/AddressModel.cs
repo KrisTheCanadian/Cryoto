@@ -23,7 +23,7 @@ public class AddressModel
 
     public AddressModel(string oId)
     {
-        this.OId = oId;
+        OId = oId;
         StreetNumber = "";
         Street = "";
         Apartment = null;
