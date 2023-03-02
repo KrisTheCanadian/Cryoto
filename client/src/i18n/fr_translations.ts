@@ -19,6 +19,10 @@ export const frenchTranslations = {
     DarkMode: 'Mode Sombre',
     LightMode: 'Mode Claire',
   },
+  navBar: {
+    searchPlaceholder: 'Tapez pour rechercher...',
+    searchNoResults: 'Aucun résultat trouvé',
+  },
   userPermissions: {
     Admin: 'Admin',
     Contractor: 'Contracteur',

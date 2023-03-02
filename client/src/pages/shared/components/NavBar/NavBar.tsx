@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  InputBase,
   IconButton,
   Box,
   Drawer,
@@ -15,9 +14,7 @@ import {useTranslation} from 'react-i18next';
 import {AuthenticatedTemplate} from '@azure/msal-react';
 import {SideBar} from '@shared/components/SideBar';
 
-import {RoundedInput} from '../interface-elements/RoundedInput';
-
-import {Notifications, ProfileMenu} from './components';
+import {Notifications, ProfileMenu, SearchNavBar} from './components';
 
 import {routeHome, routeMarket} from '@/pages/routes';
 
@@ -39,53 +36,6 @@ function NavBar() {
     color: 'text.primary',
   };
 
-  const searchBoxStyle = {
-    padding: theme.spacing(1),
-    minWidth: '300px',
-    [theme.breakpoints.up('sm')]: {
-      padding: theme.spacing(1.5),
-    },
-    boxShadow: (searchOpen && '0px -15px 20px 9px rgba(0,0,0,0.08)') || 'none',
-    background:
-      (searchOpen && theme.interface.offBackground) || theme.interface.main,
-    position: 'relative',
-
-    // changed code for marketplace
-    display: location.pathname === routeMarket ? 'none' : 'block',
-    width: '40%',
-    ...(searchOpen &&
-      location.pathname === routeMarket && {
-        display: 'block',
-      }),
-
-    [theme.breakpoints.down('sm')]: {
-      display: 'none',
-      width: '70%',
-      ...(searchOpen && {
-        [theme.breakpoints.down('sm')]: {
-          display: 'block',
-        },
-      }),
-    },
-  };
-
-  const searchResultsStyle = {
-    padding: theme.spacing(2.5),
-    position: 'absolute',
-    background: theme.interface.offBackground,
-    boxShadow: (searchOpen && '0px 15px 12px 4px rgb(0 0 0 / 8%)') || '0',
-    boxSizing: 'border-box',
-    width: '100%',
-    borderBottomLeftRadius: theme.borderRadius.large,
-    borderBottomRightRadius: theme.borderRadius.large,
-    marginLeft: theme.spacing(-1),
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(-1.5),
-    },
-    display: (searchOpen && 'block') || 'none',
-    color: theme.palette.text.primary,
-  };
-
   const searchButtonStyle = {
     [theme.breakpoints.up('sm')]: {
       display: location.pathname === routeMarket ? 'block' : 'none',
@@ -102,18 +52,8 @@ function NavBar() {
 
   // End of styling
 
-  const inputFieldRef = useRef<HTMLDivElement>(null);
-
   const openSearch = () => {
     setOpen(true);
-    // fix to allow input field to be visible before focus
-    setTimeout(() => {
-      inputFieldRef.current?.focus();
-    }, 1);
-  };
-
-  const closeSearch = () => {
-    setOpen(false);
   };
 
   const openMenu = () => {
@@ -189,29 +129,7 @@ function NavBar() {
               </Typography>
             </Box>
           </Link>
-          <Box sx={searchBoxStyle} data-testid="searchBox">
-            <RoundedInput>
-              <Search
-                sx={{
-                  color: theme.palette.action.active,
-                  ml: theme.spacing(0.5),
-                }}
-              />
-              <InputBase
-                id="searchInput"
-                placeholder={t('layout.Search')}
-                data-testid="search-field"
-                inputRef={inputFieldRef}
-                onBlur={closeSearch}
-                onFocus={openSearch}
-                sx={{width: '100%', ml: theme.spacing(0.5)}}
-              />
-            </RoundedInput>
-
-            <Box sx={searchResultsStyle} data-testid="search-results">
-              {sampleSearchResults}
-            </Box>
-          </Box>
+          <SearchNavBar searchOpen={searchOpen} setOpen={setOpen} />
           <Box sx={rightNavBarProps}>
             <IconButton
               aria-label={t('layout.search')}

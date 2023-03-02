@@ -95,7 +95,8 @@ describe('Search functionality', () => {
       searchInput.focus();
       searchInput.blur();
     });
-
+    // delay for animation
+    await new Promise((resolve, reject) => setTimeout(resolve, 200));
     expect(screen.getByTestId('search-results')).not.toBeVisible();
   });
 

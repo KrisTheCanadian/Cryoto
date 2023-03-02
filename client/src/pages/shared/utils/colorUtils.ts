@@ -1,12 +1,20 @@
 import {SxProps, Theme} from '@mui/material';
 
+const extractInitials = (name: string) => {
+  const names = name.split(' ');
+  if (names.length === 1) {
+    return names[0].charAt(0);
+  }
+  return names[0].charAt(0) + names[names.length - 1].charAt(0);
+};
+
 export const stringAvatar = (name: string, sx: SxProps<Theme> = {}) => {
   return {
     sx: {
       bgcolor: stringToColor(name),
       ...sx,
     },
-    children: `${name.split(' ')[0][0]}`,
+    children: extractInitials(name),
   };
 };
 

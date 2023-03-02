@@ -19,6 +19,10 @@ export const englishTranslations = {
     DarkMode: 'Dark mode',
     LightMode: 'Light mode',
   },
+  navBar: {
+    searchPlaceholder: 'Type to search...',
+    searchNoResults: 'No results found',
+  },
   userPermissions: {
     Admin: 'Admin',
     Contractor: 'Contractor',
