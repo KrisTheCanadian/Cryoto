@@ -24,6 +24,8 @@ import {getUserProfilePhoto} from '@/data/api/requests/users';
 import NewComment from '@/pages/HomePage/components/Comments/Components/NewComment';
 import IComment from '@/data/api/types/IComment';
 import PreviewCommentSection from '@/pages/HomePage/components/Comments/Components/PreviewCommentSection';
+import {IUser} from '@/data/api/types';
+import {getUserById} from '@/data/api/requests/admin';
 
 interface PostProps {
   name: string | undefined;
@@ -47,7 +49,7 @@ interface PostProps {
 
 function Post(props: PostProps) {
   const theme = useTheme();
-  const {t} = useTranslation();
+  const {t, i18n} = useTranslation();
   const navigate = useNavigate();
 
   const {
@@ -99,6 +101,206 @@ function Post(props: PostProps) {
   const handleAvatarClickRecipient = () => {
     navigate(`/profile/${recipientId}`);
   };
+
+  const getYearWithSuffix = (date: string | undefined, language: string) => {
+    if (!date) return '';
+    const year = moment().diff(moment(date), 'years');
+    let suffix = '';
+
+    if (language === 'en') {
+      const lastDigit = year % 10;
+      const lastTwoDigits = year % 100;
+
+      if (lastDigit === 1 && lastTwoDigits !== 11) {
+        suffix = 'st';
+      } else if (lastDigit === 2 && lastTwoDigits !== 12) {
+        suffix = 'nd';
+      } else if (lastDigit === 3 && lastTwoDigits !== 13) {
+        suffix = 'rd';
+      } else {
+        suffix = 'th';
+      }
+    } else if (language === 'fr') {
+      if (year === 1) {
+        suffix = 'er';
+      } else {
+        suffix = 'ième';
+      }
+    }
+
+    const anniversaryYear = year + suffix;
+    const [firstWord, ...remainingWords] = t('homePage.AniversaryPost').split(
+      ' ',
+    );
+    const newTranslation = `${firstWord} ${anniversaryYear} ${remainingWords.join(
+      ' ',
+    )}`;
+
+    return newTranslation;
+  };
+  // fetch anniversary user profile for years worked
+  const [anniversaryUserProfile, setAnniversaryUserProfile] = useState<IUser>();
+  useEffect(() => {
+    getUserById(recipientId)
+      .then((response) => {
+        setAnniversaryUserProfile(response);
+      })
+      .catch((err) => {});
+  }, [recipientId]);
+
+  if (tags?.includes('Anniversary')) {
+    return (
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+        }}
+      >
+        <Box
+          sx={{
+            maxWidth: 600,
+            mb: theme.margin.default,
+            flex: 1,
+            backgroundColor: theme.interface.main,
+            padding: theme.padding.default,
+            borderRadius: theme.borderRadius.default,
+            boxShadow: 1,
+          }}
+        >
+          <Stack direction="row">
+            <Stack>
+              <Box position="relative" textAlign="center">
+                <img
+                  src="images/jpgImages/celebration.png"
+                  alt="companyName"
+                  style={{width: '100%', display: 'block'}}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: '100%',
+                    transform: 'translate(-50%, -50%)',
+                    zIndex: 1,
+                  }}
+                >
+                  <Typography variant="h4" sx={{mb: 2}}>
+                    <span
+                      style={{
+                        background: theme.interface.offBackground,
+                        lineHeight: '1.1',
+                        display: 'inline',
+                      }}
+                    >
+                      {getYearWithSuffix(
+                        anniversaryUserProfile?.startDate,
+                        i18n.language,
+                      )}
+                    </span>
+                  </Typography>
+                  <Typography variant="h3">
+                    <span
+                      style={{
+                        background: theme.interface.offBackground,
+                        lineHeight: '1.1',
+                        display: 'inline',
+                      }}
+                    >
+                      <b
+                        style={{cursor: 'pointer'}}
+                        onClick={handleAvatarClickRecipient}
+                      >
+                        {` ${recipient}!`}
+                      </b>
+                    </span>
+                  </Typography>
+                </Box>
+              </Box>
+              <Box
+                sx={{display: 'flex', alignItems: 'center', mt: 2, mb: 0.25}}
+              >
+                <Chip
+                  sx={{
+                    backgroundColor: theme.interface.contrastMain,
+                    border: '3px solid',
+                    borderColor: theme.palette.primary.main,
+                    fontSize: '1rem',
+                    fontWeight: theme.typography.fontWeightMedium,
+                    marginRight: theme.spacing(1),
+                    '& .MuiChip-label': {
+                      color: theme.palette.primary.main,
+                    },
+                  }}
+                  icon={
+                    <VolunteerActivismIcon
+                      style={{
+                        fill: theme.palette.primary.main,
+                        fontSize: '1.2rem',
+                        marginLeft: '10px',
+                      }}
+                    />
+                  }
+                  key={coinsGiven}
+                  label={coinsGiven.toString()}
+                />
+              </Box>
+              <Typography
+                variant="body2"
+                sx={{color: theme.palette.text.disabled}}
+              >
+                {timeAgo}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Typography
+            variant="body1"
+            sx={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}
+          >
+            {message}
+          </Typography>
+          {imageUrl !== '' ? (
+            <img
+              src={imageUrl}
+              alt="imageUrl"
+              width="100%"
+              style={{marginBottom: theme.spacing(1)}}
+            />
+          ) : null}
+          <LikeButtons
+            id={id}
+            hearts={hearts}
+            claps={claps}
+            celebrations={celebrations}
+          />
+          <Divider sx={{my: theme.spacing(1)}} />
+          <NewComment name={props.name} oId={props.oId} postid={props.id} />
+          <PreviewCommentSection
+            id={id}
+            postId={props.id}
+            max={3}
+            comments={props.comments || []}
+            showAllComments={showAllComments}
+          />
+          {props.comments?.length > 3 && (
+            <Box sx={{display: 'flex', justifyContent: 'center'}}>
+              {showAllComments ? (
+                <ExpandLessIcon
+                  onClick={() => setShowAllComments(!showAllComments)}
+                />
+              ) : (
+                <ExpandMoreIcon
+                  onClick={() => setShowAllComments(!showAllComments)}
+                />
+              )}
+            </Box>
+          )}
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box

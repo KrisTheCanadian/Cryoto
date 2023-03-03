@@ -19,12 +19,13 @@ import {
   IconButton,
   ClickAwayListener,
 } from '@mui/material';
-import {t} from 'i18next';
+import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
 import {useQueryClient} from 'react-query';
 import {walletBalanceQuery} from '@shared/components/SideBar/SideBar';
 import {useMsal} from '@azure/msal-react';
 import PhotoIcon from '@mui/icons-material/Photo';
+import CloseIcon from '@mui/icons-material/Close';
 import EmojiPicker, {Theme} from 'emoji-picker-react';
 import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 
@@ -65,6 +66,7 @@ const StyledTextAreaAutosize = styled(TextareaAutosize)(({theme}) => ({
 }));
 
 function NewPostDialog(props: NewPostDialogProps) {
+  const {t} = useTranslation();
   const {accounts} = useMsal();
   const {dialogOpen, setDialogOpen, initialRecipients, queryKey} = props;
   const [formValidity, setFormValidity] = useState<FormValidation>({
@@ -224,11 +226,35 @@ function NewPostDialog(props: NewPostDialogProps) {
       }}
       aria-labelledby="responsive-dialog-title"
     >
-      <DialogTitle id="responsive-dialog-title">
-        <Box sx={{display: 'flex', alignItems: 'baseline'}}>
+      <DialogTitle id="responsive-dialog-title" sx={{p: 0}}>
+        <Box
+          sx={{
+            display: 'flex',
+            p: 3,
+            pt: 2,
+            pb: 1,
+          }}
+        >
+          <Box sx={{display: 'flex', alignItems: 'center'}}>
+            {t('homePage.NewRecognition')}
+          </Box>
+          <Box sx={{flex: 1, textAlign: 'right'}}>
+            <IconButton
+              data-testid="close-button"
+              aria-label="close"
+              onClick={handleClose}
+              sx={{color: theme.palette.grey[500]}}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </Box>
+      </DialogTitle>
+      <DialogContent sx={{pb: '0px!important'}}>
+        <Box sx={{display: 'flex', alignItems: 'baseline', pt: 1, pb: 1}}>
           <Autocomplete
             id="autocomplete"
-            sx={{flex: 1, ml: theme.spacing(1)}}
+            sx={{flex: 1}}
             isOptionEqualToValue={(option: Recipient, value: Recipient) =>
               option.id === value.id
             }
@@ -242,11 +268,10 @@ function NewPostDialog(props: NewPostDialogProps) {
                 {...params}
                 error={!formValidity.recipients}
                 helperText={
-                  !formValidity.recipients &&
-                  t<string>('homePage.MustSelectRecipient')
+                  !formValidity.recipients && t('homePage.MustSelectRecipient')
                 }
                 variant="standard"
-                label={t<string>('homePage.SendTo')}
+                label={t('homePage.SendTo')}
                 placeholder=""
                 onKeyUp={handleSearch}
                 id="new-post-dialog-recipients"
@@ -254,26 +279,23 @@ function NewPostDialog(props: NewPostDialogProps) {
             )}
           />
         </Box>
-      </DialogTitle>
-      <DialogContent sx={{pb: '0px!important'}}>
-        <Box sx={{pt: theme.spacing(1)}} />
+        <Box sx={{pt: 2}} />
         <FormControl sx={{width: '60%'}}>
           <TextField
             error={!formValidity.companyValue}
             select
             value={companyValue}
-            label={t<string>('homePage.SelectValue')}
+            label={t('homePage.SelectValue')}
             onChange={handleCompanyValueChange}
             sx={{width: '100%', mr: theme.spacing(1)}}
             id="new-post-dialog-company-value"
             helperText={
-              !formValidity.companyValue &&
-              t<string>('homePage.MustSelectValue')
+              !formValidity.companyValue && t('homePage.MustSelectValue')
             }
           >
             {companyValues.map((value) => (
               <MenuItem key={value} value={value}>
-                {t<string>(`values.${value}`)}
+                {t(`values.${value}`)}
               </MenuItem>
             ))}
           </TextField>
@@ -290,7 +312,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           onChange={handleAmountChange}
           onKeyPress={handleAmountKeyPress}
           value={amount}
-          placeholder={t<string>('homePage.AddCoins')}
+          placeholder={t('homePage.AddCoins')}
           id="new-post-dialog-amount"
         />
 
@@ -299,8 +321,8 @@ function NewPostDialog(props: NewPostDialogProps) {
           onChange={handleMessageChange}
           value={message}
           key="message-field"
-          aria-label={t<string>('homePage.WriteMessage')}
-          placeholder={t<string>('homePage.WriteMessage')}
+          aria-label={t('homePage.WriteMessage')}
+          placeholder={t('homePage.WriteMessage')}
           id="new-post-dialog-message"
         />
         <Collapse in={imageUploaderOpen} unmountOnExit>
@@ -363,7 +385,7 @@ function NewPostDialog(props: NewPostDialogProps) {
           onClick={handleSubmit}
           sx={{width: '100%', ml: '0!important', mt: 1}}
         >
-          {t<string>('homePage.Post')}
+          {t('homePage.Post')}
         </Button>
       </DialogActions>
     </Dialog>

@@ -80,7 +80,7 @@ describe('Search functionality', () => {
         </MsalProvider>,
       );
     });
-    const newPostField = screen.getByPlaceholderText('New Post');
+    const newPostField = screen.getByPlaceholderText('Recognize');
 
     act(() => {
       newPostField.click();

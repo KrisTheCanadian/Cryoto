@@ -151,7 +151,7 @@ function PostsFeed(props: PostsFeedProps) {
               celebrations={post?.celebrations || []}
               recipientId={post?.recipientProfiles[0]?.oId}
               name={name}
-              oId={oId}
+              oId={accounts[0].idTokenClaims?.oid}
               comments={post?.comments || []}
             />
           )),

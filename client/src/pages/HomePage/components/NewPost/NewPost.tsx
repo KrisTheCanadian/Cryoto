@@ -76,7 +76,7 @@ function NewPost(props: NewPostProps) {
                 <StyledInput
                   id="new-post-input"
                   onClick={() => setDialogOpen(true)}
-                  placeholder={t('homePage.NewPost')}
+                  placeholder={t('homePage.Recognize')}
                 />
               </RoundedInput>
             </Box>

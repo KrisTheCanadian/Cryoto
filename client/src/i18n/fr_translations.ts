@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 export const frenchTranslations = {
   layout: {
     Profile: 'Profil',
@@ -41,7 +40,9 @@ export const frenchTranslations = {
     NoMorePosts: "Il n'y a plus de mesages à charger",
   },
   homePage: {
-    NewPost: 'Nouveau Post',
+    NewRecognition: 'Nouvelle Reconnaissance',
+    AniversaryPost: 'Joyeux Anniversaire de Travail',
+    Recognize: 'Reconnaître',
     recipient: 'Destinataire',
     SendTo: 'Envoyer à',
     WriteMessage: 'Écrire un message',

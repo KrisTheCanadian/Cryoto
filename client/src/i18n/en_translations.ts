@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 export const englishTranslations = {
   layout: {
     Profile: 'Profile',
@@ -39,7 +38,9 @@ export const englishTranslations = {
     NoMorePosts: 'No more posts to load.',
   },
   homePage: {
-    NewPost: 'New Post',
+    NewRecognition: 'New Recognition',
+    AniversaryPost: 'Happy Work Anniversary',
+    Recognize: 'Recognize',
     recipient: 'Recipient',
     SendTo: 'Send to',
     WriteMessage: 'Write a message',
