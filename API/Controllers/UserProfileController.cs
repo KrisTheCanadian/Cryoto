@@ -138,4 +138,18 @@ public class UserProfileController : ControllerBase
         await _userProfileService.UpdateUserProfilesRecognitionsCount();
         return Ok();
     }
+
+    [HttpGet]
+    [Route("[controller]/[action]")]
+    public ActionResult<List<UserProfileModel>> GetUpcomingAnniversaries()
+    {
+        return Ok(_userProfileService.GetUpcomingAnniversaries());
+    }
+
+    [HttpGet]
+    [Route("[controller]/[action]")]
+    public ActionResult<List<TopRecognizers>> GetTopRecognizers()
+    {
+        return Ok(_userProfileService.GetTopRecognizers());
+    }
 }

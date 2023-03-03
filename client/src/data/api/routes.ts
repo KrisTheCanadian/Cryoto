@@ -27,6 +27,8 @@ export const apiRouteUserProfileGetUserProfile = `${apiRouteUserProfile}/GetUser
 export const apiRouteUserProfileGetUserProfilePhoto = `${apiRouteUserProfile}/GetUserProfilePhoto`;
 export const apiRouteUserSearch = `${apiRouteUserProfile}/GetSearchResult`;
 export const apiRouteUserProfileUpdate = `${apiRouteUserProfile}/Update`;
+export const apiRouteUserProfileGetUpcomingAnniversaries = `${apiRouteUserProfile}/GetUpcomingAnniversaries`;
+export const apiRouteUserProfileGetTopRecognizers = `${apiRouteUserProfile}/GetTopRecognizers`;
 
 // Crypto
 export const apiRouteCrypto = `${apiEndpoint}Crypto`;

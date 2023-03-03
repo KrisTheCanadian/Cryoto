@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using API.Models;
 using API.Models.Address;
 using API.Models.Comments;
 using API.Models.Notifications;
@@ -26,4 +25,16 @@ public class DataContext : DbContext, IDataContext
     public virtual DbSet<PostModel> Posts { get; set; } = null!;
     public virtual DbSet<CommentModel> Comments { get; set; } = null!;
     public virtual DbSet<Notification> Notifications { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<PostModel>()
+            .HasIndex(post => post.Author);
+
+        modelBuilder.Entity<PostModel>()
+            .HasIndex(post => post.CreatedDate);
+
+        modelBuilder.Entity<UserProfileModel>()
+            .HasIndex(post => post.StartDate);
+    }
 }

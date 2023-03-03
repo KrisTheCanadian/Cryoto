@@ -14,7 +14,8 @@ public interface IUserProfileService
     public Task<bool> IncrementRecognitionsReceived(string oid);
     public Task<bool> IncrementRecognitionsSent(string oid);
     public Task UpdateUserProfilesRecognitionsCount();
-
     public Task<bool> UpdateAsync(UserProfileModel userProfileModel);
     public Task<List<UserProfileModel>> GetAnniversaryUsersAsync();
+    public List<UserProfileModel> GetUpcomingAnniversaries();
+    public List<TopRecognizers> GetTopRecognizers();
 }

@@ -10,9 +10,9 @@ namespace API.Services;
 
 public class UserProfileService : IUserProfileService
 {
+    private readonly HttpClient _client = new HttpClient();
     private readonly IUserProfileRepository _context;
     private readonly IPostRepository _postContext;
-    private readonly HttpClient _client = new HttpClient();
 
     public UserProfileService(IUserProfileRepository context, IPostRepository postContext)
     {
@@ -74,26 +74,26 @@ public class UserProfileService : IUserProfileService
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
         userProfileModel!.RecognitionsSent = userProfileModel.RecognitionsSent + 1;
-        return await _context.UpdateUserProfile(userProfileModel) >0;
+        return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
     public async Task<bool> IncrementRecognitionsReceived(string oid)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
         userProfileModel!.RecognitionsReceived = userProfileModel.RecognitionsReceived + 1;
-        return await _context.UpdateUserProfile(userProfileModel) >0;
+        return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
     public async Task<List<UserProfileModel>> GetAllUsersService()
     {
         return await _context.GetAllUsersAsync();
     }
+
     public async Task<bool> UpdateUserRolesService(string oid, string[] roles)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
         userProfileModel!.Roles = roles;
-        return await _context.UpdateUserProfile(userProfileModel) >0;
-        
+        return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
     public async Task<List<UserProfileModel>> GetSearchResultServiceAsync(string keywords)
@@ -104,6 +104,26 @@ public class UserProfileService : IUserProfileService
     public async Task<UserProfileModel?> GetUserByIdAsync(string userId)
     {
         return await _context.GetUserByIdAsync(userId);
+    }
+
+    public async Task<bool> UpdateAsync(UserProfileModel userProfileModel)
+    {
+        return await _context.UpdateAsync(userProfileModel);
+    }
+
+    public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
+    {
+        return await _context.GetAnniversaryUsersAsync();
+    }
+
+    public List<UserProfileModel> GetUpcomingAnniversaries()
+    {
+        return _context.GetUpcomingAnniversaries();
+    }
+
+    public List<TopRecognizers> GetTopRecognizers()
+    {
+        return _context.GetTopRecognizers();
     }
 
     private static DateTime FakeStartDate()
@@ -130,7 +150,7 @@ public class UserProfileService : IUserProfileService
     private static UserProfileModel MapUserProfileModel(UserProfileModel userProfileModel,
         UserProfileModel fakeUserProfileModel)
     {
-        userProfileModel.Company = fakeUserProfileModel!.Company;
+        userProfileModel.Company = fakeUserProfileModel.Company;
         userProfileModel.SupervisoryOrganization = fakeUserProfileModel.SupervisoryOrganization;
         userProfileModel.ManagerReference = fakeUserProfileModel.ManagerReference;
         userProfileModel.BusinessTitle = fakeUserProfileModel.BusinessTitle;
@@ -146,15 +166,5 @@ public class UserProfileService : IUserProfileService
         userProfileModel.Birthday = FakeBirthday();
 
         return userProfileModel;
-    }
-    
-    public async Task<bool> UpdateAsync(UserProfileModel userProfileModel)
-    {
-        return await _context.UpdateAsync(userProfileModel);
-    }
-
-    public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
-    {
-        return await _context.GetAnniversaryUsersAsync();
     }
 }

@@ -7,7 +7,10 @@ import {
   apiRouteUserProfileGetUserProfile,
   apiRouteUserProfileGetUserProfilePhoto,
   apiRouteUserProfileUpdate,
+  apiRouteUserProfileGetUpcomingAnniversaries,
+  apiRouteUserProfileGetTopRecognizers,
 } from '../routes';
+import {ITopRecognizer} from '../types/ITopRecognizer';
 import IUser, {IUserProfile, IUpdateUserProfile} from '../types/IUser';
 
 export async function searchUsers(searchTerms: string): Promise<IUser[]> {
@@ -56,6 +59,40 @@ export async function getUserProfilePhoto(oId: string) {
     },
   });
 
+  return response.data;
+}
+
+export async function getUpcomingAnniversaries() {
+  const accessToken = await getAccessToken();
+
+  // convert fetch to axios for consistency
+  const response = await axios.get<IUserProfile[]>(
+    apiRouteUserProfileGetUpcomingAnniversaries,
+    {
+      // add CORS headers to request
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
+  return response.data;
+}
+
+export async function getTopRecognizers() {
+  const accessToken = await getAccessToken();
+
+  // convert fetch to axios for consistency
+  const response = await axios.get<ITopRecognizer[]>(
+    apiRouteUserProfileGetTopRecognizers,
+    {
+      // add CORS headers to request
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
   return response.data;
 }
 

@@ -108,6 +108,37 @@ public class UserProfileServicesTests
         actionResult.Should().BeTrue();
     }
 
+    [Fact]
+    public async void UserProfileService_GetUpcomingAnniversaries_ReturnsUserProfileModelList()
+    {
+        //Arrange
+        var userProfileModelList = await GetUserProfileModelList();
+        A.CallTo(() => _context.GetUpcomingAnniversaries()).Returns(userProfileModelList);
+
+        //Act
+        var actionResult = _controller.GetUpcomingAnniversaries();
+
+        //Assert
+        actionResult.Should().NotBeNull();
+        actionResult.Should().BeOfType(typeof(List<UserProfileModel>));
+    }
+
+    [Fact]
+    public async void UserProfileService_GetTopRecognizers_ReturnsObjectList()
+    {
+        //Arrange
+        var users = await GetUserProfileModelList();
+        var recognizers = new List<TopRecognizers> { new(5, users[0]), new(2, users[1]) };
+        A.CallTo(() => _context.GetTopRecognizers()).Returns(recognizers);
+
+        //Act
+        var actionResult = _controller.GetTopRecognizers();
+
+        //Assert
+        actionResult.Should().NotBeNull();
+        actionResult.Should().BeOfType(typeof(List<TopRecognizers>));
+    }
+
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
     {
         var roles1 = new[] { "roles1" };

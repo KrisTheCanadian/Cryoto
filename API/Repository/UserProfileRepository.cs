@@ -14,7 +14,7 @@ public class UserProfileRepository : IUserProfileRepository
         Context = context;
     }
 
-    private IDataContext Context { get; set; }
+    private IDataContext Context { get; }
 
 
     public async Task<List<UserProfileModel>> GetAllUsersAsync()
@@ -27,7 +27,7 @@ public class UserProfileRepository : IUserProfileRepository
         var keywordsList = keywords.ToLower().Split(' ')
             .Where(p => !string.IsNullOrWhiteSpace(p))
             .ToArray();
-        List<UserProfileModel> userProfileModelList = Context.UserProfiles.AsNoTracking()
+        var userProfileModelList = Context.UserProfiles.AsNoTracking()
             .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
         return Task.FromResult(userProfileModelList);
     }
@@ -55,23 +55,50 @@ public class UserProfileRepository : IUserProfileRepository
     {
         return await Context.UserProfiles.AsNoTracking().FirstAsync(x => x.OId.Equals(userId));
     }
-    
+
     public async Task<bool> UpdateAsync(UserProfileModel userProfileModel)
     {
         Context.UserProfiles.Update(userProfileModel);
         return await Context.SaveChangesAsync() > 0;
     }
-    
+
     public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
     {
-        List<UserProfileModel> userProfileModelList = Context.UserProfiles.AsNoTracking()
-            .Where(userProfile => 
+        var userProfileModelList = await Context.UserProfiles.AsNoTracking()
+            .Where(userProfile =>
                 userProfile.StartDate != null
-                && (userProfile.StartDate.Value.ToUniversalTime().Day == DateTime.UtcNow.Day)
-                && (userProfile.StartDate.Value.ToUniversalTime().Month == DateTime.UtcNow.Month)
-                && (userProfile.StartDate.Value.ToUniversalTime().Year < DateTime.UtcNow.Year)
+                && userProfile.StartDate.Value.ToUniversalTime().Day == DateTime.UtcNow.Day
+                && userProfile.StartDate.Value.ToUniversalTime().Month == DateTime.UtcNow.Month
+                && userProfile.StartDate.Value.ToUniversalTime().Year < DateTime.UtcNow.Year
+            )
+            .ToListAsync();
+        return userProfileModelList;
+    }
+
+    public List<UserProfileModel> GetUpcomingAnniversaries()
+    {
+        var userProfileList = Context.UserProfiles.AsNoTracking()
+            .Where(userProfile =>
+                userProfile.StartDate != null
+                && userProfile.StartDate.Value.ToUniversalTime().Year < DateTime.UtcNow.Year
+                && userProfile.StartDate.Value.ToUniversalTime().Month == DateTime.UtcNow.Month
+                && userProfile.StartDate.Value.ToUniversalTime().Day >= DateTime.UtcNow.Day
             )
             .ToList();
-        return await Task.FromResult(userProfileModelList);
+
+        return userProfileList;
+    }
+
+    public List<TopRecognizers> GetTopRecognizers()
+    {
+        var authors = Context.Posts.AsNoTracking()
+            .Where(post => post.CreatedDate.Month == DateTime.UtcNow.Month
+                           && post.CreatedDate.Year == DateTime.UtcNow.Year).AsEnumerable().GroupBy(p => p.Author)
+            .Select(async p => new TopRecognizers(p.Count(), await GetUserByIdAsync(p.Key)))
+            .Select(p => p.Result)
+            .OrderByDescending(p => p.Count)
+            .Take(5).ToList();
+
+        return authors;
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
@@ -16,9 +14,9 @@ namespace API.Tests.ControllersTests;
 
 public class UserProfileControllerTests
 {
-    private readonly IUserProfileService _userProfileService;
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly UserProfileController _controller;
+    private readonly IUserProfileService _userProfileService;
 
     public UserProfileControllerTests()
     {
@@ -137,6 +135,44 @@ public class UserProfileControllerTests
         objectResultValue?.OId.Should().Be(userProfileModel.OId);
     }
 
+    [Fact]
+    public async void UserProfileController_GetUpcomingAnniversaries_ReturnsOk()
+    {
+        //Arrange
+        var userProfiles = await GetUserProfileModelList();
+        A.CallTo(() => _userProfileService.GetUpcomingAnniversaries())
+            .Returns(userProfiles);
+
+        //Act
+        var actionResult = _controller.GetUpcomingAnniversaries();
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as List<UserProfileModel>;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResultValue.Should().Equal(userProfiles);
+    }
+
+    [Fact]
+    public async void UserProfileController_GetTopRecognizers_ReturnsOk()
+    {
+        //Arrange
+        var users = await GetUserProfileModelList();
+        var recognizers = new List<TopRecognizers> { new(5, users[0]), new(2, users[1]) };
+        A.CallTo(() => _userProfileService.GetTopRecognizers())
+            .Returns(recognizers);
+
+        //Act
+        var actionResult = _controller.GetTopRecognizers();
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as List<TopRecognizers>;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResultValue.Should().Equal(recognizers);
+    }
 
     [Fact]
     public async void UserProfileController_GetUserProfile_ReturnsBadRequest()
@@ -182,7 +218,7 @@ public class UserProfileControllerTests
     public async void UserProfileController_Update_ReturnsBadRequest1()
     {
         //Arrange
-        UserProfileUpdateModel nullUserProfileUpdateModel = new UserProfileUpdateModel(null, null, null, null, null);
+        var nullUserProfileUpdateModel = new UserProfileUpdateModel(null, null, null, null, null);
 
         //Act
         var actionResult = await _controller.Update(nullUserProfileUpdateModel);
@@ -197,9 +233,9 @@ public class UserProfileControllerTests
     public async void UserProfileController_Update_ReturnsBadRequest2()
     {
         //Arrange
-        UserProfileUpdateModel userProfileUpdateModel =
+        var userProfileUpdateModel =
             new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
-        UserProfileModel? userProfileModel =
+        var userProfileModel =
             new UserProfileModel("oid1", "name1", "email1", "lang1", new[] { "roel1" });
         A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
             .Returns(userProfileModel);
@@ -219,7 +255,7 @@ public class UserProfileControllerTests
     public async void UserProfileController_Update_ReturnsConflict()
     {
         //Arrange
-        UserProfileUpdateModel userProfileUpdateModel =
+        var userProfileUpdateModel =
             new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
         UserProfileModel? nullUserProfileModel = null;
         A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
@@ -239,14 +275,14 @@ public class UserProfileControllerTests
     public async void UserProfileController_Update_ReturnsOk()
     {
         //Arrange
-        UserProfileUpdateModel userProfileUpdateModel =
+        var userProfileUpdateModel =
             new UserProfileUpdateModel("name", "business title", "lang", "bio", true);
-        UserProfileModel? userProfileModel =
+        var userProfileModel =
             new UserProfileModel("oid1", "name1", "email1", "lang1", new[] { "roel1" });
-        UserProfileModel? updatedUserProfileModel = new UserProfileModel("oid1", "name1", "email1",
+        var updatedUserProfileModel = new UserProfileModel("oid1", "name1", "email1",
             userProfileUpdateModel.Language ?? "", new[] { "roel1" });
         A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._))
-            .ReturnsNextFromSequence(new[] { userProfileModel, updatedUserProfileModel });
+            .ReturnsNextFromSequence(userProfileModel, updatedUserProfileModel);
         A.CallTo(() => _userProfileService.UpdateAsync(A<UserProfileModel>._))
             .Returns(Task.FromResult(true));
 
