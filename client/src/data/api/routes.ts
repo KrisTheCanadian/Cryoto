@@ -47,6 +47,7 @@ export const apiRouteNotificationsGetNotificationsPaginated = `${apiRouteNotific
 // Address
 export const apiRouteAddress = `${apiEndpoint}Address`;
 export const apiRouteAddressGetAll = `${apiRouteAddress}/GetAll`;
+export const apiRouteAddressGetDefaultAddressOrCreate = `${apiRouteAddress}/GetDefaultAddressOrCreate`;
 export const apiRouteAddressGetDefaultAddress = `${apiRouteAddress}/GetDefaultAddress`;
 export const apiRouteAddressGetAllUserAddresses = `${apiRouteAddress}/GetAllUserAddresses`;
 export const apiRouteAddressAdd = `${apiRouteAddress}/Add`;

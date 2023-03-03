@@ -4,12 +4,17 @@ import {ShoppingCart} from '@mui/icons-material';
 import {styled, useTheme} from '@mui/material/styles';
 import {useNavigate} from 'react-router-dom';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
+import {useEffect, useState} from 'react';
 
 import {routeShoppingCart} from '../../../routes';
 
+import {ICartItem} from '@/data/api/types/ICart';
+
 function CartButton() {
   const theme = useTheme();
-  const {cartItemsQuantity} = useMarketplaceContext();
+  const {cartItems} = useMarketplaceContext();
+  const [cartItemsQuantity, setCartItemsQuantity] = useState(0);
+
   const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
     '& .MuiBadge-badge': {
       right: -3,
@@ -23,6 +28,16 @@ function CartButton() {
   const routeChange = () => {
     navigate(routeShoppingCart);
   };
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      let quantity = 0;
+      cartItems.forEach((item: ICartItem) => {
+        quantity += item.quantity;
+      });
+      setCartItemsQuantity(quantity);
+    }
+  }, [cartItems]);
 
   return (
     <IconButton

@@ -13,7 +13,10 @@ import {
   SettingsBoxProps,
   SettingsElementInputType,
 } from '@/pages/Settings/components/SettingsBox';
-import {getDefaultAddress, updateAddress} from '@/data/api/requests/address';
+import {
+  getDefaultAddressOrCreate,
+  updateAddress,
+} from '@/data/api/requests/address';
 import {getUserProfile, updateUserProfile} from '@/data/api/requests/users';
 import {IUserProfile} from '@/data/api/types/IUser';
 import IAddress, {IUpdateAddress} from '@/data/api/types/IAddress';
@@ -67,7 +70,7 @@ function Settings() {
 
   const loadDefaultAddress = async () => {
     if (inProgress === InteractionStatus.None) {
-      return getDefaultAddress();
+      return getDefaultAddressOrCreate();
     }
   };
 

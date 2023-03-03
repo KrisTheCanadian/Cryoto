@@ -1,6 +1,6 @@
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
-import {MarketplaceProvider} from '@shared/hooks/MarketplaceContext';
-import {render, screen} from '@testing-library/react';
+import {MarketplaceContext} from '@shared/hooks/MarketplaceContext';
+import {fireEvent, render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';
@@ -9,6 +9,7 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import ProductPage from './ProductPage';
 
 import i18n from '@/i18n/i18n';
+import {IItem} from '@/data/api/types/ICart';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,20 +20,53 @@ const queryClient = new QueryClient({
   },
 });
 
+const items: IItem[] = [
+  {
+    id: '1',
+    title: 'Product 1',
+    image: 'image_url',
+    points: 100,
+    size: ['S', 'M', 'L'],
+    brand: 'brand',
+    type: 'type1',
+    availability: 5,
+  },
+];
+
+const mockMarketplaceContext = {
+  allItems: items,
+  selectedFilters: [],
+  setSelectedFilters: jest.fn(),
+  selectSort: '',
+  setSelectSort: jest.fn(),
+  itemsDisplayed: [],
+  setItemsDisplayed: jest.fn(),
+  updateSortedItems: false,
+  setUpdateSortedItems: jest.fn(),
+  cartItems: [],
+  addCartItem: jest.fn(),
+  updateCartItem: jest.fn(),
+  deleteCartItem: jest.fn(),
+};
+
 describe('Product Page', () => {
-  it('Renders the right sections and child components', async () => {
-    const Quantity = 'Quantity';
-    const AddToCart = 'Add To Cart';
+  it('Renders Product page and corresponding titles', async () => {
+    jest.mock('react-router-dom', () => ({
+      ...jest.requireActual('react-router-dom'),
+      useParams: () => ({
+        id: '1',
+      }),
+    }));
 
     await act(async () => {
       render(
-        <MemoryRouter initialEntries={['/']}>
+        <MemoryRouter initialEntries={['/1']}>
           <I18nextProvider i18n={i18n}>
             <QueryClientProvider client={queryClient}>
               <ThemeContextProvider>
-                <MarketplaceProvider>
+                <MarketplaceContext.Provider value={mockMarketplaceContext}>
                   <ProductPage />
-                </MarketplaceProvider>
+                </MarketplaceContext.Provider>
               </ThemeContextProvider>
             </QueryClientProvider>
           </I18nextProvider>
@@ -40,7 +74,8 @@ describe('Product Page', () => {
       );
     });
 
-    expect(screen.getByText(Quantity)).toBeInTheDocument();
-    expect(screen.getByText(AddToCart)).toBeInTheDocument();
+    expect(screen.getByText('coins')).toBeInTheDocument();
+    expect(screen.getByText('Quantity')).toBeInTheDocument();
+    expect(screen.getByTestId('addToCart')).toBeInTheDocument();
   });
 });

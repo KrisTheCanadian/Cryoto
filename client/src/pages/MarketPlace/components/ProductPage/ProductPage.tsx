@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable id-length */
 import {
   Box,
@@ -23,7 +24,7 @@ function ProductPage() {
 
   const {id} = useParams();
   const [quantity, setQuantity] = useState<number>(1);
-  const {allItems, addCartItems} = useMarketplaceContext();
+  const {allItems, addCartItem} = useMarketplaceContext();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addCartValidity, setAddCartValidity] = useState(true);
 
@@ -31,7 +32,7 @@ function ProductPage() {
 
   const addToCart = () => {
     if ((item?.size && selectedSize) || item?.size === null) {
-      addCartItems(
+      addCartItem(
         item?.id,
         item?.title,
         item?.image,
@@ -154,7 +155,6 @@ function ProductPage() {
                       <Button
                         variant="outlined"
                         size="small"
-                        className="hidden-button"
                         sx={{
                           fontSize: 11,
                           mt: 1,
@@ -187,6 +187,7 @@ function ProductPage() {
                           else setSelectedSize(i);
                           setAddCartValidity(true);
                         }}
+                        disabled={item?.availability === 0}
                       >
                         {t<string>(`marketplace.sizes.${i}`)}
                       </Button>
@@ -195,7 +196,6 @@ function ProductPage() {
                   {!addCartValidity && (
                     <Box>
                       <Typography
-                        className="hidden-button"
                         sx={{
                           fontSize: 13,
                           mt: 1,
@@ -237,6 +237,7 @@ function ProductPage() {
                   onClick={() => {
                     if (quantity > 1) setQuantity(quantity - 1);
                   }}
+                  disabled={item?.availability === 0}
                 >
                   <Remove sx={{fontSize: 15}} />
                 </IconButton>
@@ -256,18 +257,22 @@ function ProductPage() {
                   onClick={() => {
                     if (quantity < 10) setQuantity(quantity + 1);
                   }}
+                  disabled={item?.availability === 0}
                 >
                   <Add sx={{fontSize: 15}} />
                 </IconButton>
               </Box>
               <Button
+                data-testid="addToCart"
                 size="large"
                 variant="outlined"
-                className="hidden-button"
                 sx={{mt: 2, mb: 1, pt: 0.6, pb: 0.6, fontSize: 14}}
                 onClick={() => addToCart()}
+                disabled={item?.availability === 0}
               >
-                {t<string>('marketplace.AddToCart')}
+                {item?.availability && item?.availability > 0
+                  ? t<string>('marketplace.AddToCart')
+                  : t<string>('marketplace.OutOfStock')}
               </Button>
             </Box>
           </Paper>

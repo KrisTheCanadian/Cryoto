@@ -18,8 +18,22 @@ export interface IUpdateAddress {
   additionalInfo?: string;
   city?: string;
   province?: string;
+  country?: string;
   postalCode?: string;
   isDefault?: true;
+}
+
+export interface IAddAddress {
+  id: string;
+  streetNumber: string;
+  street: string;
+  city: string;
+  province: string;
+  country: string;
+  postalCode: string;
+  additionalInfo?: string;
+  apartment?: string;
+  isDefault?: boolean;
 }
 
 export default IAddress;

@@ -1,11 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {createContext, useContext, useEffect, useMemo, useState} from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
 
 import IMarketPlaceItem from '@/data/api/types/IMarketPlaceItem';
 import {ICartItem, IItem} from '@/data/api/types/ICart';
 import {getAllItems} from '@/data/api/requests/marketplace';
+
+interface ILocalCartItem {
+  id: string;
+  size?: string;
+  quantity: number;
+}
 
 interface Filter {
   filter: string;
@@ -24,11 +37,9 @@ interface MarketplaceContextState {
   updateSortedItems: boolean;
   setUpdateSortedItems: any;
   cartItems: ICartItem[];
-  setCartItems: any;
-  addCartItems: any;
-  setCartItemsQuantity: any;
-  cartItemsQuantity: number;
-  updateCartItemQuantity: any;
+  addCartItem: any;
+  updateCartItem: any;
+  deleteCartItem: any;
 }
 
 const MarketplaceContext = createContext({} as MarketplaceContextState);
@@ -45,19 +56,17 @@ function MarketplaceProvider(props: {children: any}) {
 
   if (data && status === 'success') {
     data.forEach((item: IMarketPlaceItem) => {
-      if (item?.availabilities !== 0) {
-        itemsJsonTranslated.push({
-          id: item.id,
-          image: item.image,
-          title: lang === 'en' ? item.title_En : item.title_Fr,
-          type: lang === 'en' ? item.type_En : item.type_Fr,
-          description:
-            lang === 'en' ? item.description_En : item.description_Fr,
-          size: item.size,
-          brand: item.brand,
-          points: item.points,
-        });
-      }
+      itemsJsonTranslated.push({
+        id: item.id,
+        image: item.image,
+        title: lang === 'en' ? item.title_En : item.title_Fr,
+        type: lang === 'en' ? item.type_En : item.type_Fr,
+        description: lang === 'en' ? item.description_En : item.description_Fr,
+        size: item.size,
+        brand: item.brand,
+        points: item.points,
+        availability: item.availabilities,
+      });
     });
   }
 
@@ -73,43 +82,47 @@ function MarketplaceProvider(props: {children: any}) {
   const [selectSort, setSelectSort] = useState<string>('');
 
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
-  const [cartItemsQuantity, setCartItemsQuantity] = useState(0);
 
+  // Retrieving Cart from Local Storage
   useEffect(() => {
     if (status === 'success') setItemsDisplayed([...allItems]);
     const storedCartItems = JSON.parse(
       localStorage.getItem('cartItems') || '[]',
     );
     if (storedCartItems.length > 0) {
-      setCartItems(storedCartItems);
       let quantity = 0;
-      cartItems.forEach((item: ICartItem) => {
+      const itemsArray: ICartItem[] = [];
+      storedCartItems.forEach((item: ICartItem) => {
+        const cartItem = allItems.find((i) => i.id === item.id);
+        if (cartItem)
+          itemsArray.push({
+            id: item.id,
+            image: cartItem?.image,
+            title: cartItem?.title,
+            points: cartItem?.points,
+            size: item.size,
+            quantity: item.quantity,
+          });
         quantity += item.quantity;
       });
-      setCartItemsQuantity(quantity);
+      setCartItems(itemsArray);
     }
   }, [data]);
 
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems, cartItemsQuantity]);
-
-  const updateCartItemQuantity = (
-    id: string,
-    operation: string,
-    size?: number,
-  ) => {
-    const item = cartItems.find((i) => i.id === id && i.size === size);
-    if (item && operation === 'add') {
-      item.quantity += 1;
-      setCartItemsQuantity(cartItemsQuantity + 1);
-    } else if (item && operation === 'minus') {
-      item.quantity -= 1;
-      setCartItemsQuantity(cartItemsQuantity - 1);
-    }
+  const storeCartInLocal = () => {
+    const localCartItems: ILocalCartItem[] = [];
+    cartItems.forEach((item: ICartItem) => {
+      localCartItems.push({
+        id: item.id,
+        quantity: item.quantity,
+        size: item.size,
+      });
+    });
+    localStorage.setItem('cartItems', JSON.stringify(localCartItems));
   };
 
-  const addCartItems = (
+  // Cart changes
+  const addCartItem = (
     id: string,
     title: string,
     image: string,
@@ -121,14 +134,36 @@ function MarketplaceProvider(props: {children: any}) {
       setCartItems([{id, title, image, points, size, quantity}]);
     } else {
       const item = cartItems.find((i) => i.id === id && i.size === size);
-      if (item) item.quantity += quantity;
-      else
+      if (item) {
+        item.quantity += quantity;
+        setCartItems([...cartItems]);
+      } else
         setCartItems([
           ...cartItems,
           {id, title, image, points, size, quantity},
         ]);
     }
-    setCartItemsQuantity(cartItemsQuantity + quantity);
+    storeCartInLocal();
+  };
+
+  const updateCartItem = (id: string, operation: string, size?: number) => {
+    const item = cartItems.find((i) => i.id === id && i.size === size);
+    if (item && operation === 'add') {
+      item.quantity += 1;
+    } else if (item && operation === 'minus' && item.quantity !== 0) {
+      item.quantity -= 1;
+    }
+    storeCartInLocal();
+  };
+
+  const deleteCartItem = (id?: string, size?: string) => {
+    if (id) {
+      const index = cartItems.findIndex((i) => i.id === id && i.size === size);
+      if (index >= 0) cartItems.splice(index, 1);
+      storeCartInLocal();
+    } else {
+      localStorage.setItem('cartItems', JSON.stringify([]));
+    }
   };
 
   const values = useMemo(() => {
@@ -142,21 +177,18 @@ function MarketplaceProvider(props: {children: any}) {
       setSelectSort,
       updateSortedItems,
       setUpdateSortedItems,
-      addCartItems,
-      cartItemsQuantity,
-      setCartItems,
       cartItems,
-      setCartItemsQuantity,
-      updateCartItemQuantity,
+      addCartItem,
+      updateCartItem,
+      deleteCartItem,
     };
   }, [
-    addCartItems,
+    addCartItem,
     allItems,
     itemsDisplayed,
     selectSort,
     selectedFilters,
     updateSortedItems,
-    cartItemsQuantity,
     cartItems,
   ]);
 

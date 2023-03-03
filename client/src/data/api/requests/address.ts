@@ -2,10 +2,12 @@ import axios from 'axios';
 
 import {
   apiEndpoint,
+  apiRouteAddressGetDefaultAddressOrCreate,
   apiRouteAddressGetDefaultAddress,
   apiRouteAddressUpdate,
+  apiRouteAddressAdd,
 } from '../routes';
-import IAddress, {IUpdateAddress} from '../types/IAddress';
+import IAddress, {IUpdateAddress, IAddAddress} from '../types/IAddress';
 
 import {getAccessToken} from '@/data/api/helpers';
 
@@ -26,6 +28,31 @@ export async function getDefaultAddress(): Promise<IAddress> {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
+  return response.data;
+}
+
+export async function getDefaultAddressOrCreate(): Promise<IAddress> {
+  const nullAddress: IAddress = {
+    city: '',
+    country: '',
+    id: -1,
+    postalCode: '',
+    province: '',
+    street: '',
+    streetNumber: '',
+  };
+  const accessToken = await getAccessToken();
+
+  const response = await axios.get<IAddress>(
+    apiRouteAddressGetDefaultAddressOrCreate,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
   return response.data;
 }
 
@@ -34,11 +61,29 @@ export async function updateAddress(
   updateAddressData: IUpdateAddress,
 ): Promise<IAddress> {
   const accessToken = await getAccessToken();
-
   const url = `${apiRouteAddressUpdate}?id=${id}`;
   const response = await axios.put<IAddress>(
     url,
     JSON.stringify(updateAddressData),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
+export async function addAddress(
+  addressData: IAddAddress,
+): Promise<IAddAddress> {
+  const accessToken = await getAccessToken();
+  const response = await axios.post<IAddAddress>(
+    apiRouteAddressAdd,
+    addressData,
     {
       headers: {
         'Content-Type': 'application/json',

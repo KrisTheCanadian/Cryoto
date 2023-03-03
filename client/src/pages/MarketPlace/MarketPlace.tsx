@@ -23,15 +23,7 @@ import {
   CartButton,
 } from './components';
 
-interface Item {
-  id: string;
-  image: any;
-  title: string;
-  type: string;
-  size?: string[];
-  brand: string;
-  points: number;
-}
+import {IItem} from '@/data/api/types/ICart';
 
 function MarketPlace() {
   const theme = useTheme();
@@ -39,7 +31,7 @@ function MarketPlace() {
 
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [itemsDisplayedInPage, setItemsDisplayedInPage] = useState<Item[]>([]);
+  const [itemsDisplayedInPage, setItemsDisplayedInPage] = useState<IItem[]>([]);
 
   useEffect(() => {
     setItemsDisplayedInPage(
@@ -244,6 +236,7 @@ function MarketPlace() {
                   title={i.title}
                   points={i.points}
                   size={i?.size}
+                  availability={i.availability}
                 />
               </Grid>
             ))}

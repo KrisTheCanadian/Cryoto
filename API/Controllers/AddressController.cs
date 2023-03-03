@@ -31,7 +31,7 @@ public class AddressController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<AddressModel>> GetDefaultAddress()
+    public async Task<ActionResult<AddressModel>> GetDefaultAddressOrCreate()
     {
         var address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
         if (address == null)
@@ -47,6 +47,13 @@ public class AddressController : ControllerBase
             address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
         }
 
+        return Ok(address);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult<AddressModel>> GetDefaultAddress()
+    {
+        var address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
         return Ok(address);
     }
 

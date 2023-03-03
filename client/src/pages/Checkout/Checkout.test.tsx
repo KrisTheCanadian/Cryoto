@@ -107,11 +107,9 @@ test('when cart is not empty, place order button is enabled', async () => {
     updateSortedItems: false,
     setUpdateSortedItems: jest.fn(),
     cartItems: mockCartItems,
-    setCartItems: jest.fn(),
-    addCartItems: jest.fn(),
-    setCartItemsQuantity: jest.fn(),
-    cartItemsQuantity: 0,
-    updateCartItemQuantity: jest.fn(),
+    addCartItem: jest.fn(),
+    updateCartItem: jest.fn(),
+    deleteCartItem: jest.fn(),
   };
 
   await act(async () => {

@@ -53,6 +53,80 @@ public class AddressControllerTests
     }
 
     [Fact]
+    public async void AddressController_GetDefaultAddressOrCreate_ReturnsOK()
+    {
+        //Arrange
+        var addressModel = GetAddressModel();
+        A.CallTo(() => _addressService.GetDefaultAddressByOIdAsync(A<string>._))
+            .Returns(Task.FromResult<AddressModel?>(addressModel.Result));
+
+        //Act
+        var actionResult = await _controller.GetDefaultAddressOrCreate();
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as AddressModel;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResultValue?.OId.Should().Be(addressModel.Result.OId);
+        objectResultValue?.StreetNumber.Should().Be(addressModel.Result.StreetNumber);
+        objectResultValue?.Street.Should().Be(addressModel.Result.Street);
+        objectResultValue?.City.Should().Be(addressModel.Result.City);
+        objectResultValue?.Province.Should().Be(addressModel.Result.Province);
+        objectResultValue?.Country.Should().Be(addressModel.Result.Country);
+        objectResultValue?.PostalCode.Should().Be(addressModel.Result.PostalCode);
+    }
+
+    [Fact]
+    public async void AddressController_GetDefaultAddressOrCreate_ReturnsOK2()
+    {
+        //Arrange
+        var addressModel = GetAddressModel();
+        AddressModel? nullAddressModel = null;
+        A.CallTo(() => _addressService.GetDefaultAddressByOIdAsync(A<string>._))
+            .ReturnsNextFromSequence(new[]
+            {
+                Task.FromResult<AddressModel?>(nullAddressModel), Task.FromResult<AddressModel?>(addressModel.Result)
+            });
+        A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(true));
+
+        //Act
+        var actionResult = await _controller.GetDefaultAddressOrCreate();
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as AddressModel;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResultValue?.OId.Should().Be(addressModel.Result.OId);
+        objectResultValue?.StreetNumber.Should().Be(addressModel.Result.StreetNumber);
+        objectResultValue?.Street.Should().Be(addressModel.Result.Street);
+        objectResultValue?.City.Should().Be(addressModel.Result.City);
+        objectResultValue?.Province.Should().Be(addressModel.Result.Province);
+        objectResultValue?.Country.Should().Be(addressModel.Result.Country);
+        objectResultValue?.PostalCode.Should().Be(addressModel.Result.PostalCode);
+    }
+
+    [Fact]
+    public async void AddressController_GetDefaultAddressOrCreate_ReturnsProblem()
+    {
+        //Arrange
+        AddressModel? nullAddressModel = null;
+        A.CallTo(() => _addressService.GetDefaultAddressByOIdAsync(A<string>._))
+            .Returns(Task.FromResult(nullAddressModel));
+        A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(false));
+
+        //Act
+        var actionResult = await _controller.GetDefaultAddressOrCreate();
+        var objectResult = actionResult.Result as ObjectResult;
+        var objectResultValue = objectResult?.Value as AddressModel;
+
+        //Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().NotBeOfType(typeof(OkObjectResult));
+    }
+    
+    [Fact]
     public async void AddressController_GetDefaultAddress_ReturnsOK()
     {
         //Arrange
@@ -77,54 +151,6 @@ public class AddressControllerTests
         objectResultValue?.PostalCode.Should().Be(addressModel.Result.PostalCode);
     }
 
-    [Fact]
-    public async void AddressController_GetDefaultAddress_ReturnsOK2()
-    {
-        //Arrange
-        var addressModel = GetAddressModel();
-        AddressModel? nullAddressModel = null;
-        A.CallTo(() => _addressService.GetDefaultAddressByOIdAsync(A<string>._))
-            .ReturnsNextFromSequence(new[]
-            {
-                Task.FromResult<AddressModel?>(nullAddressModel), Task.FromResult<AddressModel?>(addressModel.Result)
-            });
-        A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(true));
-
-        //Act
-        var actionResult = await _controller.GetDefaultAddress();
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as AddressModel;
-
-        //Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue?.OId.Should().Be(addressModel.Result.OId);
-        objectResultValue?.StreetNumber.Should().Be(addressModel.Result.StreetNumber);
-        objectResultValue?.Street.Should().Be(addressModel.Result.Street);
-        objectResultValue?.City.Should().Be(addressModel.Result.City);
-        objectResultValue?.Province.Should().Be(addressModel.Result.Province);
-        objectResultValue?.Country.Should().Be(addressModel.Result.Country);
-        objectResultValue?.PostalCode.Should().Be(addressModel.Result.PostalCode);
-    }
-
-    [Fact]
-    public async void AddressController_GetDefaultAddress_ReturnsProblem()
-    {
-        //Arrange
-        AddressModel? nullAddressModel = null;
-        A.CallTo(() => _addressService.GetDefaultAddressByOIdAsync(A<string>._))
-            .Returns(Task.FromResult(nullAddressModel));
-        A.CallTo(() => _addressService.CreateAddressAsync(A<AddressModel>._)).Returns(Task.FromResult(false));
-
-        //Act
-        var actionResult = await _controller.GetDefaultAddress();
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as AddressModel;
-
-        //Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().NotBeOfType(typeof(OkObjectResult));
-    }
 
     [Fact]
     public async void AddressController_GetAllUserAddresses_ReturnsOK()

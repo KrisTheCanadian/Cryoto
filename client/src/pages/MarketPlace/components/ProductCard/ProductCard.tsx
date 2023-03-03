@@ -20,6 +20,7 @@ interface IProductCardProps {
   title: string;
   points: number;
   size?: string[];
+  availability: number;
 }
 
 function ProductCard(props: IProductCardProps) {
@@ -27,7 +28,7 @@ function ProductCard(props: IProductCardProps) {
   const {t} = useTranslation();
   const [selectedSize, setSelectedSize] = useState<string>('');
   const [addCartValidity, setAddCartValidity] = useState(true);
-  const {addCartItems} = useMarketplaceContext();
+  const {addCartItem} = useMarketplaceContext();
   const customTheme = createTheme({
     ...theme,
     components: {
@@ -131,7 +132,7 @@ function ProductCard(props: IProductCardProps) {
 
   const addToCart = () => {
     if ((props.size && selectedSize) || props.size === null) {
-      addCartItems(
+      addCartItem(
         props.id,
         props.title,
         props.image,
@@ -254,6 +255,7 @@ function ProductCard(props: IProductCardProps) {
                       else setSelectedSize(i);
                       setAddCartValidity(true);
                     }}
+                    disabled={props.availability === 0}
                   >
                     {t<string>(`marketplace.sizes.${i}`)}
                   </Button>
@@ -282,8 +284,11 @@ function ProductCard(props: IProductCardProps) {
                 className="hidden-button"
                 sx={{marginTop: 1, fontSize: 12}}
                 onClick={() => addToCart()}
+                disabled={props.availability === 0}
               >
-                {t<string>('marketplace.AddToCart')}
+                {props.availability === 0 &&
+                  t<string>('marketplace.OutOfStock')}
+                {props.availability > 0 && t<string>('marketplace.AddToCart')}
               </Button>
             </Box>
           </CardContent>

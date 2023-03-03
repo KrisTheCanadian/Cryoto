@@ -1,3 +1,4 @@
+/* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 
 import {
@@ -22,7 +23,7 @@ import IAddress, {IUpdateAddress} from '@/data/api/types/IAddress';
 import {updateAddress} from '@/data/api/requests/address';
 
 interface IEditAddressDialogProps {
-  shippingAddress: IAddress | undefined;
+  shippingAddress: IAddress;
   setShippingAddress: any;
   editAddressOpen: boolean;
   setEditAddressOpen: (editAddressOpen: boolean) => void;
@@ -33,6 +34,8 @@ function EditAddressDialog(props: IEditAddressDialogProps) {
   const handleSelfEditAddressClose = () => setEditAddressOpen(false);
 
   const [saveAsDefault, setSaveAsDefault] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(true);
   const [hasChanged, setHasChanged] = useState(false);
   const [updateShippingAddress, setUpdateShippingAddress] =
     useState<IUpdateAddress>();
@@ -48,15 +51,39 @@ function EditAddressDialog(props: IEditAddressDialogProps) {
   const {t} = useTranslation();
 
   const {mutate: mutateAddress} = useMutation(() =>
-    updateAddress(1 as number, toSaveShippingAddress),
+    updateAddress(props.shippingAddress.id, toSaveShippingAddress),
   );
 
-  const saveAddress = () => {
-    if (saveAsDefault) {
-      if (updateShippingAddress) toSaveShippingAddress = updateShippingAddress;
-      mutateAddress();
+  const validateShippingAddress = () => {
+    if (!shippingAddress) {
+      return false;
     }
-    props.setShippingAddress(shippingAddress);
+
+    const requiredFields: (keyof IAddress)[] = [
+      'streetNumber',
+      'street',
+      'city',
+      'province',
+      'country',
+      'postalCode',
+    ];
+
+    return requiredFields.every((field) => Boolean(shippingAddress[field]));
+  };
+
+  const saveAddress = () => {
+    setIsSaved(true);
+    const isValid = validateShippingAddress();
+    setIsAddressValid(isValid);
+    if (isValid) {
+      if (saveAsDefault) {
+        if (updateShippingAddress)
+          toSaveShippingAddress = updateShippingAddress;
+        mutateAddress();
+      }
+      props.setShippingAddress(shippingAddress);
+      setEditAddressOpen(false);
+    }
   };
 
   const addressData = [
@@ -64,48 +91,56 @@ function EditAddressDialog(props: IEditAddressDialogProps) {
       label: 'StreetNumber',
       name: 'streetNumber',
       defaultValue: props.shippingAddress?.streetNumber,
+      optional: false,
       gridWidth: 3.3,
     },
     {
       label: 'Unit',
       name: 'apartment',
       defaultValue: props.shippingAddress?.apartment,
+      optional: true,
       gridWidth: 3,
     },
     {
       label: 'Street',
       name: 'street',
       defaultValue: props.shippingAddress?.street,
+      optional: false,
       gridWidth: 8,
     },
     {
       label: 'City',
       name: 'city',
       defaultValue: props.shippingAddress?.city,
+      optional: false,
       gridWidth: 8,
     },
     {
       label: 'Province',
       name: 'province',
       defaultValue: props.shippingAddress?.province,
+      optional: false,
       gridWidth: 8,
     },
     {
       label: 'Country',
       name: 'country',
       defaultValue: props.shippingAddress?.country,
+      optional: false,
       gridWidth: 8,
     },
     {
       label: 'PostalCode',
       name: 'postalCode',
       defaultValue: props.shippingAddress?.postalCode,
+      optional: false,
       gridWidth: 8,
     },
     {
       label: 'AdditionalInfo',
       name: 'additionalInfo',
       defaultValue: props.shippingAddress?.additionalInfo,
+      optional: true,
       gridWidth: 8,
     },
   ];
@@ -223,11 +258,32 @@ function EditAddressDialog(props: IEditAddressDialogProps) {
                       setShippingAddress(newAddressShippingAddress);
                     }
                   }}
-                  hiddenLabel
+                  error={
+                    isSaved &&
+                    !elem.optional &&
+                    shippingAddress &&
+                    !shippingAddress[elem.name as keyof IAddress]
+                  }
                 />
               </Grid>
             </React.Fragment>
           ))}
+          <Box
+            sx={{
+              display: isAddressValid ? 'none' : 'flex',
+              justifyContent: 'center',
+              mt: 3,
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: 14,
+                color: theme.palette.error.main,
+              }}
+            >
+              Please fill out all required fields.
+            </Typography>
+          </Box>
         </Grid>
       </DialogContent>
       <Box sx={{ml: 5, mt: 1}}>
@@ -271,7 +327,6 @@ function EditAddressDialog(props: IEditAddressDialogProps) {
             style={{textTransform: 'none'}}
             onClick={() => {
               saveAddress();
-              setEditAddressOpen(false);
             }}
           >
             {t<string>('settings.Save')}

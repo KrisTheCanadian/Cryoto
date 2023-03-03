@@ -9,6 +9,7 @@ export interface IItem {
   brand: string;
   points: number;
   description?: string;
+  availability: number;
 }
 
 export interface ICartItem {

@@ -32,21 +32,11 @@ function CartItem(props: ICartItemProps) {
   const theme = useTheme();
   const {t} = useTranslation();
   const [quantity, setQuantity] = useState(props.quantity);
-  const {
-    updateCartItemQuantity,
-    cartItems,
-    setCartItems,
-    cartItemsQuantity,
-    setCartItemsQuantity,
-  } = useMarketplaceContext();
+  const {updateCartItem, deleteCartItem} = useMarketplaceContext();
 
-  const deleteCartItem = () => {
-    const index = cartItems.findIndex(
-      (i) => i.id === props.id && i.size === props.size,
-    );
-    if (index >= 0) cartItems.splice(index, 1);
-    setCartItems(cartItems);
-    setCartItemsQuantity(cartItemsQuantity - quantity);
+  const deleteItem = () => {
+    deleteCartItem(props.id, props.size);
+    props.setTotal(props.total - props.points * quantity);
   };
   const titleStyle = {
     fontSize: 14,
@@ -171,7 +161,7 @@ function CartItem(props: ICartItemProps) {
                 onClick={() => {
                   if (quantity > 1) {
                     setQuantity(quantity - 1);
-                    updateCartItemQuantity(props.id, 'minus', props.size);
+                    updateCartItem(props.id, 'minus', props.size);
                     props.setTotal(props.total - props.points);
                   }
                 }}
@@ -197,7 +187,7 @@ function CartItem(props: ICartItemProps) {
                 onClick={() => {
                   if (quantity < 10) {
                     setQuantity(quantity + 1);
-                    updateCartItemQuantity(props.id, 'add', props.size);
+                    updateCartItem(props.id, 'add', props.size);
                     props.setTotal(props.total + props.points);
                   }
                 }}
@@ -216,7 +206,7 @@ function CartItem(props: ICartItemProps) {
         </Grid>
         {!props.checkout && (
           <Grid item xs={1} sx={{display: 'flex', justifyContent: 'flex-end'}}>
-            <IconButton data-testid="clearButton" onClick={deleteCartItem}>
+            <IconButton data-testid="clearButton" onClick={deleteItem}>
               <Clear
                 sx={{
                   fontSize: 14,

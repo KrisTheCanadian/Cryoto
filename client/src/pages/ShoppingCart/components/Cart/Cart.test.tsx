@@ -44,11 +44,9 @@ const mockMarketplaceContext = {
   updateSortedItems: false,
   setUpdateSortedItems: jest.fn(),
   cartItems: mockCartItems,
-  setCartItems: jest.fn(),
-  addCartItems: jest.fn(),
-  setCartItemsQuantity: jest.fn(),
-  cartItemsQuantity: 0,
-  updateCartItemQuantity: jest.fn(),
+  addCartItem: jest.fn(),
+  updateCartItem: jest.fn(),
+  deleteCartItem: jest.fn(),
 };
 
 // Render the component with mock context values and a router

@@ -133,6 +133,7 @@ export const englishTranslations = {
   marketplace: {
     Coins: 'coins',
     AddToCart: 'Add To Cart',
+    OutOfStock: 'Out Of Stock',
     Search: 'Search Marketplace',
     Quantity: 'Quantity',
     sizes: {
@@ -210,8 +211,11 @@ export const englishTranslations = {
 
     TermsCondition:
       "By continuing, you agree to Cryoto's General Terms and Conditions.",
+    NoFunds: 'Insufficient funds in your <italic>To Spend</italic> Wallet',
+    FillOutFields: 'Please fill out all required fields',
   },
   order: {
+    ProcessOrder: 'Processing Order',
     OrderReceived: 'Your order has been received.',
     ThankYou:
       'Thank you for your order. We will begin processing it right away. You will receive an order confirmation shortly at ',

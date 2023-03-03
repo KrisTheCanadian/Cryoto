@@ -94,7 +94,7 @@ export const frenchTranslations = {
     loading: 'Connexion En Cours',
   },
   profilePage: {
-    joinedIn: 'Rejoint En ',
+    joinedIn: 'Rejoint en ',
     recognize: 'Reconnaître',
     recognitions: 'Reconnaissances',
     recognitionsSent: ' Reconnaissances envoyées',
@@ -136,6 +136,7 @@ export const frenchTranslations = {
   marketplace: {
     Coins: 'pièces',
     AddToCart: 'Ajouter au panier',
+    OutOfStock: 'Indisponible',
     Search: 'Recherchez sur le marché',
     Quantity: 'Quantité',
     sizes: {
@@ -212,8 +213,12 @@ export const frenchTranslations = {
       'Vous ne pouvez pas passer de commande avec un panier vide. Veuillez ajouter des articles à votre panier et réessayer.',
     TermsCondition:
       'En continuant, vous acceptez les conditions générales de Cryoto.',
+    NoFunds:
+      'Solde insuffisant dans votre portefeuille <italic>À dépenser</italic>.',
+    FillOutFields: 'Veuillez remplir tous les champs obligatoires.',
   },
   order: {
+    ProcessOrder: 'Commande en traitement',
     OrderReceived: 'Votre commande a été reçue.',
     ThankYou:
       "Merci pour votre commande. Nous commencerons à la traiter immédiatement. Vous recevrez sous peu une confirmation de commande à l'adresse courriel ",
