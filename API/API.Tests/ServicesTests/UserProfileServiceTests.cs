@@ -43,10 +43,10 @@ public class UserProfileServicesTests
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
-        A.CallTo(() => _context.GetSearchResultAsync(A<string>._)).Returns(userProfileModelList);
+        A.CallTo(() => _context.GetSearchResultAsync(A<string>._, A<string>._)).Returns(userProfileModelList);
 
         //Act
-        var actionResult = await _controller.GetSearchResultServiceAsync("keywords");
+        var actionResult = await _controller.GetSearchResultServiceAsync("keywords", "oid");
 
         //Assert
         actionResult.Should().NotBeNull();

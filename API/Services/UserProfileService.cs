@@ -96,9 +96,9 @@ public class UserProfileService : IUserProfileService
         return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
-    public async Task<List<UserProfileModel>> GetSearchResultServiceAsync(string keywords)
+    public async Task<List<UserProfileModel>?> GetSearchResultServiceAsync(string? keywords, string oid)
     {
-        return await _context.GetSearchResultAsync(keywords);
+        return await _context.GetSearchResultAsync(keywords, oid);
     }
 
     public async Task<UserProfileModel?> GetUserByIdAsync(string userId)

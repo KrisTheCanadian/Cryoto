@@ -53,9 +53,9 @@ public class UserProfileController : ControllerBase
 
     [HttpGet]
     [Route("[controller]/[action]")]
-    public async Task<ActionResult<List<UserProfileModel>>> GetSearchResult(string keywords)
+    public async Task<ActionResult<List<UserProfileModel>>> GetSearchResult(string? keywords)
     {
-        return Ok(await _userProfileService.GetSearchResultServiceAsync(keywords));
+        return Ok(await _userProfileService.GetSearchResultServiceAsync(keywords, _oId));
     }
 
     [HttpGet]

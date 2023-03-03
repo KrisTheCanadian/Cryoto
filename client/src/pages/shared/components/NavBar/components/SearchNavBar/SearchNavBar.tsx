@@ -2,7 +2,6 @@ import {Avatar, Box, InputBase, useTheme} from '@mui/material';
 import {RoundedInput} from '@shared/components/interface-elements/RoundedInput';
 import {useEffect, useRef, useState} from 'react';
 import {Search} from '@mui/icons-material';
-import {t} from 'i18next';
 import {useTranslation} from 'react-i18next';
 import {useMsal} from '@azure/msal-react';
 import {Link, useNavigate} from 'react-router-dom';
@@ -22,8 +21,6 @@ function SearchNavBar(props: SearchNavBarProps) {
   const [searchValue, setSearchValue] = useState('');
   const [searchResults, setSearchResults] = useState<IUser[]>([]);
   const [searching, setSearching] = useState(false);
-  const {accounts} = useMsal();
-  const navigate = useNavigate();
 
   const theme = useTheme();
   const {t} = useTranslation();
@@ -76,8 +73,28 @@ function SearchNavBar(props: SearchNavBarProps) {
 
   const inputFieldRef = useRef<HTMLDivElement>(null);
 
+  const showPreviousRecipents = () => {
+    searchUsers('')
+      .then((users) => {
+        users.length = 5;
+        setSearchResults(users);
+        setTimeout(() => {
+          setSearching(false);
+        }, 500);
+      })
+      .catch((err) => {
+        setSearching(false);
+      });
+  };
+
   const openSearch = () => {
     setOpen(true);
+
+    // Show the previous recipients by default (search history)
+    if (searchValue.length === 0) {
+      showPreviousRecipents();
+    }
+
     // fix to allow input field to be visible before focus
     setTimeout(() => {
       inputFieldRef.current?.focus();
@@ -98,20 +115,14 @@ function SearchNavBar(props: SearchNavBarProps) {
     inputTimeout.current = setTimeout(() => {
       if (!event.target.value || event.target.value.length === 0) {
         setSearchResults([]);
-        setTimeout(() => {
-          setSearching(false);
-        }, 200);
+        showPreviousRecipents();
         return;
       }
 
       searchUsers(event.target.value)
-        .then((res) => {
-          const users = res.filter((user) => {
-            return user.name !== accounts[0].name;
-          });
+        .then((users) => {
           // limit to 5 results
           users.length = 5;
-
           setSearchResults(users);
           setTimeout(() => {
             setSearching(false);
@@ -152,23 +163,27 @@ function SearchNavBar(props: SearchNavBarProps) {
       </RoundedInput>
 
       <Box sx={searchResultsStyle} data-testid="search-results">
-        {searchOpen && !searching && searchValue.length === 0 && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: theme.spacing(1),
-              color: theme.palette.text.secondary,
-            }}
-          >
-            {t('navBar.searchPlaceholder')}
-          </Box>
-        )}
+        {searchOpen &&
+          !searching &&
+          searchResults.length === 0 &&
+          searchValue.length === 0 && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: theme.spacing(1),
+                color: theme.palette.text.secondary,
+              }}
+            >
+              {t('navBar.searchPlaceholder')}
+            </Box>
+          )}
         {searchOpen &&
           !searching &&
           searchValue.length > 0 &&
-          !searchResults.length && (
+          // List of size 5 is not null but might be empty
+          searchResults.every((result) => !result) && (
             <Box
               sx={{
                 display: 'flex',
@@ -182,7 +197,10 @@ function SearchNavBar(props: SearchNavBarProps) {
             </Box>
           )}
         {searchResults.map((user, index) => {
-          const isLastItem = index === searchResults.length - 1;
+          const nonNullsearchResults = searchResults.filter(
+            (user) => user !== null,
+          );
+          const isLastItem = index === nonNullsearchResults.length - 1;
           return (
             <Link
               to={`/profile/${user.oId}`}

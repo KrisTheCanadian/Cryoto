@@ -22,14 +22,48 @@ public class UserProfileRepository : IUserProfileRepository
         return await Context.UserProfiles.AsNoTracking().ToListAsync();
     }
 
-    public Task<List<UserProfileModel>> GetSearchResultAsync(string keywords)
+
+    public async Task<List<UserProfileModel>> GetSearchResultAsync(string? keywords, string oid)
     {
-        var keywordsList = keywords.ToLower().Split(' ')
+        // Return list of last users have been recognized by the actor once user open the search model.
+        var recognizedUsersList = await GetRecognizedUsersByIdAsync(oid);
+        if (keywords == null && recognizedUsersList!.Any()) return recognizedUsersList!;
+
+        var user = await GetUserProfileAsync(oid);
+        var keywordsList = keywords!.ToLower().Split(' ')
             .Where(p => !string.IsNullOrWhiteSpace(p))
             .ToArray();
-        var userProfileModelList = Context.UserProfiles.AsNoTracking()
+
+
+        // Return search result from last users have been recognized by the actor.
+        var searchResultList = Context.UserProfiles.AsNoTracking()
+            .Where(x => recognizedUsersList!.Contains(x) && x.OId != user!.OId)
             .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
-        return Task.FromResult(userProfileModelList);
+        if (searchResultList.Count >= 5) return searchResultList;
+
+        // Return search result from team members and manager.
+        var teamMembersList = Context.UserProfiles.AsNoTracking()
+            .Where(x => !searchResultList.Contains(x) && x.OId != oid)
+            .Where(x => x.Name == user!.ManagerReference || x.ManagerReference == user.ManagerReference)
+            .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
+        searchResultList = searchResultList.Concat(teamMembersList).ToList();
+        if (searchResultList.Count >= 5) return searchResultList;
+
+        // Return search result from the same supervisory organization.
+        var supervisoryOrganizationList = Context.UserProfiles.AsNoTracking()
+            .Where(x => !searchResultList.Contains(x) && x.OId != oid)
+            .Where(x => x.SupervisoryOrganization == user!.SupervisoryOrganization)
+            .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
+        searchResultList = searchResultList.Concat(supervisoryOrganizationList).ToList();
+        if (searchResultList.Count >= 5) return searchResultList;
+
+        // Return search result no priorities.
+        var searchResultNoPrioritiesList = Context.UserProfiles.AsNoTracking()
+            .Where(x => !searchResultList.Contains(x) && x.OId != oid)
+            .Search(userProfileModel => userProfileModel.Name.ToLower()).Containing(keywordsList).ToList();
+        searchResultList = searchResultList.Concat(searchResultNoPrioritiesList).ToList();
+
+        return searchResultList;
     }
 
     public async Task<UserProfileModel?> GetUserProfileAsync(string oid)
@@ -100,5 +134,21 @@ public class UserProfileRepository : IUserProfileRepository
             .Take(5).ToList();
 
         return authors;
+    }
+
+    private async Task<List<UserProfileModel>?> GetRecognizedUsersByIdAsync(string oid)
+    {
+        var recognizedUsersOidList = Context.Posts.Where(postModel => postModel.Author == oid)
+            .Select(postModel => postModel.Recipients).ToList().SelectMany(array => array).Distinct();
+
+        var recognizedUsersList = new List<UserProfileModel?>();
+
+        foreach (var recipient in recognizedUsersOidList)
+        {
+            recognizedUsersList.Add(await Context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OId.Equals(recipient)));
+        }
+
+        return recognizedUsersList!;
     }
 }

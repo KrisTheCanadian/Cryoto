@@ -85,7 +85,8 @@ public class UserProfileControllerTests
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
-        A.CallTo(() => _userProfileService.GetSearchResultServiceAsync(A<string>._)).Returns(userProfileModelList);
+        A.CallTo(() => _userProfileService.GetSearchResultServiceAsync(A<string>._, A<string>._))!
+            .Returns(userProfileModelList);
 
         //Act
         var actionResult = await _controller.GetSearchResult("keywords");
