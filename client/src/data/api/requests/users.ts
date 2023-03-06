@@ -66,7 +66,7 @@ export async function getUpcomingAnniversaries() {
   const accessToken = await getAccessToken();
 
   // convert fetch to axios for consistency
-  const response = await axios.get<IUserProfile[]>(
+  const response = await axios.get<IUser[]>(
     apiRouteUserProfileGetUpcomingAnniversaries,
     {
       // add CORS headers to request

@@ -62,6 +62,7 @@ function SideBar() {
       top: 64,
       minHeight: 'calc(100vh - 64px)',
     },
+    maxWidth: 350,
   };
 
   return (

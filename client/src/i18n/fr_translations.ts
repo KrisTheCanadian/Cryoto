@@ -55,6 +55,8 @@ export const frenchTranslations = {
     React: 'Réagir',
     Recognized: 'a reconnu ',
     UploadImageMessage: 'Déposez l’image ici',
+    Celebrations: 'Célébrations',
+    TopRecognizers: 'Meilleurs reconnaisseurs du mois',
   },
   comments: {
     Delete: 'Supprimer',

@@ -52,6 +52,8 @@ export const englishTranslations = {
     React: 'React',
     Recognized: 'recognized ',
     UploadImageMessage: 'Drop image here',
+    Celebrations: 'Celebrations',
+    TopRecognizers: 'Top Recognizers of the Month',
   },
   comments: {
     Delete: 'Delete',
@@ -76,7 +78,7 @@ export const englishTranslations = {
     LandingPage1: 'Get Rewarded, Give Back,',
     LandingPage2: 'Feel Recognized.',
     LandingPageSubText:
-      'Cryoto allows you to recognize and celebrate the people you work everyday, with the power of crypto.',
+      'Cryoto allows you to recognize and celebrate the people you work with everyday, with the power of crypto.',
     RecognitionFeatureDescription:
       "Take a moment to recognize your coworkers' hard work and dedication with a recognition post. Share a message and photo to show your appreciation, and sweeten the deal with some Cryoto Coins to show how much you value their efforts.",
     CelebrationFeatureDescription:
