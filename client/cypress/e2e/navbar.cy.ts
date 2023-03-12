@@ -31,6 +31,15 @@ describe('Navbar', () => {
     cy.get('body').should('have.css', 'background-color', 'rgb(248, 250, 251)');
   });
 
+  it('Check for Settings', () => {
+    cy.visit('/');
+    cy.wait(1000);
+    cy.get('[data-testid="profileButton"]').should('exist');
+    cy.get('[data-testid="profileButton"]').click({force: true});
+    cy.wait(1000);
+    cy.get('[data-testid="SettingsIcon"]').should('exist');
+  });
+
   it('Test Notifications', () => {
     cy.visit('/');
     cy.get('[data-testid="NotificationsNoneIcon"]').should('exist');

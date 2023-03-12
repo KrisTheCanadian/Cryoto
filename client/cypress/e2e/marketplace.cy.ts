@@ -8,13 +8,11 @@ describe('Marketplace', () => {
     cy.get('[data-testid="mFilterButton"]').should('exist');
     cy.get('[data-testid="mFilterButton"]').click();
     cy.get('[data-testid="type-button"]').click();
-    cy.wait(100);
-    // cy.get('#types-Gift Card').should('exist');
-    // cy.get('#types-Gift Card').click({force: true});
-    // cy.get('#types-Company Merchandise').should('exist');
-    // cy.get('#types-Company Merchandise').click({force: true});
-    // cy.get('#types-Company Rewards').should('exist');
-    // cy.get('#types-Company Rewards').click({force: true});
+    cy.wait(1000);
+    cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').should('exist');
+    cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').each(($el) => {
+      cy.wrap($el).click({force: true});
+    });
     cy.wait(1000);
   });
 
@@ -58,7 +56,7 @@ describe('Marketplace', () => {
     ).should('contain', '1');
   });
 
-  it('Test marketplace filter - Types', () => {
+  it('Test marketplace filters - Gift Cards', () => {
     cy.visit('/market');
     cy.get('[data-testid="mFilterButton"]').should('exist');
     cy.get('[data-testid="mFilterButton"]').click();
@@ -69,9 +67,32 @@ describe('Marketplace', () => {
       .click({force: true});
     cy.get('[data-testid="mFilterButton"]').click({force: true});
     cy.wait(1000);
-    // cy.get(
-    //   ':nth-child(1) > .css-19o132d > .MuiPaper-root > .MuiCardContent-root > .css-0 > .MuiTypography-body1',
-    // ).should('contain', 'Gift Card');
+  });
+
+  it('Test marketplace filters - Prices', () => {
+    cy.visit('/market');
+    cy.get('[data-testid="mFilterButton"]').should('exist');
+    cy.get('[data-testid="mFilterButton"]').click();
+    cy.get('[data-testid="price-button"]').click();
+    cy.wait(1000);
+    cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').should('exist');
+    cy.get('[data-testid="CheckBoxOutlineBlankIcon"]').each(($el) => {
+      cy.wrap($el).click({force: true});
+    });
+    cy.wait(1000);
+  });
+
+  it('Test marketplace filters - Under 150 coins', () => {
+    cy.visit('/market');
+    cy.get('[data-testid="mFilterButton"]').should('exist');
+    cy.get('[data-testid="mFilterButton"]').click();
+    cy.get('[data-testid="price-button"]').click();
+    cy.wait(100);
+    cy.get('[data-testid="CheckBoxOutlineBlankIcon"]')
+        .first()
+        .click({force: true});
+    cy.get('[data-testid="mFilterButton"]').click({force: true});
+    cy.wait(100);
   });
 
   it('Check for remove filters button', () => {
