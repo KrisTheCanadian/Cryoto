@@ -1,5 +1,6 @@
 using API.Models.Comments;
 using API.Models.Posts;
+using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Services.Interfaces;
 using API.Utils;
@@ -67,5 +68,25 @@ public class PostService : IPostService
     public async Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel)
     {
         return await _postRepository.CommentOnPostAsync(postModel, commentModel); 
+    }
+    
+    public async Task<bool> BoostAsync(string guid, UserProfileModel userProfile)
+    {
+        var allowedRoles = new [] { "Partner", "Senior Partner" };
+        var hasAllowedRole = false;
+        foreach (var role in userProfile.Roles) 
+        {
+            if (allowedRoles.Contains(role))
+            {
+                hasAllowedRole = true;
+                break;
+            }
+        }
+
+        if (!hasAllowedRole)
+        {
+            return false;
+        }
+        return await _postRepository.BoostAsync(guid, userProfile.OId);
     }
 }

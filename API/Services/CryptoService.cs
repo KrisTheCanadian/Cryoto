@@ -129,7 +129,7 @@ public class CryptoService : ICryptoService
         var receiverPublicKey = receiverWallet.Account.PublicKey;
         var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
-        if (rpcTransactionResult.error != null)
+        if (rpcTransactionResult.error == null)
         {
             await UpdateTokenBalance((-amount), senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
@@ -302,5 +302,45 @@ public class CryptoService : ICryptoService
             await _notificationService.SendNotificationAsync(new Notification("System", oid,
                 "Welcome to the team!", "Kudos", 100));
         }
+    }
+
+    public async Task<bool> BoostRecognition(string senderId, List<string> recipientIds)
+    {
+        const string walletType = "toAward";
+        const float boostAmount = 10;
+        var maxResend = 10;
+
+        var senderWallet = await _context.GetWalletModelByOIdAsync(senderId, walletType);
+        if (senderWallet == null)
+        {
+            return false;
+        }
+
+        if (senderWallet.TokenBalance < boostAmount * recipientIds.Count)
+        {
+            return false;
+        }
+        var recipientsList = recipientIds.ConvertAll(id => id);
+        while (maxResend > 0 && recipientsList.Count > 0)
+        {
+           var didNotReceiveTransaction = new List<string>();
+           foreach (var recipientId in recipientsList)
+           {
+               var rpcTransactionResult = await SendTokens(boostAmount, senderId, recipientId);
+               if (rpcTransactionResult?.error != null)
+               {
+                   didNotReceiveTransaction.Add(recipientId);
+               }
+               else
+               {
+                   await _transactionService.AddTransactionAsync(new TransactionModel(recipientId, "toSpend", senderId,
+                       "toAward", boostAmount, "boost", DateTimeOffset.UtcNow));
+                   QueueTokenUpdate(new List<List<string>> { new() { "tokenUpdateQueue" }, new() { senderId, recipientId } });
+               }
+           }
+           maxResend -= 1;
+           recipientsList = didNotReceiveTransaction.ConvertAll(id => id);
+        }
+        return recipientsList.Count == 0;
     }
 }

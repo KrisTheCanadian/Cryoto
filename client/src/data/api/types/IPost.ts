@@ -21,6 +21,7 @@ interface IPost {
   celebrations: string[];
   commentIds: string[];
   comments: IComment[];
+  boosts: string[];
 }
 
 export default IPost;

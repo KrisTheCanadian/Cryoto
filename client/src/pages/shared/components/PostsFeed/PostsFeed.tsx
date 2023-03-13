@@ -125,6 +125,7 @@ function PostsFeed(props: PostsFeedProps) {
               name={undefined}
               oId={undefined}
               comments={[]}
+              boosts={[]}
             />
           ),
         )}
@@ -153,6 +154,7 @@ function PostsFeed(props: PostsFeedProps) {
               name={name}
               oId={accounts[0].idTokenClaims?.oid}
               comments={post?.comments || []}
+              boosts={post?.boosts || []}
             />
           )),
         )}
@@ -183,6 +185,7 @@ function PostsFeed(props: PostsFeedProps) {
               name={undefined}
               oId={undefined}
               comments={[]}
+              boosts={[]}
             />
           ),
         )}

@@ -35,9 +35,7 @@ public class CryptoController : ControllerBase
         var rpcTransactionResult = await _cryptoService.SendTokens(amount, _oId, receiverOId);
         if (rpcTransactionResult?.error != null)
             return BadRequest(rpcTransactionResult.error);
-
-        await _cryptoService.UpdateTokenBalance((amount), receiverOId, "toSpend");
-        await _cryptoService.UpdateTokenBalance((-amount), _oId, "toAward");
+        
         _cryptoService.QueueTokenUpdate(new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { _oId, receiverOId } });
 

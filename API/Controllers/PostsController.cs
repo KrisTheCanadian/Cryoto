@@ -130,8 +130,6 @@ public class PostsController : ControllerBase
             {
                 var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
                 if (rpcTransactionResult?.error != null) continue;
-                await _cryptoService.UpdateTokenBalance(amount, recipientProfile.OId, "toSpend");
-                await _cryptoService.UpdateTokenBalance(-amount, _actorId, "toAward");
                 await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
                     _actorId,
                     "toAward", amount, "Recognition", postCreateModel.CreatedDate));
@@ -226,6 +224,47 @@ public class PostsController : ControllerBase
         if (!notificationSent)
         {
             _logger.LogWarning("Failed to send reaction notification on post '{guid}' by user {_actorId}", guid, _actorId);
+        }
+        return Ok(await _postService.GetByIdAsync(guid));
+    }
+    
+    [HttpPost]
+    [Authorize(Roles = "Partner,SeniorPartner")]
+    public async Task<ActionResult<PostModel>> Boost(string guid)
+    {
+        var existingPost = await _postService.GetByIdAsync(guid);
+        if (existingPost == null)
+        {
+            _logger.LogError("Could not retrieve post '{guid}'", guid);
+            return BadRequest("Cannot boost to the post because it does not exist.");
+        }
+        
+        var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
+        if (actorProfile == null)
+        {
+            _logger.LogError("Could not retrieve user '{_actorId}'", _actorId);
+            return BadRequest("Cannot boost the post because user does not exist.");
+        }
+
+        var recipients = existingPost.Recipients.ToList();
+        var transactionSuccess = await _cryptoService.BoostRecognition(_actorId, recipients);
+        if (!transactionSuccess)
+        {
+            _logger.LogError("Could not complete transaction to boost post '{guid}' by booster '{_actorId}'.", guid, _actorId);
+            return BadRequest("Could not complete boost transaction.");
+        }
+
+        var boosted = await _postService.BoostAsync(guid, actorProfile);
+        if (!boosted)
+        {
+            _logger.LogError("Could not complete boost reaction to boost post '{guid}' by booster '{_actorId}'.", guid, _actorId);
+            return BadRequest("Could not boost the post.");
+        }
+
+        var notificationSent = await _notificationService.SendBoostNotification(_actorId, guid, existingPost);
+        if (!notificationSent)
+        {
+            _logger.LogWarning("Failed to send boost notification on post '{guid}' by user {_actorId}", guid, _actorId);
         }
         return Ok(await _postService.GetByIdAsync(guid));
     }

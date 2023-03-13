@@ -17,4 +17,5 @@ public interface IPostRepository
     public Task<int> GetReceivedPostsCountAsync(string oid);
     Task<bool> ReactAsync(int type, string guid, string actorId);
     Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
+    Task<bool> BoostAsync(string guid, string actorId);
 }

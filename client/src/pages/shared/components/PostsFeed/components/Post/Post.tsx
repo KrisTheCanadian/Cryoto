@@ -26,6 +26,7 @@ import IComment from '@/data/api/types/IComment';
 import PreviewCommentSection from '@/pages/HomePage/components/Comments/Components/PreviewCommentSection';
 import {IUser} from '@/data/api/types';
 import {getUserById} from '@/data/api/requests/admin';
+import {BoostButton} from '@/pages/HomePage/components/BoostButton';
 
 interface PostProps {
   name: string | undefined;
@@ -45,6 +46,7 @@ interface PostProps {
   claps: string[];
   celebrations: string[];
   comments: IComment[];
+  boosts: string[];
 }
 
 function Post(props: PostProps) {
@@ -67,6 +69,7 @@ function Post(props: PostProps) {
     hearts,
     claps,
     celebrations,
+    boosts,
   } = props;
   if (loading) {
     return <LoadingPostSkeleton />;
@@ -401,12 +404,27 @@ function Post(props: PostProps) {
             style={{marginBottom: theme.spacing(1)}}
           />
         ) : null}
-        <LikeButtons data-testid="like-button"
-          id={id}
-          hearts={hearts}
-          claps={claps}
-          celebrations={celebrations}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <LikeButtons
+            data-testid="like-button"
+            id={id}
+            hearts={hearts}
+            claps={claps}
+            celebrations={celebrations}
+          />
+          <Box sx={{ml: theme.spacing(2)}}>
+            <BoostButton
+              data-testid="postboostbutton"
+              id={id}
+              boosts={boosts}
+            />
+          </Box>
+        </Box>
         <Divider sx={{my: theme.spacing(1)}} />
         <NewComment name={props.name} oId={props.oId} postid={props.id} />
         <PreviewCommentSection data-testid="preview-comments"

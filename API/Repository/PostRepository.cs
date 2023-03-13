@@ -211,4 +211,20 @@ public class PostRepository : IPostRepository
             ? post.Hearts.Where(x => !x.Equals(actorId)).ToArray()
             : post.Hearts.Append(actorId).ToArray();
     }
+    
+    public async Task<bool> BoostAsync(string guid, string actorId)
+    {
+        var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
+        if (post == null) return false;
+        if (post.Boosts.Contains(actorId))
+        {
+            return false;
+        }
+
+        post.Boosts = post.Boosts.Append(actorId).ToArray();
+
+        Context.Posts.Update(post);
+
+        return await Context.SaveChangesAsync() > 0;
+    }
 }

@@ -1,5 +1,6 @@
 using API.Models.Comments;
 using API.Models.Posts;
+using API.Models.Users;
 using API.Utils;
 
 namespace API.Services.Interfaces;
@@ -16,4 +17,5 @@ public interface IPostService
     public Task<IEnumerable<PostModel>> GetAllAsync();
     Task<bool> ReactAsync(int type, string guid, string actorId);
     Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
+    Task<bool> BoostAsync(string guid, UserProfileModel userProfile);
 }

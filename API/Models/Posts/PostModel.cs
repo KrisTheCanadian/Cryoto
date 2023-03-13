@@ -33,6 +33,8 @@ public class PostModel
     public string[] UsersWhoReacted { get; set; }
     
     public string[] CommentIds { get; set; }
+    
+    public string[] Boosts { get; set; }
 
     [NotMapped] public IEnumerable<UserProfileModel> RecipientProfiles { get; set; }
     [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
@@ -66,6 +68,8 @@ public class PostModel
         
         CommentIds = Array.Empty<string>();
         Comments = new List<CommentModel>();
+        
+        Boosts = Array.Empty<string>();
     }
 
 
@@ -96,6 +100,8 @@ public class PostModel
         
         CommentIds = Array.Empty<string>();
         Comments = new List<CommentModel>();
+        
+        Boosts = Array.Empty<string>();
     }
     public PostModel(PostCreateModel postCreateModel, string actor)
     {
@@ -122,6 +128,8 @@ public class PostModel
         
         CommentIds = Array.Empty<string>();
         Comments = new List<CommentModel>();
+        
+        Boosts = Array.Empty<string>();
     }
 
     public PostModel(PostUpdateModel postUpdateModel, string actor)
@@ -148,5 +156,7 @@ public class PostModel
         
         CommentIds = postUpdateModel.CommentIds;
         Comments = new List<CommentModel>();
+        
+        Boosts = postUpdateModel.Boosts;
     }
 }

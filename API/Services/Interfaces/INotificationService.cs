@@ -16,4 +16,5 @@ public interface INotificationService
     Task<PaginationWrapper<Notification>> GetNotificationsPaginatedAsync(string actorId, int page, int pageSize);
     public Task<bool> SendReactionNotification(string actorId, string guid, int type, PostModel post);
     public Task<bool> SendCommentNotification(string actorId, string postId, PostModel post);
+    public Task<bool> SendBoostNotification(string actorId, string guid, PostModel post);
 }

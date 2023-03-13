@@ -40,10 +40,6 @@ public class CryptoControllerTests
         var amount = A.Dummy<double>();
         A.CallTo(() => _cryptoService.SendTokens(amount, A<string>._, A<string>._))!
             .Returns(rpcTransactionResult);
-        A.CallTo(() => _cryptoService.UpdateTokenBalance((-amount), senderOId, "toAward"))
-            .Returns(true);
-        A.CallTo(() => _cryptoService.UpdateTokenBalance(amount, receiverOId, "toSpend"))
-            .Returns(true);
 
         //Act
         var actionResult = await _controller.PostTransaction(amount, receiverOId);
@@ -53,8 +49,6 @@ public class CryptoControllerTests
         //Assert
         A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
             .MustHaveHappenedOnceExactly();
-        A.CallTo(() => _cryptoService.UpdateTokenBalance(A<double>._, A<string>._, A<string>._))
-            .MustHaveHappenedTwiceExactly();
 
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType<OkObjectResult>();

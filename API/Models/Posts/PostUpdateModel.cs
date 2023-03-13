@@ -26,6 +26,8 @@ public class PostUpdateModel
     public string[] UsersWhoReacted { get; set; }
     
     public string[] CommentIds { get; set; }
+    
+    public string[] Boosts { get; set; }
 
     public PostUpdateModel(string id, string message, string[] recipients, string[] tags, DateTimeOffset createdDate,
         string postType, bool isTransactable, ulong coins = 0, string imageUrl = "")
@@ -46,5 +48,7 @@ public class PostUpdateModel
         Celebrations = Array.Empty<string>();
         UsersWhoReacted = Array.Empty<string>();
         CommentIds = Array.Empty<string>();
+        
+        Boosts = Array.Empty<string>();
     }
 }

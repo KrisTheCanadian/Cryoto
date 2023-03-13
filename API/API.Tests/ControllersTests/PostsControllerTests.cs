@@ -394,6 +394,127 @@ public class PostsControllerTests
         Assert.Equal(objectResult?.Value, post);
     }
     
+    [Fact]
+    public async void Boost_SuccessfulBoost()
+    {
+        // Arrange
+        var existingPost = new PostModel("authorId", "message", new []{"rec1", "rec2"}, new []{"tag"}, DateTimeOffset.UtcNow);
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"role"});
+        
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._)).Returns(actorProfile);
+        A.CallTo(() => _cryptoService.BoostRecognition(A<string>._, A<List<string>>._)).Returns(true);
+        A.CallTo(() => _postService.BoostAsync(A<string>._, A<UserProfileModel>._)).Returns(true);
+        A.CallTo(() => _notificationService.SendBoostNotification(A<string>._, A<string>._, A<PostModel>._)).Returns(true);
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.Boost("guid");
+        var objectResult = actionResult.Result as OkObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        objectResult?.Value.Should().BeOfType(typeof(PostModel));
+        Assert.Equal(objectResult?.Value, existingPost);
+    }
+    
+    [Fact]
+    public async void Boost_NonExistingPost_ReturnsBadRequest()
+    {
+        // Arrange
+        PostModel? existingPost = null;
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"role"});
+        
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._)).Returns(actorProfile);
+        A.CallTo(() => _cryptoService.BoostRecognition(A<string>._, A<List<string>>._)).Returns(true);
+        A.CallTo(() => _postService.BoostAsync(A<string>._, A<UserProfileModel>._)).Returns(true);
+        A.CallTo(() => _notificationService.SendBoostNotification(A<string>._, A<string>._, A<PostModel>._)).Returns(true);
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.Boost("guid");
+        var objectResult = actionResult.Result as BadRequestObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+        Assert.Equal("Cannot boost to the post because it does not exist.", objectResult!.Value);
+    }
+    
+    [Fact]
+    public async void Boost_NonExistingUser_ReturnsBadRequest()
+    {
+        // Arrange
+        var existingPost = new PostModel("authorId", "message", new []{"rec1", "rec2"}, new []{"tag"}, DateTimeOffset.UtcNow);
+        UserProfileModel? actorProfile = null;
+
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._)).Returns(actorProfile);
+        A.CallTo(() => _cryptoService.BoostRecognition(A<string>._, A<List<string>>._)).Returns(true);
+        A.CallTo(() => _postService.BoostAsync(A<string>._, A<UserProfileModel>._)).Returns(true);
+        A.CallTo(() => _notificationService.SendBoostNotification(A<string>._, A<string>._, A<PostModel>._)).Returns(true);
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.Boost("guid");
+        var objectResult = actionResult.Result as BadRequestObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+        Assert.Equal("Cannot boost the post because user does not exist.", objectResult!.Value);
+    }
+    
+    [Fact]
+    public async void Boost_FailedTransaction_ReturnsBadRequest()
+    {
+        // Arrange
+        var existingPost = new PostModel("authorId", "message", new []{"rec1", "rec2"}, new []{"tag"}, DateTimeOffset.UtcNow);
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"role"});
+
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._)).Returns(actorProfile);
+        A.CallTo(() => _cryptoService.BoostRecognition(A<string>._, A<List<string>>._)).Returns(false);
+        A.CallTo(() => _postService.BoostAsync(A<string>._, A<UserProfileModel>._)).Returns(true);
+        A.CallTo(() => _notificationService.SendBoostNotification(A<string>._, A<string>._, A<PostModel>._)).Returns(true);
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.Boost("guid");
+        var objectResult = actionResult.Result as BadRequestObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+        Assert.Equal("Could not complete boost transaction.", objectResult!.Value);
+    }
+    
+    [Fact]
+    public async void Boost_ReturnsBadRequest()
+    {
+        // Arrange
+        var existingPost = new PostModel("authorId", "message", new []{"rec1", "rec2"}, new []{"tag"}, DateTimeOffset.UtcNow);
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"role"});
+
+        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
+        A.CallTo(() => _userProfileService.GetUserByIdAsync(A<string>._)).Returns(actorProfile);
+        A.CallTo(() => _cryptoService.BoostRecognition(A<string>._, A<List<string>>._)).Returns(true);
+        A.CallTo(() => _postService.BoostAsync(A<string>._, A<UserProfileModel>._)).Returns(false);
+        A.CallTo(() => _notificationService.SendBoostNotification(A<string>._, A<string>._, A<PostModel>._)).Returns(true);
+        var mockController = GetControllerWithIodContext(A.Dummy<string>());
+        
+        // Act
+        var actionResult = await mockController.Boost("guid");
+        var objectResult = actionResult.Result as BadRequestObjectResult;
+        
+        // Assert
+        objectResult.Should().NotBeNull();
+        objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
+        Assert.Equal("Could not boost the post.", objectResult!.Value);
+    }
+    
     private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()
     {
         var rpcTransactionResult = new RpcTransactionResult

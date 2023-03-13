@@ -243,4 +243,50 @@ public class NotificationService : INotificationService
 
         return true;
     }
+    
+    public async Task<bool> SendBoostNotification(string actorId, string postId, PostModel post)
+    {
+        var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
+        // Send Notification to Post Author
+        if (post.Author != actorId)
+        {
+            // public Notification(string senderId, string receiverId, string message, string type, double amount)
+            var notification = new Notification(
+                actorId,
+                post.Author,
+                $"{actorProfile!.Name} boosted your post.",
+                "Boost",
+                null
+            );
+    
+            await SendNotificationAsync(notification);
+    
+            // send email notification
+            if (post.AuthorProfile!.EmailNotifications)
+                await SendEmailAsync(post.Author, "New Boost",
+                    $"<h1>{actorProfile!.Name} boosted your post.</h1>");
+        }
+    
+        foreach (var postRecipient in post.RecipientProfiles)
+            if (postRecipient.OId != actorId)
+            {
+                // Send Notification to Post Recipients
+                // public Notification(string senderId, string receiverId, string message, string type, double amount)
+                var notificationToPostRecipient = new Notification(
+                    actorId,
+                    postRecipient.OId,
+                    $"{actorProfile!.Name} boosted a post you are recognized in.",
+                    "Boost",
+                    null
+                );
+    
+                await SendNotificationAsync(notificationToPostRecipient);
+    
+                // send email notification
+                if (postRecipient!.EmailNotifications)
+                    await SendEmailAsync(postRecipient.OId, "New Boost",
+                        $"<h1>{actorProfile!.Name} boosted a post you are recognized in.</h1>");
+            }
+        return true;
+    }
 }

@@ -127,6 +127,7 @@ export const englishTranslations = {
       WelcomeTransfer: 'Welcome Transfer',
       MarketPlacePurchase: 'Marketplace Purchase',
       AnniversaryGift: 'Anniversary Tokens Gift',
+      boost: 'Boost',
     },
     creditCard: {
       Balance: 'Balance',

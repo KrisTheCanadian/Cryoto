@@ -20,6 +20,7 @@ export const apiRoutePostsUpdatePost = `${apiRoutePosts}/Update`;
 export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
 export const apiRoutePostsReactPost = `${apiRoutePosts}/React`;
 export const apiRoutePostsCommentOnPost = `${apiRoutePosts}/CommentOnPost`;
+export const apiRoutePostsBoostPost = `${apiRoutePosts}/Boost`;
 
 // UserProfile
 export const apiRouteUserProfile = `${apiEndpoint}userProfile`;

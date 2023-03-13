@@ -3,6 +3,7 @@ import axios, {AxiosError} from 'axios';
 import {getAccessToken, getUserId} from '../helpers';
 import {
   apiEndpoint,
+  apiRoutePostsBoostPost,
   apiRoutePostsCommentOnPost,
   apiRoutePostsCreatePost,
   apiRoutePostsGetUserFeed,
@@ -123,10 +124,31 @@ async function commentOnPost(
   return response.data;
 }
 
+async function boostPost(postId: string): Promise<IPost | AxiosError> {
+  const accessToken = await getAccessToken();
+  const url = `${apiRoutePostsBoostPost}?guid=${postId}`;
+
+  const response = await axios.post<IPost>(
+    url,
+    {},
+    {
+      // add CORS headers to request
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+        'Access-Control-Allow-Origin': `${apiEndpoint}`,
+      },
+    },
+  );
+
+  return response.data;
+}
+
 export {
   commentOnPost,
   getNextPage,
   createPost,
   getNextPageUserProfile,
   reactPost,
+  boostPost,
 };

@@ -26,4 +26,5 @@ public interface ICryptoService
     public Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid);
     public Task<bool> SendAnniversaryTokenByOId(string oid);
     public void QueueAnniversaryBonus(List<List<string>> message);
+    public Task<bool> BoostRecognition(string senderId, List<string> recipientIds);
 }

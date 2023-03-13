@@ -9,18 +9,21 @@ interface EmojiContainerProps {
   type: number;
   emoji: ReactNode;
   likes: string[];
+  enabled: boolean;
   handleReactionClick: (type: number) => Promise<boolean | undefined>;
 }
 
 function EmojiContainer(props: EmojiContainerProps) {
-  const {type, emoji, likes, handleReactionClick} = props;
+  const {type, emoji, likes, enabled, handleReactionClick} = props;
   const {accounts} = useMsal();
   const theme = useTheme();
   const [showEmojiAnimation, setShowEmojiAnimation] = useState(false);
   const isLiked = likes.includes(accounts[0].localAccountId);
 
   const handleClick = async () => {
-    const isRemoved = await handleReactionClick(type);
+    if (enabled) {
+      const isRemoved = await handleReactionClick(type);
+    }
   };
 
   const isMounted = useRef(false);
@@ -61,7 +64,7 @@ function EmojiContainer(props: EmojiContainerProps) {
     paddingRight: theme.spacing(1),
     alignItems: 'center',
     height: '30px',
-    cursor: 'pointer',
+    cursor: enabled ? 'pointer' : 'default',
     marginRight: theme.spacing(0.5),
   };
   const emojiStyles = {
@@ -101,12 +104,18 @@ function EmojiContainer(props: EmojiContainerProps) {
 
   return (
     <AnimatePresence mode="sync">
-      <Box sx={{height: '40px', display: 'flex', alignItems: 'center'}}>
+      <Box
+        sx={{
+          height: '40px',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
         <Box
-          key={`reaction-${type}-{id}-{text}`}
+          key={`${type < 0 ? 'boost' : `reaction-${type}`}-{id}-{text}`}
           component={motion.div}
-          whileHover={{scale: 1.2}}
-          whileTap={{scale: 0.9}}
+          whileHover={{scale: enabled ? 1.2 : 1}}
+          whileTap={{scale: enabled ? 0.9 : 1}}
           onClick={handleClick}
           sx={emojiContainerStyles}
           layout

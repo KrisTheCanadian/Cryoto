@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace API.Migrations
 {
+    [ExcludeFromCodeCoverage]
     public partial class Added_AddressModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

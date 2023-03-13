@@ -10,7 +10,7 @@ import {useMsal} from '@azure/msal-react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {useAlertContext} from '@shared/hooks/Alerts';
 
-import {EmojiContainer} from './components';
+import {EmojiContainer} from '../shared/EmojiContainer';
 
 import {reactPost} from '@/data/api/requests/posts';
 
@@ -261,6 +261,7 @@ function LikeButtons(props: ILikeButtonsProps) {
             likes={heartsCount}
             type={0}
             emoji={<>&#x1F49C;</>}
+            enabled
             handleReactionClick={handleReactionClick}
           />
 
@@ -268,12 +269,14 @@ function LikeButtons(props: ILikeButtonsProps) {
             likes={clapsCount}
             type={1}
             emoji={<>&#x1f44f;</>}
+            enabled
             handleReactionClick={handleReactionClick}
           />
           <EmojiContainer
             likes={celebrationsCount}
             type={2}
             emoji={<>&#x1f389;</>}
+            enabled
             handleReactionClick={handleReactionClick}
           />
         </Box>

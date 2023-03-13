@@ -51,7 +51,7 @@ public class UserProfileServicesTests
         //Assert
         actionResult.Should().NotBeNull();
         actionResult.Should().BeOfType(typeof(List<UserProfileModel>));
-        actionResult[0].OId.Should().Be(userProfileModelList.Result[0].OId);
+        actionResult?[0].OId.Should().Be(userProfileModelList.Result[0].OId);
     }
 
     [Fact]
@@ -74,7 +74,6 @@ public class UserProfileServicesTests
     public async void UserProfileService_UpdateAsync_ReturnsTrue()
     {
         //Arrange
-        var userProfileModelList = GetUserProfileModelList();
         var updatedUserProfile = new UserProfileModel("oid1", "name3", "email3", "lang3", new[] { "role3", "role4" });
         A.CallTo(() => _context.UpdateAsync(A<UserProfileModel>._)).Returns(Task.FromResult(true));
         A.CallTo(() => _context.GetUserByIdAsync(A<string>._)).Returns(updatedUserProfile);

@@ -130,6 +130,7 @@ export const frenchTranslations = {
       WelcomeTransfer: 'Transfert de bienvenue',
       MarketPlacePurchase: 'Achats en ligne',
       AnniversaryGift: "Transfer d'anniversaire",
+      boost: 'Boost',
     },
     creditCard: {
       Balance: 'Solde',
