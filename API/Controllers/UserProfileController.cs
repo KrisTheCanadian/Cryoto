@@ -17,7 +17,6 @@ public class UserProfileController : ControllerBase
     private readonly string _oId;
     private readonly IUserProfileService _userProfileService;
 
-
     public UserProfileController(IUserProfileService userProfileService, IHttpContextAccessor contextAccessor)
     {
         _userProfileService = userProfileService;
@@ -38,17 +37,18 @@ public class UserProfileController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin")]
     [Route("Admin/[controller]/[action]")]
-    public async Task<ActionResult<List<UserProfileModel>>> GetAllUsers()
+    public async Task<ActionResult<List<UserRolesModel>>> GetAllUsersRoles([FromHeader] string msGraphAccessToken)
     {
-        return Ok(await _userProfileService.GetAllUsersService());
+        return Ok(await _userProfileService.GetAllUsersRolesServiceAsync(msGraphAccessToken));
     }
 
     [HttpPut]
     [Authorize(Roles = "Admin")]
     [Route("Admin/[controller]/[action]")]
-    public async Task<ActionResult<bool>> UpdateUserRoles(string[] roles, string oId)
+    public async Task<ActionResult<bool>> UpdateUserRoles([FromHeader] string msGraphAccessToken, string[] roles,
+        string oId)
     {
-        return Ok(await _userProfileService.UpdateUserRolesService(oId, roles));
+        return Ok(await _userProfileService.UpdateUserRolesService(msGraphAccessToken, oId, roles));
     }
 
     [HttpGet]

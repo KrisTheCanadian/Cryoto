@@ -28,5 +28,11 @@ export const graphRequest = {
     'https://graph.microsoft.com/User.ReadWrite.All',
     'https://graph.microsoft.com/User.Read',
     'https://graph.microsoft.com/User.ReadWrite',
+    'https://graph.microsoft.com/Application.Read.All',
+    'https://graph.microsoft.com/AppRoleAssignment.ReadWrite.All',
+    'https://graph.microsoft.com/Directory.Read.All',
+    'https://graph.microsoft.com/Directory.ReadWrite.All',
+    'https://graph.microsoft.com/RoleManagement.Read.Directory',
+    'https://graph.microsoft.com/RoleManagement.ReadWrite.Directory',
   ],
 };

@@ -10,14 +10,18 @@ namespace API.Services;
 
 public class UserProfileService : IUserProfileService
 {
-    private readonly HttpClient _client = new HttpClient();
+    private readonly HttpClient _client = new();
     private readonly IUserProfileRepository _context;
     private readonly IPostRepository _postContext;
+    private readonly IMsGraphApiService _msGraphApiService;
 
-    public UserProfileService(IUserProfileRepository context, IPostRepository postContext)
+
+    public UserProfileService(IUserProfileRepository context, IPostRepository postContext,
+        IMsGraphApiService msGraphApiService)
     {
         _context = context;
         _postContext = postContext;
+        _msGraphApiService = msGraphApiService;
     }
 
     [ExcludeFromCodeCoverage]
@@ -84,18 +88,6 @@ public class UserProfileService : IUserProfileService
         return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
-    public async Task<List<UserProfileModel>> GetAllUsersService()
-    {
-        return await _context.GetAllUsersAsync();
-    }
-
-    public async Task<bool> UpdateUserRolesService(string oid, string[] roles)
-    {
-        var userProfileModel = await _context.GetUserByIdAsync(oid);
-        userProfileModel!.Roles = roles;
-        return await _context.UpdateUserProfile(userProfileModel) > 0;
-    }
-
     public async Task<List<UserProfileModel>?> GetSearchResultServiceAsync(string? keywords, string oid)
     {
         return await _context.GetSearchResultAsync(keywords, oid);
@@ -124,6 +116,54 @@ public class UserProfileService : IUserProfileService
     public List<TopRecognizers> GetTopRecognizers()
     {
         return _context.GetTopRecognizers();
+    }
+
+    public async Task<bool> UpdateUserRolesService(string msGraphAccessToken, string oid, string[] newRoles)
+    {
+        var userProfileModel = await GetUserByIdAsync(oid);
+        var userRolesDb = userProfileModel!.Roles;
+        var rolesToBeDeleted = userRolesDb.Except(newRoles).ToArray();
+        var rolesToBeAdded = newRoles.Except(userRolesDb).ToArray();
+        var removedRolesSuccessfully = false;
+        var addedRolesSuccessfully = false;
+
+        if (rolesToBeAdded.Length > 0)
+            addedRolesSuccessfully =
+                await _msGraphApiService.AddRolesAzureAsync(msGraphAccessToken, oid, rolesToBeAdded);
+        if (rolesToBeDeleted.Length > 0)
+            removedRolesSuccessfully =
+                await _msGraphApiService.RemoveRolesAzureAsync(msGraphAccessToken, oid, rolesToBeDeleted);
+
+        var successResponses = (rolesToBeAdded.Length > 0 && addedRolesSuccessfully) ||
+                               (rolesToBeDeleted.Length > 0 && removedRolesSuccessfully);
+        if (!successResponses) return successResponses;
+
+        userProfileModel.Roles = newRoles;
+        // This is used as a cache to store the user role in the DB for faster retrieve.
+        await _context.UpdateUserProfile(userProfileModel);
+
+        return successResponses;
+    }
+
+    public async Task<List<UserRolesModel>> GetAllUsersRolesDbServiceAsync()
+    {
+        var allUsersProfileModelList = await _context.GetAllUsersAsync();
+
+        return allUsersProfileModelList
+            .Select(user => new UserRolesModel(user.OId, user.Name, new List<string>(user.Roles))).ToList();
+    }
+
+    public async Task<List<UserRolesModel>> GetAllUsersRolesServiceAsync(string msGraphAccessToken)
+    {
+        List<UserRolesModel> userRolesModelList = new();
+        var allUsersProfileModelList = await _context.GetAllUsersAsync();
+        foreach (var user in allUsersProfileModelList)
+        {
+            var userRoles = await _msGraphApiService.GetAzureUserRolesAsync(msGraphAccessToken, user.OId);
+            userRolesModelList.Add(new UserRolesModel(user.OId, user.Name, userRoles));
+        }
+
+        return userRolesModelList;
     }
 
     private static DateTime FakeStartDate()

@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
 import {
@@ -14,6 +13,8 @@ import {
   Paper,
   IconButton,
   Modal,
+  CircularProgress,
+  Backdrop,
 } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {useTheme} from '@mui/material/styles';
@@ -25,10 +26,10 @@ import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
 
 import {TableToolbar} from './TableToolbar';
-import {EditUserModal} from './EditUserModal';
+import {EditUserRolesModal} from './EditUserRolesModal';
 
-import {IUser} from '@/data/api/types';
-import {getAllUsers} from '@/data/api/requests/admin';
+import {getAllUsersRoles} from '@/data/api/requests/admin';
+import IUserRoles from '@/data/api/types/IUserRoles';
 
 interface HeadCell {
   disablePadding: boolean;
@@ -41,7 +42,7 @@ interface HeadCell {
 interface EnhancedTableProps {
   onRequestSort: (
     event: React.MouseEvent<unknown>,
-    property: keyof IUser,
+    property: keyof IUserRoles,
   ) => void;
   order: Order;
   orderBy: string;
@@ -124,7 +125,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const {order, orderBy, onRequestSort} = props;
 
   const createSortHandler =
-    (property: keyof IUser) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof IUserRoles) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
   return (
@@ -158,18 +159,21 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 export default function TransactionTable() {
   const [order, setOrder] = useState<Order>('desc');
-  const [orderBy, setOrderBy] = useState<keyof IUser>('oId');
+  const [orderBy, setOrderBy] = useState<keyof IUserRoles>('oId');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<IUser[]>([]);
-  const [filteredRows, setFilteredRows] = useState<IUser[]>([]);
+  const [rows, setRows] = useState<IUserRoles[]>([]);
+  const [filteredRows, setFilteredRows] = useState<IUserRoles[]>([]);
   const theme = useTheme();
   const {t, i18n} = useTranslation();
   const lang = i18n.language.substring(0, 2);
 
   // modal window for editing user
   const [modalEditOpen, setModalEditOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser>({} as IUser);
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUserRoles>(
+    {} as IUserRoles,
+  );
   const closeEditUser = () => {
     setModalEditOpen(false);
   };
@@ -211,12 +215,16 @@ export default function TransactionTable() {
   };
 
   const retrieveUsers = () => {
-    getAllUsers()
-      .then((data: IUser[]) => {
+    setIsLoading(true);
+    getAllUsersRoles()
+      .then((data: IUserRoles[]) => {
         setFilteredRows(data);
         setRows(data);
+        setIsLoading(false);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -225,7 +233,7 @@ export default function TransactionTable() {
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof IUser,
+    property: keyof IUserRoles,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -237,7 +245,7 @@ export default function TransactionTable() {
   };
 
   // this handles the click to click a row
-  const openEditUser = (event: React.MouseEvent<unknown>, user: IUser) => {
+  const openEditUser = (event: React.MouseEvent<unknown>, user: IUserRoles) => {
     setModalEditOpen(true);
     setSelectedUser(user);
   };
@@ -273,7 +281,7 @@ export default function TransactionTable() {
         }}
       >
         <TableToolbar onSearch={handleSearch} />
-        <TableContainer>
+        <TableContainer style={{position: 'relative'}}>
           <Table
             sx={{minWidth: 600}}
             aria-labelledby="tableTitle"
@@ -353,6 +361,16 @@ export default function TransactionTable() {
                 </TableRow>
               )}
             </TableBody>
+            {isLoading && (
+              <Backdrop
+                data-testid="Backdrop"
+                sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}
+                style={{position: 'absolute'}}
+                open
+              >
+                <CircularProgress data-testid="CircularProgress" size="2rem" />
+              </Backdrop>
+            )}
           </Table>
         </TableContainer>
         <TablePagination
@@ -380,7 +398,7 @@ export default function TransactionTable() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={modalStyle}>
-          <EditUserModal
+          <EditUserRolesModal
             handleClose={closeEditUser}
             selectedUser={selectedUser}
             retrieveUsers={retrieveUsers}

@@ -15,15 +15,15 @@ import {useTranslation} from 'react-i18next';
 
 import Role from '@/pages/roles';
 import {updateUserRoles} from '@/data/api/requests/admin';
-import {IUser} from '@/data/api/types';
+import IUserRoles from '@/data/api/types/IUserRoles';
 
 interface Props {
   handleClose: () => void;
-  selectedUser: IUser;
+  selectedUser: IUserRoles;
   retrieveUsers: () => void;
 }
 
-export const EditUserModal = ({
+export const EditUserRolesModal = ({
   handleClose,
   selectedUser,
   retrieveUsers,

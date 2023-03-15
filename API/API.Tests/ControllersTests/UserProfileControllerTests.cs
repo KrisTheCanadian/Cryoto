@@ -61,22 +61,22 @@ public class UserProfileControllerTests
     }
 
     [Fact]
-    public async void UserProfileController_GetAllUsers_ReturnsOK()
+    public async void UserProfileController_GetAllUsersRoles_ReturnsOK()
     {
         //Arrange
-        var userProfileModelList = GetUserProfileModelList();
-        A.CallTo(() => _userProfileService.GetAllUsersService()).Returns(userProfileModelList);
+        var userRolesModelList = GetUserRolesModelList();
+        A.CallTo(() => _userProfileService.GetAllUsersRolesServiceAsync(A<string>._)).Returns(userRolesModelList);
 
         //Act
-        var actionResult = await _controller.GetAllUsers();
+        var actionResult = await _controller.GetAllUsersRoles("token");
         var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as List<UserProfileModel>;
+        var objectResultValue = objectResult?.Value as List<UserRolesModel>;
 
         //Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
         objectResultValue.Should().HaveCount(2);
-        objectResultValue?[0].OId.Should().Be(userProfileModelList.Result[0].OId);
+        objectResultValue?[0].OId.Should().Be(userRolesModelList.Result[0].OId);
     }
 
 
@@ -302,10 +302,11 @@ public class UserProfileControllerTests
     public async void UserProfileController_Update_ReturnsOK()
     {
         //Arrange
-        A.CallTo(() => _userProfileService.UpdateUserRolesService(A<string>._, A<string[]>._)).Returns(true);
+        A.CallTo(() => _userProfileService.UpdateUserRolesService(A<string>._, A<string>._, A<string[]>._))
+            .Returns(true);
 
         //Act
-        var actionResult = await _controller.UpdateUserRoles(new[] { "role3", "role4" }, "oid");
+        var actionResult = await _controller.UpdateUserRoles("token", new[] { "role3", "role4" }, "oid");
         var objectResult = actionResult.Result as ObjectResult;
 
         //Assert
@@ -321,6 +322,18 @@ public class UserProfileControllerTests
         {
             new("oid1", "name1", "email1", "en1", roles1),
             new("oid2", "name2", "email2", "en2", roles2)
+        };
+        return Task.FromResult(userProfileModelList);
+    }
+
+    private static Task<List<UserRolesModel>> GetUserRolesModelList()
+    {
+        var roles1 = new List<string> { "roles1" };
+        var roles2 = new List<string> { "roles1" };
+        var userProfileModelList = new List<UserRolesModel>
+        {
+            new("oid1", "name1", roles1),
+            new("oid2", "name2", roles2)
         };
         return Task.FromResult(userProfileModelList);
     }

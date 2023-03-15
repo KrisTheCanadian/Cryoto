@@ -3,12 +3,12 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  apiRouteAdminUserProfileGetAllUsers,
+  apiRouteAdminUserProfileGetAllUsersRoles,
   apiRouteAdminUserProfileGetUserByID,
   apiRouteAdminUserProfileUpdateUserRoles,
 } from '../routes';
 
-import {getAllUsers, getUserById, updateUserRoles} from './admin';
+import {getAllUsersRoles, getUserById, updateUserRoles} from './admin';
 
 const mock = new MockAdapter(axios);
 
@@ -17,20 +17,23 @@ jest.mock('../helpers', () => {
     getAccessToken: jest.fn(() => {
       return 'access_token';
     }),
+    getGraphAccessToken: jest.fn(() => {
+      return 'graph_access_token';
+    }),
     getUserId: jest.fn(() => {
       return 'homeAccountId';
     }),
   };
 });
 
-it('getAllUsers returns success', async () => {
+it('getAllUsersRoles returns success', async () => {
   const data: any = [];
 
-  const url = `${apiRouteAdminUserProfileGetAllUsers}`;
+  const url = `${apiRouteAdminUserProfileGetAllUsersRoles}`;
 
   mock.onGet(url).reply(200, data);
 
-  const res = await getAllUsers();
+  const res = await getAllUsersRoles();
   expect(res).toEqual(data);
 });
 

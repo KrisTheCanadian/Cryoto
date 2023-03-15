@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Services;
+using API.Services.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
 using Xunit;
@@ -13,28 +14,30 @@ public class UserProfileServicesTests
 {
     private readonly IUserProfileRepository _context;
     private readonly UserProfileService _controller;
+    private readonly IMsGraphApiService _msGraphApiService;
 
 
     public UserProfileServicesTests()
     {
         _context = A.Fake<IUserProfileRepository>();
         var postContext = A.Fake<IPostRepository>();
-        _controller = new UserProfileService(_context, postContext);
+        _msGraphApiService = A.Fake<IMsGraphApiService>();
+        _controller = new UserProfileService(_context, postContext, _msGraphApiService);
     }
 
     [Fact]
-    public async void UserProfileService_GetAllUsersService_ReturnsUserProfileModelList()
+    public async void UserProfileService_GetAllUsersRolesDbServiceAsync_ReturnsUserProfileModelList()
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
         A.CallTo(() => _context.GetAllUsersAsync()).Returns(userProfileModelList);
 
         //Act
-        var actionResult = await _controller.GetAllUsersService();
+        var actionResult = await _controller.GetAllUsersRolesDbServiceAsync();
 
         //Assert
         actionResult.Should().NotBeNull();
-        actionResult.Should().BeOfType(typeof(List<UserProfileModel>));
+        actionResult.Should().BeOfType(typeof(List<UserRolesModel>));
         actionResult[0].OId.Should().Be(userProfileModelList.Result[0].OId);
     }
 
@@ -93,18 +96,48 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_UpdateUserRolesService_ReturnsTrue()
+    public async Task UserProfileService_UpdateUserRolesService_ReturnsTrue()
     {
-        //Arrange
-        var userProfileModelList = GetUserProfileModelList();
-        A.CallTo(() => _context.GetUserByIdAsync(A<string>._)).Returns(userProfileModelList.Result[0]);
+        // Arrange
+        const string msGraphAccessToken = "testToken";
+        const string oid = "testOid";
+        var newRoles = new[] { "role1", "role2" };
+        var updatedRoles = new[] { "role1", "role2" };
+        var userList = await GetUserProfileModelList();
+        var userProfileModel = userList[0];
+
+        A.CallTo(() => _context.GetUserByIdAsync(oid)).Returns(userProfileModel);
+        A.CallTo(() => _msGraphApiService.AddRolesAzureAsync(A<string>._, A<string>._, A<string[]>._)).Returns(true);
+        A.CallTo(() => _msGraphApiService.RemoveRolesAzureAsync(A<string>._, A<string>._, A<string[]>._)).Returns(true);
         A.CallTo(() => _context.UpdateUserProfile(A<UserProfileModel>._)).Returns(1);
 
-        //Act
-        var actionResult = await _controller.UpdateUserRolesService("oid", new[] { "role3", "role4" });
+        // Act
+        var result = await _controller.UpdateUserRolesService(msGraphAccessToken, oid, newRoles);
+
+        // Assert
+        result.Should().BeTrue();
+        userProfileModel.Roles.Should().BeEquivalentTo(updatedRoles);
+    }
+
+    [Fact]
+    public async Task UserProfileService_GetAllUsersRolesServiceAsync_ReturnsTrue()
+    {
+        // Arrange
+        const string msGraphAccessToken = "testToken";
+        var userRolesModelList = GetUserRolesModelList();
+        var userList = await GetUserProfileModelList();
+
+        A.CallTo(() => _context.GetAllUsersAsync()).Returns(userList);
+        A.CallTo(() => _msGraphApiService.GetAzureUserRolesAsync(A<string>._, A<string>._))
+            .Returns((List<string>?)null!);
+
+        // Act
+        var actionResult = await _controller.GetAllUsersRolesServiceAsync(msGraphAccessToken);
 
         //Assert
-        actionResult.Should().BeTrue();
+        actionResult.Should().NotBeNull();
+        actionResult.Should().BeOfType(typeof(List<UserRolesModel>));
+        actionResult[0].OId.Should().Be(userRolesModelList[0].OId);
     }
 
     [Fact]
@@ -148,5 +181,17 @@ public class UserProfileServicesTests
             new("oid2", "name2", "email2", "en2", roles2)
         };
         return Task.FromResult(userProfileModelList);
+    }
+
+    private static List<UserRolesModel> GetUserRolesModelList()
+    {
+        var roles1 = new List<string> { "roles1" };
+        var roles2 = new List<string> { "roles1" };
+        var userProfileModelList = new List<UserRolesModel>
+        {
+            new("oid1", "name1", roles1),
+            new("oid2", "name2", roles2)
+        };
+        return userProfileModelList;
     }
 }

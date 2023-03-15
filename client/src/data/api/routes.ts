@@ -66,7 +66,7 @@ export const apiRouteMarketPlaceCompletePurchase = `${apiRouteMarketPlace}/Compl
 // Admin
 export const apiRouteAdmin = `${apiEndpoint}Admin`;
 export const apiRouteAdminUserProfile = `${apiRouteAdmin}/UserProfile`;
-export const apiRouteAdminUserProfileGetAllUsers = `${apiRouteAdminUserProfile}/GetAllUsers`;
+export const apiRouteAdminUserProfileGetAllUsersRoles = `${apiRouteAdminUserProfile}/GetAllUsersRoles`;
 export const apiRouteAdminUserProfileUpdateUserRoles = `${apiRouteAdminUserProfile}/UpdateUserRoles`;
 export const apiRouteAdminUserProfileGetUserByID = `${apiRouteAdminUserProfile}/GetUserById`;
 

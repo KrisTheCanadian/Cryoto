@@ -16,5 +16,7 @@
   "SolanaBalanceLowLimit":0.09,
   "SolanaTokenBalanceLowLimit":10000,
   "LowBalanceAdminEmail":"admin@kpmglhx.onmicrosoft.com",
-  "publicKey": "HgRdHMtBLZRfLjbjyq8d38LFx3fC2DbVgzjUbKx4VQ4Y"
+  "publicKey": "HgRdHMtBLZRfLjbjyq8d38LFx3fC2DbVgzjUbKx4VQ4Y",
+  "ObjectID": "44b13614-c89c-409a-9b13-dca5f468e06b",
+  "ResourceId": "29001a9c-030c-4568-9acf-5df587545d5f"
 }

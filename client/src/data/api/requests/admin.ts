@@ -2,20 +2,24 @@ import axios from 'axios';
 
 import {
   apiEndpoint,
-  apiRouteAdminUserProfileGetAllUsers,
+  apiRouteAdminUserProfileGetAllUsersRoles,
   apiRouteAdminUserProfileGetUserByID,
   apiRouteAdminUserProfileUpdateUserRoles,
 } from '../routes';
-import {getAccessToken} from '../helpers';
+import {getAccessToken, getGraphAccessToken} from '../helpers';
 import {IUser} from '../types';
 
-export async function getAllUsers(): Promise<IUser[]> {
+export async function getAllUsersRoles(): Promise<IUser[]> {
   const accessToken = await getAccessToken();
+  const graphAccessToken = await getGraphAccessToken();
+  const bearer = `Bearer ${accessToken}`;
+  const graphBearer = `${graphAccessToken}`;
 
-  const response = await axios.get(apiRouteAdminUserProfileGetAllUsers, {
+  const response = await axios.get(apiRouteAdminUserProfileGetAllUsersRoles, {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: bearer,
+      MSGraphAccessToken: graphBearer,
       'Access-Control-Allow-Origin': `${apiEndpoint}`,
     },
   });
@@ -27,12 +31,16 @@ export async function updateUserRoles(
   oId: string,
 ): Promise<boolean> {
   const accessToken = await getAccessToken();
+  const graphAccessToken = await getGraphAccessToken();
+  const bearer = `Bearer ${accessToken}`;
+  const graphBearer = `${graphAccessToken}`;
 
   const url = `${apiRouteAdminUserProfileUpdateUserRoles}?oId=${oId}`;
   const response = await axios.put<boolean>(url, JSON.stringify(roles), {
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: bearer,
+      MSGraphAccessToken: graphBearer,
       'Access-Control-Allow-Origin': `${apiEndpoint}`,
     },
   });
