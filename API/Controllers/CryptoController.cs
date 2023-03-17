@@ -28,20 +28,7 @@ public class CryptoController : ControllerBase
         _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
-
-    [HttpPost]
-    public async Task<ActionResult<RpcTransactionResult>> PostTransaction(double amount, string receiverOId)
-    {
-        var rpcTransactionResult = await _cryptoService.SendTokens(amount, _oId, receiverOId);
-        if (rpcTransactionResult?.error != null)
-            return BadRequest(rpcTransactionResult.error);
-        
-        _cryptoService.QueueTokenUpdate(new List<List<string>>
-            { new() { "tokenUpdateQueue" }, new() { _oId, receiverOId } });
-
-        return Ok(rpcTransactionResult);
-    }
-
+    
     [HttpPost]
     public async Task<ActionResult<RpcTransactionResult>> SelfTransferTokens(double amount)
     {
@@ -60,6 +47,7 @@ public class CryptoController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")] // Only admin can transfer tokens (this can be deleted later on)
     public async Task<ActionResult<RpcTransactionResult>> PostTokens(double amount, string walletType)
     {
         var rpcTransactionResult = await _cryptoService.AddTokensAsync(amount, _oId, walletType);
@@ -82,30 +70,38 @@ public class CryptoController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public ActionResult<double> GetSolBalance()
     {
         return Ok(_cryptoService.GetSolanaAdminBalance());
     }
 
     [HttpGet]
-    public void InitiateSolBalanceCheck()
+    [Authorize(Roles = "Admin")]
+    public ActionResult InitiateSolBalanceCheck()
     {
         _cryptoService.QueueSolUpdate(new List<List<string>>
             { new() { "checkAdminBalanceQueue" }, new() { "null" } });
+
+        return Ok();
     }
 
     [HttpGet]
-    public async Task InitiateMonthlyTokensGift(string oid)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult> InitiateMonthlyTokensGift(string oid)
     {
         await _cryptoService.SendMonthlyTokenBasedOnRole(oid);
         _cryptoService.QueueMonthlyTokensGift(new List<List<string>>
             { new() { "monthlyTokenQueue" }, new() { oid } });
+        return Ok();
     }
     
     [HttpGet]
-    public void InitiateAnniversaryBonusGifting()
+    [Authorize(Roles = "Admin")]
+    public ActionResult InitiateAnniversaryBonusGifting()
     {
         _cryptoService.QueueAnniversaryBonus(new List<List<string>>
             { new() { "anniversaryBonusQueue" }, new() { "null" } });
+        return Ok();
     }
 }

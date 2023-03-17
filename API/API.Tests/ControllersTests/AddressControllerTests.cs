@@ -28,31 +28,6 @@ public class AddressControllerTests
     }
 
     [Fact]
-    public async void AddressController_GetAll_ReturnsOK()
-    {
-        //Arrange
-        var addressModelList = GetAddressModelList();
-        A.CallTo(() => _addressService.GetAllAddressesAsync()).Returns(addressModelList);
-
-        //Act
-        var actionResult = await _controller.GetAll();
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as List<AddressModel>;
-
-        //Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue.Should().HaveCount(2);
-        objectResultValue?[0].OId.Should().Be(addressModelList.Result[0].OId);
-        objectResultValue?[0].StreetNumber.Should().Be(addressModelList.Result[0].StreetNumber);
-        objectResultValue?[0].Street.Should().Be(addressModelList.Result[0].Street);
-        objectResultValue?[0].City.Should().Be(addressModelList.Result[0].City);
-        objectResultValue?[0].Province.Should().Be(addressModelList.Result[0].Province);
-        objectResultValue?[0].Country.Should().Be(addressModelList.Result[0].Country);
-        objectResultValue?[0].PostalCode.Should().Be(addressModelList.Result[0].PostalCode);
-    }
-
-    [Fact]
     public async void AddressController_GetDefaultAddressOrCreate_ReturnsOK()
     {
         //Arrange
@@ -149,32 +124,6 @@ public class AddressControllerTests
         objectResultValue?.Province.Should().Be(addressModel.Result.Province);
         objectResultValue?.Country.Should().Be(addressModel.Result.Country);
         objectResultValue?.PostalCode.Should().Be(addressModel.Result.PostalCode);
-    }
-
-
-    [Fact]
-    public async void AddressController_GetAllUserAddresses_ReturnsOK()
-    {
-        //Arrange
-        var addressModelList = GetAddressModelList();
-        A.CallTo(() => _addressService.GetAllAddressesByOIdAsync(A<string>._)).Returns(addressModelList);
-
-        //Act
-        var actionResult = await _controller.GetAllUserAddresses();
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as List<AddressModel>;
-
-        //Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue.Should().HaveCount(2);
-        objectResultValue?[0].OId.Should().Be(addressModelList.Result[0].OId);
-        objectResultValue?[0].StreetNumber.Should().Be(addressModelList.Result[0].StreetNumber);
-        objectResultValue?[0].Street.Should().Be(addressModelList.Result[0].Street);
-        objectResultValue?[0].City.Should().Be(addressModelList.Result[0].City);
-        objectResultValue?[0].Province.Should().Be(addressModelList.Result[0].Province);
-        objectResultValue?[0].Country.Should().Be(addressModelList.Result[0].Country);
-        objectResultValue?[0].PostalCode.Should().Be(addressModelList.Result[0].PostalCode);
     }
 
     [Fact]

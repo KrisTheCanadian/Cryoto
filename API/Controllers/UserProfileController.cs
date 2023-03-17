@@ -53,7 +53,7 @@ public class UserProfileController : ControllerBase
 
     [HttpGet]
     [Route("[controller]/[action]")]
-    public async Task<ActionResult<List<UserProfileModel>>> GetSearchResult(string? keywords)
+    public async Task<ActionResult<List<UserWithBusinessTitleAndDateDto>>> GetSearchResult(string? keywords)
     {
         return Ok(await _userProfileService.GetSearchResultServiceAsync(keywords, _oId));
     }
@@ -74,8 +74,7 @@ public class UserProfileController : ControllerBase
     {
         // validate received data
         if (
-            userProfileUpdateModel.Name == null
-            && userProfileUpdateModel.BusinessTitle == null
+            userProfileUpdateModel.BusinessTitle == null
             && userProfileUpdateModel.Language == null
             && userProfileUpdateModel.Bio == null
             && userProfileUpdateModel.EmailNotifications == null
@@ -87,7 +86,6 @@ public class UserProfileController : ControllerBase
         if (userProfile == null) return Conflict("Cannot update the user profile because it does not exist.");
 
         // set new attributes 
-        if (userProfileUpdateModel.Name != null) userProfile.Name = userProfileUpdateModel.Name;
         if (userProfileUpdateModel.BusinessTitle != null)
             userProfile.BusinessTitle = userProfileUpdateModel.BusinessTitle;
         if (userProfileUpdateModel.Language != null) userProfile.Language = userProfileUpdateModel.Language;
@@ -126,22 +124,14 @@ public class UserProfileController : ControllerBase
     [Route("Admin/[controller]/[action]")]
     public async Task<OkResult> UpdateUserProfileFakeData()
     {
+        // TODO: KPMG DEV TEAM: replace with a real implementation (Service Workday)
         await _userProfileService.UpdateUserProfileFakeData();
-        return Ok();
-    }
-
-    [HttpPut]
-    [Authorize(Roles = "Admin")]
-    [Route("Admin/[controller]/[action]")]
-    public async Task<OkResult> UpdateUserProfileRecognitionsCount()
-    {
-        await _userProfileService.UpdateUserProfilesRecognitionsCount();
         return Ok();
     }
 
     [HttpGet]
     [Route("[controller]/[action]")]
-    public ActionResult<List<UserProfileModel>> GetUpcomingAnniversaries()
+    public ActionResult<List<UserWithBusinessTitleAndDateDto>> GetUpcomingAnniversaries()
     {
         return Ok(_userProfileService.GetUpcomingAnniversaries());
     }

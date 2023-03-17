@@ -3,12 +3,11 @@ import MockAdapter from 'axios-mock-adapter';
 
 import {
   apiRouteMarketPlaceGetAllItems,
-  apiRouteMarketPlaceGetItemById,
   apiRouteMarketPlaceCompletePurchase,
 } from '../routes';
 import {IOrder} from '../types/ICart';
 
-import {getAllItems, getItemById, completePurchase} from './marketplace';
+import {getAllItems, completePurchase} from './marketplace';
 
 const mock = new MockAdapter(axios);
 
@@ -30,17 +29,6 @@ it('getAllItems returns success', async () => {
   mock.onGet(url).reply(200, data);
 
   const res = await getAllItems();
-  expect(res).toEqual(data);
-});
-
-it('getItemById returns success', async () => {
-  const data = {response: 'success'};
-  const id = '1';
-  const url = `${apiRouteMarketPlaceGetItemById}?id=${id}`;
-
-  mock.onGet(url).reply(200, data);
-
-  const res = await getItemById(id);
   expect(res).toEqual(data);
 });
 

@@ -32,18 +32,6 @@ public class TransactionController : ControllerBase
         return Ok(receiverList);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<TransactionModel>> GetTransactionById(string id)
-    {
-        var transaction = await _transactionService.GetTransactionByIdAsync(id);
-        if (transaction == null)
-        {
-            return NotFound();
-        }
-        return Ok(transaction);
-    }
-    
-    
     [HttpPost]
     public async Task<ActionResult<TransactionModel>> AddTransaction(TransactionModel transaction)
     {
@@ -53,28 +41,5 @@ public class TransactionController : ControllerBase
         var createdTransaction = await _transactionService.GetTransactionByIdAsync(transaction.Id);
         return Ok(createdTransaction);
     }
-    
-    [HttpPut]
-    public async Task<ActionResult<TransactionModel>> UpdateTransaction(TransactionModel transaction)
-    {
-        var exists = await _transactionService.GetTransactionByIdAsync(transaction.Id);
-        if (exists == null) return Conflict("Cannot update the transaction because it does not exist.");
-        
-        var updated = await _transactionService.UpdateTransactionAsync(transaction);
-        if (!updated) return BadRequest("Could not update the transaction");
-        var updatedTransaction = await _transactionService.GetTransactionByIdAsync(transaction.Id);
-        return Ok(updatedTransaction);
-    }
-    
-    [HttpDelete]
-    public async Task<ActionResult> DeleteTransaction(TransactionModel transaction)
-    {
-        var exists = await _transactionService.GetTransactionByIdAsync(transaction.Id);
-        if (exists == null) return Conflict("Cannot delete the transaction because it does not exist.");
-        var deletedTransaction = await _transactionService.DeleteTransactionAsync(transaction);
-        if (!deletedTransaction)
-            return BadRequest("Could not delete the transaction");
-        return Ok($"Successfully deleted transaction {transaction.Id}");
-    }
-    
+
 }

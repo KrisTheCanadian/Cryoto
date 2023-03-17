@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using API.Models.Users;
 using API.Repository.Interfaces;
@@ -12,7 +12,6 @@ public class UserProfileService : IUserProfileService
 {
     private readonly HttpClient _client = new();
     private readonly IUserProfileRepository _context;
-    private readonly IPostRepository _postContext;
     private readonly IMsGraphApiService _msGraphApiService;
 
 
@@ -20,7 +19,6 @@ public class UserProfileService : IUserProfileService
         IMsGraphApiService msGraphApiService)
     {
         _context = context;
-        _postContext = postContext;
         _msGraphApiService = msGraphApiService;
     }
 
@@ -63,17 +61,6 @@ public class UserProfileService : IUserProfileService
         }
     }
 
-    public async Task UpdateUserProfilesRecognitionsCount()
-    {
-        var userProfileModels = await _context.GetAllUsersAsync();
-        foreach (var userProfileModel in userProfileModels)
-        {
-            userProfileModel.RecognitionsReceived = await _postContext.GetReceivedPostsCountAsync(userProfileModel.OId);
-            userProfileModel.RecognitionsSent = await _postContext.GetSentPostsCountAsync(userProfileModel.OId);
-            await _context.UpdateUserProfile(userProfileModel);
-        }
-    }
-
     public async Task<bool> IncrementRecognitionsSent(string oid)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
@@ -88,7 +75,7 @@ public class UserProfileService : IUserProfileService
         return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
-    public async Task<List<UserProfileModel>?> GetSearchResultServiceAsync(string? keywords, string oid)
+    public async Task<List<UserWithBusinessTitleAndDateDto>?> GetSearchResultServiceAsync(string? keywords, string oid)
     {
         return await _context.GetSearchResultAsync(keywords, oid);
     }
@@ -103,12 +90,12 @@ public class UserProfileService : IUserProfileService
         return await _context.UpdateAsync(userProfileModel);
     }
 
-    public async Task<List<UserProfileModel>> GetAnniversaryUsersAsync()
+    public async Task<List<UserWithBusinessTitleAndDateDto>> GetAnniversaryUsersAsync()
     {
         return await _context.GetAnniversaryUsersAsync();
     }
 
-    public List<UserProfileModel> GetUpcomingAnniversaries()
+    public List<UserWithBusinessTitleAndDateDto> GetUpcomingAnniversaries()
     {
         return _context.GetUpcomingAnniversaries();
     }

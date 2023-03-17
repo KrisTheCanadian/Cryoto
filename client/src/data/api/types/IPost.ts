@@ -1,7 +1,7 @@
 import {PostType} from '../enums';
 
 import IComment from './IComment';
-import IUser from './IUser';
+import {IUserMinimal} from './IUser';
 
 interface IPost {
   id: string;
@@ -13,8 +13,8 @@ interface IPost {
   postType: PostType;
   isTransactable: boolean;
   coins: number;
-  recipientProfiles: IUser[];
-  authorProfile: IUser;
+  recipientProfiles: IUserMinimal[];
+  authorProfile: IUserMinimal;
   imageUrl: string;
   hearts: string[];
   claps: string[];

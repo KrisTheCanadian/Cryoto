@@ -3,7 +3,6 @@ import axios from 'axios';
 import {
   apiEndpoint,
   apiRouteMarketPlaceGetAllItems,
-  apiRouteMarketPlaceGetItemById,
   apiRouteMarketPlaceCompletePurchase,
 } from '../routes';
 import {getAccessToken} from '../helpers';
@@ -15,20 +14,6 @@ export async function getAllItems(): Promise<IMarketPlaceItem[]> {
 
   const url = `${apiRouteMarketPlaceGetAllItems}`;
   const response = await axios.get<IMarketPlaceItem[]>(url, {
-    // add CORS headers to request
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Access-Control-Allow-Origin': `${apiEndpoint}`,
-    },
-  });
-  return response.data;
-}
-
-export async function getItemById(id: string): Promise<IMarketPlaceItem> {
-  const accessToken = await getAccessToken();
-
-  const url = `${apiRouteMarketPlaceGetItemById}?id=${id}`;
-  const response = await axios.get<IMarketPlaceItem>(url, {
     // add CORS headers to request
     headers: {
       Authorization: `Bearer ${accessToken}`,

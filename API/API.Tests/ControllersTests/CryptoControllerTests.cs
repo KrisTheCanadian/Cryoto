@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
@@ -29,58 +29,6 @@ public class CryptoControllerTests
         _controller = new CryptoController(_cryptoService, _transactionService, contextAccessor);
     }
 
-    [Fact]
-    public async void CryptoController_PostTransaction_ReturnsOK()
-    {
-        //Arrange
-        var rpcTransactionResult = GetRpcTransactionResultSuccessful();
-        var userProfileModelList = GetUserProfileModelList();
-        var senderOId = userProfileModelList.Result[0].OId;
-        var receiverOId = userProfileModelList.Result[1].OId;
-        var amount = A.Dummy<double>();
-        A.CallTo(() => _cryptoService.SendTokens(amount, A<string>._, A<string>._))!
-            .Returns(rpcTransactionResult);
-
-        //Act
-        var actionResult = await _controller.PostTransaction(amount, receiverOId);
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult!.Value as RpcTransactionResult;
-
-        //Assert
-        A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
-            .MustHaveHappenedOnceExactly();
-
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType<OkObjectResult>();
-        objectResultValue?.result.Should().Be(rpcTransactionResult.Result.result);
-        objectResultValue?.error.Should().BeNull();
-    }
-
-    [Fact]
-    public async void CryptoController_PostTransaction_ReturnsBadRequest()
-    {
-        //Arrange
-        var rpcTransactionResultError = GetRpcTransactionResultError();
-        var userProfileModelList = GetUserProfileModelList();
-        var receiverOId = userProfileModelList.Result[1].OId;
-        var amount = A.Dummy<double>();
-        A.CallTo(() => _cryptoService.SendTokens(amount, A<string>._, A<string>._))!
-            .Returns(rpcTransactionResultError);
-
-        //Act
-        var actionResult = await _controller.PostTransaction(amount, receiverOId);
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value;
-
-        //Assert
-        A.CallTo(() => _cryptoService.SendTokens(A<double>._, A<string>._, A<string>._))
-            .MustHaveHappenedOnceExactly();
-
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType<BadRequestObjectResult>();
-        objectResultValue.Should().BeOfType<RpcTransactionResult.Error>();
-    }
-    
     [Fact]
     public async void CryptoController_SelfTransferTokens_ReturnsOK()
     {
@@ -144,7 +92,7 @@ public class CryptoControllerTests
     public async void CryptoController_GetTokenBalance_ReturnsOK()
     {
         //Arrange
-        var userWalletsModel = getFakeUserWalletsModel();
+        var userWalletsModel = GetFakeUserWalletsModel();
         A.CallTo(() => _cryptoService.GetWalletsBalanceAsync(A<string>._,A<ClaimsIdentity>._)).Returns(userWalletsModel);
 
         //Act
@@ -188,8 +136,8 @@ public class CryptoControllerTests
         };
         return Task.FromResult(rpcTransactionResult);
     }
-    
-    private UserWalletsModel getFakeUserWalletsModel()
+
+    private UserWalletsModel GetFakeUserWalletsModel()
     {
         return new UserWalletsModel(
             50.50,

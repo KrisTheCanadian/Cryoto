@@ -21,13 +21,7 @@ public class NotificationController: ControllerBase
         var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
-    
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<Notification>>> GetNotifications()
-    {
-        return Ok(await _notificationService.GetUserNotificationsAsync(_actorId));
-    }
-    
+
     [HttpGet]
     public async Task<ActionResult<PaginationWrapper<Notification>>> GetNotificationsPaginated([FromQuery] int page, [FromQuery] int pageSize)
     {
@@ -46,19 +40,6 @@ public class NotificationController: ControllerBase
         if(notification.ReceiverId != _actorId){ return Conflict($"User {_actorId} does not have access to modify notification {id}."); }
         var updated = await _notificationService.UpdateReadAsync(id);
         if (!updated) { return BadRequest("Cannot mark post as read."); }
-
-        return Ok();
-    }
-
-    [HttpDelete]
-    public async Task<ActionResult> DeleteNotification(string id)
-    {
-        var notification = await _notificationService.GetNotificationAsync(id);
-        if (notification == null) { return Conflict($"Notification {id}"); }
-        // validate if the user is the receiver
-        if(notification.SenderId != _actorId){ return Conflict($"User {_actorId} does not have access to modify notification {id}"); }
-        var updated = await _notificationService.DeleteAsync(id);
-        if (!updated) { return BadRequest("Cannot delete post."); }
 
         return Ok();
     }

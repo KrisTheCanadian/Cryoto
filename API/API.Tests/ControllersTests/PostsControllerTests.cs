@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Crypto.Solana.SolanaObjects;
+using API.Models.Comments;
 using API.Models.Posts;
 using API.Models.Users;
 using API.Services.Interfaces;
@@ -14,6 +15,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
 using Xunit;
 
 namespace API.Tests.ControllersTests;
@@ -28,6 +30,7 @@ public class PostsControllerTests
     private readonly INotificationService _notificationService;
     private readonly IUserProfileService _userProfileService;
     private readonly ILogger<PostsController> _logger;
+    private readonly ICommentService _commentService;
 
 
     public PostsControllerTests()
@@ -39,7 +42,8 @@ public class PostsControllerTests
         _contextAccessor = A.Fake<IHttpContextAccessor>();
         _notificationService = A.Fake<INotificationService>();
         _userProfileService = A.Fake<IUserProfileService>();
-        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _logger);
+        _commentService = A.Fake<ICommentService>();
+        _controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _commentService, _logger);
     }
 
     private List<PostModel> GetFakePosts()
@@ -70,12 +74,13 @@ public class PostsControllerTests
             post2
         };
     }
-    private static List<UserProfileModel> GetUserProfileModelList()
+    private static IEnumerable<UserDto> GetUserProfileModelList()
     {
         var roles1 = new[] { "roles1" };
-        var userProfileModelList = new List<UserProfileModel>
+        var profile = new UserProfileModel("oid1", "name1", "email1", "en1", roles1);
+        var userProfileModelList = new List<UserDto>
         {
-            new("oid1", "name1", "email1", "en1", roles1),
+            new(profile),
         };
         return userProfileModelList;
     }
@@ -97,7 +102,7 @@ public class PostsControllerTests
 
     private PostsController GetControllerWithIodContext(string iod)
     {
-        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _logger)
+        var mockController = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _commentService, _logger)
         {
             ControllerContext = new ControllerContext
             {
@@ -138,27 +143,7 @@ public class PostsControllerTests
         objectResult.Should().BeOfType(typeof(OkObjectResult));
         Assert.Equal(posts, objectResultValue?.Data.ToList());
     }
-
-    [Fact]
-    public async void PostsController_GetAllPosts_ReturnsOk()
-    {
-        // Arrange
-        var posts = GetFakePosts();
-        A.CallTo(() => _postService.GetAllAsync()).Returns(posts);
-
-        // Act
-        var actionResult = await _controller.GetAllPosts();
-
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as IEnumerable<PostModel>;
-        var resultPosts = objectResultValue!.ToList();
-
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-        Assert.Equal(posts, resultPosts);
-    }
-
+    
     [Fact]
     public async void PostsController_GetPostById_ReturnsOk()
     {
@@ -230,105 +215,6 @@ public class PostsControllerTests
         Assert.Equal(post.Coins, objectResultValue?.Coins);
         Assert.Equal(post.Tags, objectResultValue?.Tags);
         Assert.Equal(post.Recipients, objectResultValue?.Recipients);
-    }
-
-    [Fact]
-    public async void PostController_Update_ReturnsOk()
-    {
-        // Arrange
-        var post = GetFakePost();
-        var updatedPost = new PostModel(post.Id, "New Message", post.Recipients, post.Tags, post.CreatedDate,
-            post.PostType, post.IsTransactable, 100000);
-
-        A.CallTo(() => _postService.UpdateAsync(A<PostModel>.Ignored)).Returns(true);
-        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
-        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(updatedPost);
-
-
-        var postCreateModel = new PostUpdateModel(post.Id, "New Message", post.Recipients, post.Tags, post.CreatedDate,
-            post.PostType, post.IsTransactable, 100000);
-        var mockController = GetControllerWithIodContext(post.Author);
-
-        // Act
-        var actionResult = await mockController.Update(postCreateModel);
-
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as PostModel;
-
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-
-        Assert.Equal(objectResultValue?.Message, postCreateModel.Message);
-        Assert.Equal(objectResultValue?.Coins, postCreateModel.Coins);
-    }
-
-    [Fact]
-    public async void PostController_Update_ReturnsConflict()
-    {
-        // Arrange
-        PostModel? existingPost = null;
-        var post = GetFakePost();
-
-        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
-
-        var postCreateModel = new PostUpdateModel(post.Id, "New Message", post.Recipients, post.Tags, post.CreatedDate,
-            post.PostType, post.IsTransactable, 100000);
-
-        var mockController = GetControllerWithIodContext(post.Author);
-
-        // Act
-        var actionResult = await mockController.Update(postCreateModel);
-
-        var objectResult = actionResult.Result as ConflictObjectResult;
-
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(ConflictObjectResult));
-    }
-
-    [Fact]
-    public async void PostController_Delete_ReturnsOk()
-    {
-        // Arrange
-        var post = GetFakePost();
-
-        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(post);
-
-        var mockController = GetControllerWithIodContext(post.Author);
-
-        // Act
-        var actionResult = await mockController.Delete(post.Id);
-
-        var objectResult = actionResult.Result as OkObjectResult;
-        var objectResultValue = objectResult?.Value as string;
-
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-
-        Assert.Equal(objectResultValue, $"Successfully Delete Post {post.Id}");
-    }
-
-    [Fact]
-    public async void PostController_Delete_ReturnsConflict()
-    {
-        // Arrange
-        PostModel? existingPost = null;
-        var post = GetFakePost();
-
-        A.CallTo(() => _postService.GetByIdAsync(A<string>._)).Returns(existingPost);
-
-        var mockController = GetControllerWithIodContext(post.Author);
-
-        // Act
-        var actionResult = await mockController.Delete(post.Id);
-
-        var objectResult = actionResult.Result as ConflictObjectResult;
-
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(ConflictObjectResult));
     }
 
     [Fact]
@@ -513,6 +399,51 @@ public class PostsControllerTests
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(BadRequestObjectResult));
         Assert.Equal("Could not boost the post.", objectResult!.Value);
+    }
+    
+    [Fact]
+    public async void CommentController_Delete_ReturnsOk()
+    {
+        //Arrange
+        const string id = "oidValue";
+        
+        var contextAccessor = A.Fake<IHttpContextAccessor>();
+        var identity = new ClaimsIdentity(new[] { new Claim(ClaimConstants.ObjectId, id) });
+        
+        var controller = new PostsController(_postService, _cryptoService, _transactionService, _contextAccessor, _notificationService, _userProfileService, _commentService, _logger)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            },
+            HttpContext = { User = new ClaimsPrincipal() }
+        };
+
+        var claims = new ClaimsIdentity();
+        claims.AddClaim(new Claim(ClaimConstants.ObjectId, id));
+        claims.AddClaim(new Claim("oid", id));
+        claims.AddClaim(new Claim("name", "namValue"));
+        claims.AddClaim(new Claim("preferred_username", "email"));
+        claims.AddClaim(new Claim("roles", "Admin"));
+        controller.HttpContext.User.AddIdentity(claims);
+        
+        var commentModel = A.Fake<CommentModel>();
+        
+        var guid = Guid.NewGuid();
+        commentModel.Id = guid.ToString();
+        
+        commentModel.Author = id;
+        A.CallTo(() => contextAccessor.HttpContext).Returns(A.Fake<HttpContext>());
+        A.CallTo(() => _commentService.GetCommentById(A<string>.That.Matches(x => x == commentModel.Id))).Returns(commentModel);
+        A.CallTo(() => _commentService.DeleteComment(A<CommentModel>.That.Matches(x => x == commentModel))).Returns(Task.FromResult(true));
+        A.CallTo(() => contextAccessor.HttpContext!.User.Identity).Returns(identity);
+        
+        //Act
+        var actionResult = await controller.DeleteComment(guid);
+        
+        //Assert
+        actionResult.Should().NotBeNull();
+        A.CallTo(() => _commentService.GetCommentById(A<string>.That.Matches(x => x == commentModel.Id))).MustHaveHappenedOnceExactly();
     }
     
     private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()

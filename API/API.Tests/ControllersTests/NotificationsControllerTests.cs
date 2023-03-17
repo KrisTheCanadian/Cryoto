@@ -24,26 +24,7 @@ public class NotificationsControllerTests
         _httpContextAccessor = A.Fake<IHttpContextAccessor>();
         _controller = new NotificationController(_notificationService, _httpContextAccessor);
     }
-    
-    [Fact]
-    public async void GetNotificationsReturnsOkResult()
-    {
-        // Arrange
-        A.CallTo(() => _notificationService.GetUserNotificationsAsync(A<string>.Ignored)).Returns(GetTestNotifications());
 
-        // Act
-        var actionResult = await _controller.GetNotifications();
-        
-        
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as IEnumerable<Notification>;
-
-        // Assert
-        Assert.IsType<OkObjectResult>(objectResult);
-        Assert.IsAssignableFrom<IEnumerable<Notification>>(objectResultValue);
-        Assert.NotNull(objectResultValue?.ToList());
-    }
-    
     [Fact]
     public async void GetNotificationsPaginatedReturnsOkResult()
     {

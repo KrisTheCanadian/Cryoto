@@ -1,4 +1,4 @@
-import IUser from './IUser';
+import {IUserMinimal} from './IUser';
 
 interface IComment {
   id: string;
@@ -11,7 +11,7 @@ interface IComment {
   parentId: string;
   parentType: string;
   replies: IComment[];
-  authorProfile: IUser | null;
+  authorProfile: IUserMinimal | null;
 }
 
 export default IComment;

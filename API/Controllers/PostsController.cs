@@ -25,13 +25,15 @@ public class PostsController : ControllerBase
     private readonly IPostService _postService;
     private readonly ITransactionService _transactionService;
     private readonly IUserProfileService _userProfileService;
+    private readonly ICommentService _commentService;
 
 
     public PostsController(IPostService postService, ICryptoService cryptoService,
         ITransactionService transactionService, IHttpContextAccessor contextAccessor,
-        INotificationService notificationService, IUserProfileService userProfileService,
+        INotificationService notificationService, IUserProfileService userProfileService, ICommentService commentService,
         ILogger<PostsController> logger)
     {
+        _commentService = commentService;
         _postService = postService;
         _cryptoService = cryptoService;
         _transactionService = transactionService;
@@ -57,12 +59,6 @@ public class PostsController : ControllerBase
         return Ok(await _postService.GetUserProfileFeedPaginatedAsync(userId, page, pageCount));
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable>> GetAllPosts()
-    {
-        return Ok(await _postService.GetAllAsync());
-    }
-
     [HttpGet("{guid:guid}")]
     public async Task<ActionResult<PostModel>> GetById(string guid)
     {
@@ -86,7 +82,7 @@ public class PostsController : ControllerBase
         var notificationSent = await _notificationService.SendCommentNotification(_actorId, postId.ToString(), postModel);
         if (!notificationSent)
         {
-            _logger.LogWarning("Failed to send reaction notification on post '{guid}' by user {_actorId}", postId.ToString(), _actorId);
+            _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}", postId.ToString(), _actorId);
         }
         return Ok(commentModel);
     }
@@ -124,7 +120,7 @@ public class PostsController : ControllerBase
 
         var oIdsList = new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { _actorId } };
-        var successfulRecipients = new List<UserProfileModel>();
+        var successfulRecipients = new List<UserDto>();
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
             try
             {
@@ -161,54 +157,39 @@ public class PostsController : ControllerBase
     }
 
     // send notification to recipient using notification service
-    private async Task SendNotification(PostCreateModel postCreateModel, UserProfileModel recipientProfile,
+    private async Task SendNotification(PostCreateModel postCreateModel, UserDto recipientProfile,
         PostModel postModel, double amount)
     {
         var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
 
+        if (actorProfile == null)
+        {
+            _logger.LogWarning("Failed to send notification to {Name} with oId: {Id}", recipientProfile.Name,
+                recipientProfile.OId);
+            return;
+        }
+
         await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId,
             postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
-
-        var senderName = "a Team Member";
-
-        if (actorProfile != null) senderName = actorProfile.Name;
-
-
+        
+        var senderName = actorProfile.Name;
         var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
         var htmlContent = "<h1>You have been awarded " + amount + " tokens" + " by " + senderName + "!</h1>" +
                           "<h3>" + postCreateModel.Message + "</h3>";
 
-        await _notificationService.SendEmailAsync(recipientProfile.Email, subject, htmlContent, true);
+        await _notificationService.SendEmailAsync(actorProfile.Email, subject, htmlContent, true);
     }
-
-
-    [HttpPut]
-    public async Task<ActionResult<PostModel>> Update(PostUpdateModel postUpdateModel)
+    
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult> DeleteComment(Guid id)
     {
-        var existingPost = await _postService.GetByIdAsync(postUpdateModel.Id);
-        if (existingPost == null) return Conflict("Cannot update the post because it does not exist.");
-
-        if (_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
-
-        var postModel = new PostModel(postUpdateModel, _actorId);
-        var updated = await _postService.UpdateAsync(postModel);
-        if (!updated) return BadRequest("Could not update the post");
-        var updatedPostModel = await _postService.GetByIdAsync(postModel.Id);
-
-        return Ok(updatedPostModel);
-    }
-
-    [HttpDelete]
-    public async Task<ActionResult<PostModel>> Delete(string guid)
-    {
-        var existingPost = await _postService.GetByIdAsync(guid);
-        if (existingPost == null) return Conflict("Cannot delete the post because it does not exist.");
-
-        if (_actorId != existingPost.AuthorProfile?.OId) return BadRequest("You are not the author of this post");
-
-        await _postService.DeleteAsync(existingPost);
-
-        return Ok($"Successfully Delete Post {guid}");
+        var comment = await _commentService.GetCommentById(id.ToString());
+        if (comment == null) return NotFound();
+        if(comment.Author != _actorId) return Unauthorized();
+        var isSuccessful = await _commentService.DeleteComment(comment);
+        if (!isSuccessful) return BadRequest();
+        
+        return Ok();
     }
 
     [HttpPost]

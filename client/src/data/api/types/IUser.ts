@@ -14,6 +14,16 @@ interface IUser {
   birthday: string;
 }
 
+export interface IUserMinimal {
+  oId: string;
+  name: string;
+}
+
+export interface IUserWithDate extends IUserMinimal {
+  startDate: string;
+  businessTitle: string;
+}
+
 export interface IUserProfile {
   // addresses?: string[];
   bio?: string;

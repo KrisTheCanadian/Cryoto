@@ -9,7 +9,7 @@ import {stringAvatar} from '@shared/utils/colorUtils';
 
 import {routeMarket, routeProfile} from '@/pages/routes';
 import {searchUsers} from '@/data/api/requests/users';
-import {IUser} from '@/data/api/types';
+import {IUserWithDate} from '@/data/api/types/IUser';
 
 interface SearchNavBarProps {
   searchOpen: boolean;
@@ -19,7 +19,7 @@ interface SearchNavBarProps {
 function SearchNavBar(props: SearchNavBarProps) {
   const {searchOpen, setOpen} = props;
   const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState<IUser[]>([]);
+  const [searchResults, setSearchResults] = useState<IUserWithDate[]>([]);
   const [searching, setSearching] = useState(false);
 
   const theme = useTheme();

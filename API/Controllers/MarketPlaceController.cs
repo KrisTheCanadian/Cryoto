@@ -34,18 +34,6 @@ public class MarketPlaceController : ControllerBase
         return Ok(_marketPlaceService.GetAllItems());
     }
 
-    [HttpGet]
-    public ActionResult<MarketPlaceItem> GetItemById(string id)
-    {
-        var item = _marketPlaceService.GetItemById(id);
-        if (item == null)
-        {
-            return NotFound("Item could not be found");
-        }
-
-        return Ok(item);
-    }
-
     [HttpPost]
     public async Task<ActionResult<Order>> CompletePurchaseAsync(Order order)
     {

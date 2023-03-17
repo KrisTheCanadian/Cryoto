@@ -24,13 +24,6 @@ public class AddressController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<List<AddressModel>>> GetAll()
-    {
-        return Ok(await _addressService.GetAllAddressesAsync());
-    }
-
-    [HttpGet]
     public async Task<ActionResult<AddressModel>> GetDefaultAddressOrCreate()
     {
         var address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
@@ -55,12 +48,6 @@ public class AddressController : ControllerBase
     {
         var address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
         return Ok(address);
-    }
-
-    [HttpGet]
-    public async Task<ActionResult<List<AddressModel>>> GetAllUserAddresses()
-    {
-        return Ok(await _addressService.GetAllAddressesByOIdAsync(_oId));
     }
 
     [HttpPost]

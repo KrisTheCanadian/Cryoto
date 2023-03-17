@@ -121,25 +121,7 @@ public class MarketPlaceControllerTests
         objectResult.Should().BeOfType(typeof(OkObjectResult));
         Assert.Equal(items, objectResultValue);
     }
-    
-    [Fact]
-    public void MarketPlaceController_GetItemById_ReturnsOK()
-    {
-        // Arrange
-        var item = GetFakeMarketPlaceItem();
-        A.CallTo(() => _marketPlaceService.GetItemById(item.Id)).Returns(item);
-        
-        // Act
-        var actionResult = _controller.GetItemById(item.Id);
-        var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as MarketPlaceItem;
 
-        // Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
-        Assert.Equal(item, objectResultValue);
-    }
-    
     [Fact]
     public async void MarketPlaceController_CompletePurchase_ReturnsOK()
     {

@@ -157,9 +157,9 @@ public class NotificationService : INotificationService
                 await SendNotificationAsync(notification);
         
                 // send email notification
-                if (post.AuthorProfile!.EmailNotifications)
+                if (actorProfile.EmailNotifications)
                     await SendEmailAsync(post.Author, "New Reaction",
-                        $"<h1>{actorProfile!.Name} {ReactionMessage(type)} your post.</h1>");
+                        $"<h1>{actorProfile.Name} {ReactionMessage(type)} your post.</h1>");
             }
         
             foreach (var postRecipient in post.RecipientProfiles)
@@ -176,11 +176,14 @@ public class NotificationService : INotificationService
                     );
         
                     await SendNotificationAsync(notificationToPostRecipient);
+                    
+                    // get user profile of post recipient
+                    var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
         
                     // send email notification
-                    if (postRecipient!.EmailNotifications)
+                    if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
                         await SendEmailAsync(postRecipient.OId, "New Reaction",
-                            $"<h1>{actorProfile!.Name} {ReactionMessage(type)} a post you are recognized in.</h1>");
+                            $"<h1>{actorProfile.Name} {ReactionMessage(type)} a post you are recognized in.</h1>");
                 }
         }
 
@@ -192,13 +195,13 @@ public class NotificationService : INotificationService
         var commentAuthor = await _userProfileRepository.GetUserByIdAsync(actorId);
         if (commentAuthor == null)
         {
-            _logger.LogError("Could not retrieve user profile of user '{actorId}'", actorId);
+            _logger.LogError("Could not retrieve user profile of user '{ActorId}'", actorId);
             return false;
         }
         var postAuthor = post.AuthorProfile;
         if (postAuthor == null)
         {
-            _logger.LogError("Could not retrieve author profile of post '{postId}'", postId);
+            _logger.LogError("Could not retrieve author profile of post '{PostId}'", postId);
             return false;
         }
         // Send Notification to Post Author
@@ -214,9 +217,12 @@ public class NotificationService : INotificationService
             );
         
             await SendNotificationAsync(notification);
+            
+            // get user profile of post author
+            var postAuthorProfile = await _userProfileRepository.GetUserByIdAsync(post.Author);
         
             // send email notification
-            if (postAuthor.EmailNotifications)
+            if (postAuthorProfile != null && postAuthorProfile.EmailNotifications)
                 await SendEmailAsync(post.Author, "New Comment",
                     $"<h1>{commentAuthor.Name} commented on your post.</h1>");
         }
@@ -234,9 +240,12 @@ public class NotificationService : INotificationService
                 );
         
                 await SendNotificationAsync(notificationToPostRecipient);
-        
+                
+                // get user profile of post recipient
+                var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
+
                 // send email notification
-                if (postRecipient.EmailNotifications)
+                if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
                     await SendEmailAsync(postRecipient.OId, "New Comment",
                         $"<h1>{commentAuthor.Name} commented on a post you are recognized in.</h1>");
             }
@@ -260,11 +269,14 @@ public class NotificationService : INotificationService
             );
     
             await SendNotificationAsync(notification);
+            
+            // get user profile of post author
+            var postAuthorProfile = await _userProfileRepository.GetUserByIdAsync(post.Author);
     
             // send email notification
-            if (post.AuthorProfile!.EmailNotifications)
+            if (postAuthorProfile != null && postAuthorProfile.EmailNotifications)
                 await SendEmailAsync(post.Author, "New Boost",
-                    $"<h1>{actorProfile!.Name} boosted your post.</h1>");
+                    $"<h1>{actorProfile.Name} boosted your post.</h1>");
         }
     
         foreach (var postRecipient in post.RecipientProfiles)
@@ -281,11 +293,14 @@ public class NotificationService : INotificationService
                 );
     
                 await SendNotificationAsync(notificationToPostRecipient);
+                
+                // get user profile of post recipient
+                var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
     
                 // send email notification
-                if (postRecipient!.EmailNotifications)
+                if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
                     await SendEmailAsync(postRecipient.OId, "New Boost",
-                        $"<h1>{actorProfile!.Name} boosted a post you are recognized in.</h1>");
+                        $"<h1>{actorProfile.Name} boosted a post you are recognized in.</h1>");
             }
         return true;
     }

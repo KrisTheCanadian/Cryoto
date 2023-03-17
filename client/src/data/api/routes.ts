@@ -9,17 +9,13 @@ export const clientEndpointAuth = `${clientEndpoint}authentication`;
 
 // Posts
 export const apiRoutePosts = `${apiEndpoint}posts`;
-// Post Feed
 export const apiRoutePostsGetUserFeed = `${apiRoutePosts}/GetUserFeedPaginated`;
 export const apiRoutePostsGetUserProfileFeed = `${apiRoutePosts}/GetUserProfileFeedPaginated`;
-export const apiRoutePostsGetAllPosts = `${apiRoutePosts}/GetAllPosts`;
-// Crud
 export const apiRoutePostsGetPostById = `${apiRoutePosts}/GetPostById`;
 export const apiRoutePostsCreatePost = `${apiRoutePosts}/Create`;
-export const apiRoutePostsUpdatePost = `${apiRoutePosts}/Update`;
-export const apiRoutePostsDeletePost = `${apiRoutePosts}/Delete`;
 export const apiRoutePostsReactPost = `${apiRoutePosts}/React`;
 export const apiRoutePostsCommentOnPost = `${apiRoutePosts}/CommentOnPost`;
+export const apiRouteCommentsDelete = `${apiRoutePosts}/DeleteComment`;
 export const apiRoutePostsBoostPost = `${apiRoutePosts}/Boost`;
 
 // UserProfile
@@ -43,24 +39,19 @@ export const apiRouteTransactionsGetTransactionsByReceiverOId = `${apiRouteTrans
 
 // Notifications
 export const apiRouteNotifications = `${apiEndpoint}Notification`;
-export const apiRouteNotificationsGetNotifications = `${apiRouteNotifications}/GetNotifications`;
 export const apiRouteNotificationsReadNotification = `${apiRouteNotifications}/ReadNotification`;
 export const apiRouteNotificationsGetNotificationsPaginated = `${apiRouteNotifications}/GetNotificationsPaginated`;
 
 // Address
 export const apiRouteAddress = `${apiEndpoint}Address`;
-export const apiRouteAddressGetAll = `${apiRouteAddress}/GetAll`;
 export const apiRouteAddressGetDefaultAddressOrCreate = `${apiRouteAddress}/GetDefaultAddressOrCreate`;
 export const apiRouteAddressGetDefaultAddress = `${apiRouteAddress}/GetDefaultAddress`;
-export const apiRouteAddressGetAllUserAddresses = `${apiRouteAddress}/GetAllUserAddresses`;
 export const apiRouteAddressAdd = `${apiRouteAddress}/Add`;
-export const apiRouteAddressDelete = `${apiRouteAddress}/Delete`;
 export const apiRouteAddressUpdate = `${apiRouteAddress}/Update`;
 
 // MarketPlace
 export const apiRouteMarketPlace = `${apiEndpoint}MarketPlace`;
 export const apiRouteMarketPlaceGetAllItems = `${apiRouteMarketPlace}/GetAllItems`;
-export const apiRouteMarketPlaceGetItemById = `${apiRouteMarketPlace}/GetItemById`;
 export const apiRouteMarketPlaceCompletePurchase = `${apiRouteMarketPlace}/CompletePurchase`;
 
 // Admin
@@ -69,8 +60,3 @@ export const apiRouteAdminUserProfile = `${apiRouteAdmin}/UserProfile`;
 export const apiRouteAdminUserProfileGetAllUsersRoles = `${apiRouteAdminUserProfile}/GetAllUsersRoles`;
 export const apiRouteAdminUserProfileUpdateUserRoles = `${apiRouteAdminUserProfile}/UpdateUserRoles`;
 export const apiRouteAdminUserProfileGetUserByID = `${apiRouteAdminUserProfile}/GetUserById`;
-
-// Comments
-export const apiRouteComments = `${apiEndpoint}Comment`;
-export const apiRouteCommentsGetCommentsById = `${apiRouteComments}/GetById`;
-export const apiRouteCommentsDelete = `${apiRouteComments}/Delete`;

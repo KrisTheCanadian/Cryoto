@@ -118,12 +118,7 @@ public class PostRepository : IPostRepository
     {
         var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
         if (post == null) return false;
-
-        // check type
-        // 0 = Heart
-        // 1 = Claps
-        // 2 = Celebrations
-
+        
         switch (type)
         {
             case 0:
@@ -167,8 +162,11 @@ public class PostRepository : IPostRepository
         var comments = await Context.Comments.AsNoTracking().Where(x => x.ParentType == "Post" && x.ParentId == postModel.Id).OrderByDescending(x=> x.CreatedDate).ToListAsync();
         foreach (var comment in comments)
         {
-            comment.AuthorProfile = await Context.UserProfiles.AsNoTracking()
+            var author = await Context.UserProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.OId.Equals(comment.Author));
+            
+            if (author != null) { comment.AuthorProfile = new UserDto(author); }
+            
         }
         postModel.Comments = comments;
     }
@@ -176,15 +174,18 @@ public class PostRepository : IPostRepository
     private async Task<PostModel> GetAllProfiles(PostModel postModel)
     {
         // get profile of author
-        postModel.AuthorProfile = await Context.UserProfiles.AsNoTracking()
+        var profile = await Context.UserProfiles.AsNoTracking()
             .FirstOrDefaultAsync(x => x.OId.Equals(postModel.Author));
+        
+        if(profile != null){ postModel.AuthorProfile = new UserDto(profile); }
 
-        var recipientProfiles = new List<UserProfileModel>();
+        var recipientProfiles = new List<UserDto>();
         // get profiles of recipients
         foreach (var author in postModel.Recipients)
         {
-            recipientProfiles.Add((await Context.UserProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.OId.Equals(author)))!);
+            var recipientProfile = await Context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OId.Equals(author));
+            if(recipientProfile != null) recipientProfiles.Add(new UserDto(recipientProfile));
         }
 
         postModel.RecipientProfiles = recipientProfiles.ToList();

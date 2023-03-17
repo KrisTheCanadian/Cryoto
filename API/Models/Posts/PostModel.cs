@@ -36,8 +36,8 @@ public class PostModel
     
     public string[] Boosts { get; set; }
 
-    [NotMapped] public IEnumerable<UserProfileModel> RecipientProfiles { get; set; }
-    [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
+    [NotMapped] public IEnumerable<UserDto> RecipientProfiles { get; set; }
+    [NotMapped] public UserDto? AuthorProfile { get; set; }
     [NotMapped] public IEnumerable<CommentModel> Comments { get; set; }
 
 
@@ -58,7 +58,7 @@ public class PostModel
         // if transactable is false, the coins should be 0
         Coins = isTransactable ? coins : 0;
 
-        RecipientProfiles = new List<UserProfileModel>();
+        RecipientProfiles = new List<UserDto>();
         ImageUrl = imageUrl;
         
         Hearts = Array.Empty<string>();
@@ -73,7 +73,7 @@ public class PostModel
     }
 
 
-    public PostModel(string author, string message, string[] recipients, string[] tags, DateTimeOffset createdDate, List<UserProfileModel> userProfileModelList,
+    public PostModel(string author, string message, string[] recipients, string[] tags, DateTimeOffset createdDate, IEnumerable<UserDto> userProfileModelList,
         string postType = "General", bool isTransactable = false, ulong coins = 0, string imageUrl = "")
     {
         Id = Guid.NewGuid().ToString();
@@ -112,13 +112,12 @@ public class PostModel
         Recipients = postCreateModel.Recipients;
         Tags = postCreateModel.Tags;
         CreatedDate = postCreateModel.CreatedDate;
-
-        // TODO: Validate PostType
+        
         PostType = postCreateModel.PostType;
         Coins = postCreateModel.Coins;
         IsTransactable = Coins != 0;
 
-        RecipientProfiles = new List<UserProfileModel>();
+        RecipientProfiles = new List<UserDto>();
         ImageUrl = postCreateModel.ImageUrl;
         
         Hearts = Array.Empty<string>();
@@ -146,7 +145,7 @@ public class PostModel
         Coins = postUpdateModel.Coins;
         IsTransactable = Coins != 0;
 
-        RecipientProfiles = new List<UserProfileModel>();
+        RecipientProfiles = new List<UserDto>();
         ImageUrl = postUpdateModel.ImageUrl;
         
         Hearts = postUpdateModel.Hearts;

@@ -117,10 +117,10 @@ public class CryotoBackgroundService : BackgroundService
                         {
                             var userProfileService = scope.ServiceProvider.GetRequiredService<IUserProfileService>();
                             var postService = scope.ServiceProvider.GetRequiredService<IPostService>();
-                            List<UserProfileModel> anniversaryUsers = await userProfileService.GetAnniversaryUsersAsync();
-                            foreach (UserProfileModel userProfileModel in anniversaryUsers)
+                            var anniversaryUsers = await userProfileService.GetAnniversaryUsersAsync();
+                            foreach (var userProfileModel in anniversaryUsers)
                             {
-                                double anniversaryBonus =
+                                var anniversaryBonus =
                                     await cryptoService.GetAnniversaryBonusAmountOfRoleByOIdAsync(userProfileModel.OId);
                                 // One of these messages will be used randomly as a congratulation message in the post
                                 // Add your own messages to the array
@@ -138,7 +138,7 @@ public class CryotoBackgroundService : BackgroundService
                                     "Thank you for being an essential part of our success. Happy Anniversary!",
                                     "On your anniversary, we appreciate all your hard work and dedication. Best wishes for another successful year."
                                 };
-                                string anniversaryMessage = anniversaryMessages[new Random().NextInt64(anniversaryMessages.Length)];
+                                var anniversaryMessage = anniversaryMessages[new Random().NextInt64(anniversaryMessages.Length)];
                                 await postService.CreateAsync(new PostModel("da6e9ec4-6c5d-45b3-bf3c-22ad1c4b9800", anniversaryMessage, new []{userProfileModel.OId},new []{"Anniversary"},DateTimeOffset.UtcNow, "Anniversary", true, (ulong)Math.Round(Math.Abs(anniversaryBonus))));
                                 await cryptoService.SendAnniversaryTokenByOId(userProfileModel.OId);
                             }

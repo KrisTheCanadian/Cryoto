@@ -11,9 +11,15 @@ import {
   apiRouteUserProfileGetTopRecognizers,
 } from '../routes';
 import {ITopRecognizer} from '../types/ITopRecognizer';
-import IUser, {IUserProfile, IUpdateUserProfile} from '../types/IUser';
+import IUser, {
+  IUserProfile,
+  IUpdateUserProfile,
+  IUserWithDate,
+} from '../types/IUser';
 
-export async function searchUsers(searchTerms: string): Promise<IUser[]> {
+export async function searchUsers(
+  searchTerms: string,
+): Promise<IUserWithDate[]> {
   // get access token
   const accessToken = await getAccessToken();
 
@@ -66,7 +72,7 @@ export async function getUpcomingAnniversaries() {
   const accessToken = await getAccessToken();
 
   // convert fetch to axios for consistency
-  const response = await axios.get<IUser[]>(
+  const response = await axios.get<IUserWithDate[]>(
     apiRouteUserProfileGetUpcomingAnniversaries,
     {
       // add CORS headers to request

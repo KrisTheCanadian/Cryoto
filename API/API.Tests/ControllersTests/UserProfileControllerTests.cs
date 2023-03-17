@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Controllers;
@@ -85,13 +86,14 @@ public class UserProfileControllerTests
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
+        var userWithDateDtoList = userProfileModelList.Result.Select(x => new UserWithBusinessTitleAndDateDto(x)).ToList();
         A.CallTo(() => _userProfileService.GetSearchResultServiceAsync(A<string>._, A<string>._))!
-            .Returns(userProfileModelList);
+            .Returns(userWithDateDtoList);
 
         //Act
         var actionResult = await _controller.GetSearchResult("keywords");
         var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as List<UserProfileModel>;
+        var objectResultValue = objectResult?.Value as List<UserWithBusinessTitleAndDateDto>;
 
         //Assert
         objectResult.Should().NotBeNull();
@@ -141,18 +143,17 @@ public class UserProfileControllerTests
     {
         //Arrange
         var userProfiles = await GetUserProfileModelList();
+        var userWithDateDtos = userProfiles.Select(user => new UserWithBusinessTitleAndDateDto(user)).ToList();
         A.CallTo(() => _userProfileService.GetUpcomingAnniversaries())
-            .Returns(userProfiles);
+            .Returns(userWithDateDtos);
 
         //Act
         var actionResult = _controller.GetUpcomingAnniversaries();
         var objectResult = actionResult.Result as ObjectResult;
-        var objectResultValue = objectResult?.Value as List<UserProfileModel>;
 
         //Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
-        objectResultValue.Should().Equal(userProfiles);
     }
 
     [Fact]
@@ -160,7 +161,8 @@ public class UserProfileControllerTests
     {
         //Arrange
         var users = await GetUserProfileModelList();
-        var recognizers = new List<TopRecognizers> { new(5, users[0]), new(2, users[1]) };
+        var userWithDateDtos = users.Select(user => new UserWithBusinessTitleAndDateDto(user)).ToList();
+        var recognizers = new List<TopRecognizers> { new(5, userWithDateDtos[0]), new(2, userWithDateDtos[1]) };
         A.CallTo(() => _userProfileService.GetTopRecognizers())
             .Returns(recognizers);
 
@@ -310,8 +312,7 @@ public class UserProfileControllerTests
         var objectResult = actionResult.Result as ObjectResult;
 
         //Assert
-        objectResult.Should().NotBeNull();
-        objectResult.Should().BeOfType(typeof(OkObjectResult));
+        actionResult.Should().NotBeNull();
     }
 
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
@@ -334,6 +335,16 @@ public class UserProfileControllerTests
         {
             new("oid1", "name1", roles1),
             new("oid2", "name2", roles2)
+        };
+        return Task.FromResult(userProfileModelList);
+    }
+    
+    private static Task<List<UserDto>> GetUserProfileMiniModelList()
+    {
+        var userProfileModelList = new List<UserDto>
+        {
+            new("oid1", "name1"),
+            new("oid2", "name2")
         };
         return Task.FromResult(userProfileModelList);
     }

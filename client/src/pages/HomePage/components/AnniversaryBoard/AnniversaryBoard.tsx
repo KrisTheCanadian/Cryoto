@@ -7,15 +7,18 @@ import {useQuery} from 'react-query';
 import {AnniversaryItem} from './components';
 
 import {getUpcomingAnniversaries} from '@/data/api/requests/users';
-import IUser from '@/data/api/types/IUser';
+import IUser, {IUserWithDate} from '@/data/api/types/IUser';
 
 export default function AnniversaryBoard() {
-  const [upcomingAnniversaries, setUpcomingAnniversaries] = useState<IUser[]>(
-    [],
-  );
+  const [upcomingAnniversaries, setUpcomingAnniversaries] = useState<
+    IUserWithDate[]
+  >([]);
 
   const {data: upcomingAnniversariesData, status: upcomingAnniversariesStatus} =
-    useQuery<IUser[]>('upcomingAnniversaries', getUpcomingAnniversaries);
+    useQuery<IUserWithDate[]>(
+      'upcomingAnniversaries',
+      getUpcomingAnniversaries,
+    );
 
   useEffect(() => {
     if (upcomingAnniversariesStatus === 'success') {
@@ -46,7 +49,7 @@ export default function AnniversaryBoard() {
         </Typography>
       </Box>
       <Divider sx={{ml: 2, mr: 2}} />
-      {upcomingAnniversaries.map((user: IUser) => (
+      {upcomingAnniversaries.map((user: IUserWithDate) => (
         <AnniversaryItem
           key={user.oId}
           oId={user.oId}

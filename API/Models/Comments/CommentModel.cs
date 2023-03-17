@@ -17,7 +17,7 @@ public class CommentModel
     [Required] public DateTimeOffset CreatedDate { get; set; }
     [Required] public string ParentId { get; set; }
     [Required] public string ParentType { get; set; }
-    [NotMapped] public UserProfileModel? AuthorProfile { get; set; }
+    [NotMapped] public UserDto? AuthorProfile { get; set; }
 
     public CommentModel(string author, string message, string imageUrl, int likes, string[] usersWhoLiked, DateTimeOffset createdDate, string parentId, string parentType)
     {

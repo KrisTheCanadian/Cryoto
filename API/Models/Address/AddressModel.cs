@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using API.Models.Users;
 
 namespace API.Models.Address;
 
@@ -19,7 +18,6 @@ public class AddressModel
     [Required] public string Country { get; set; }
     [Required] public string PostalCode { get; set; }
     public bool? IsDefault { get; set; }
-    [NotMapped] public UserProfileModel? UserProfile { get; set; }
 
     public AddressModel(string oId)
     {

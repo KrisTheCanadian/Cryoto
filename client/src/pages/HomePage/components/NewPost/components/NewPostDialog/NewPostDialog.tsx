@@ -35,6 +35,7 @@ import {ImageUploader} from './components';
 import {searchUsers} from '@/data/api/requests/users';
 import {INewPost, IUser} from '@/data/api/types';
 import {PostType} from '@/data/api/enums';
+import {IUserMinimal} from '@/data/api/types/IUser';
 
 interface NewPostDialogProps {
   dialogOpen: boolean;
@@ -146,7 +147,7 @@ function NewPostDialog(props: NewPostDialogProps) {
     searchUsers(event.target.value)
       .then((res) => {
         const users = res
-          .map((user: IUser) => {
+          .map((user: IUserMinimal) => {
             return {name: user.name, id: user.oId} as Recipient;
           })
           .filter((user) => {

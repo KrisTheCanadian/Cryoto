@@ -3,11 +3,9 @@ import axios from 'axios';
 import {getAccessToken} from '../helpers';
 import {
   apiEndpoint,
-  apiRouteNotificationsGetNotifications,
   apiRouteNotificationsGetNotificationsPaginated,
   apiRouteNotificationsReadNotification,
 } from '../routes';
-import INotification from '../types/INotification';
 import INotificationPage from '../types/INotificationPage';
 
 export async function getNextPage(
@@ -21,23 +19,6 @@ export async function getNextPage(
   // in the future, this should be available in the auth context or data store
   const url = `${apiRouteNotificationsGetNotificationsPaginated}?page=${page}&pageSize=${pageSize}`;
   const response = await axios.get<INotificationPage>(url, {
-    // add CORS headers to request
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Access-Control-Allow-Origin': `${apiEndpoint}`,
-    },
-  });
-  return response.data;
-}
-
-export async function getNotifications(): Promise<INotification[]> {
-  // get access token
-  const accessToken = await getAccessToken();
-
-  // decode access token to grab user id
-  // in the future, this should be available in the auth context or data store
-  const url = `${apiRouteNotificationsGetNotifications}`;
-  const response = await axios.get<INotification[]>(url, {
     // add CORS headers to request
     headers: {
       Authorization: `Bearer ${accessToken}`,
