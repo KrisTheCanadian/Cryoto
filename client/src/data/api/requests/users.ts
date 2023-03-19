@@ -3,17 +3,17 @@ import axios from 'axios';
 import {getAccessToken, getGraphAccessToken} from '../helpers';
 import {
   apiEndpoint,
-  apiRouteUserSearch,
+  apiRouteUserProfileGetTopRecognizers,
+  apiRouteUserProfileGetUpcomingAnniversaries,
   apiRouteUserProfileGetUserProfile,
   apiRouteUserProfileGetUserProfilePhoto,
   apiRouteUserProfileUpdate,
-  apiRouteUserProfileGetUpcomingAnniversaries,
-  apiRouteUserProfileGetTopRecognizers,
+  apiRouteUserSearch,
 } from '../routes';
 import {ITopRecognizer} from '../types/ITopRecognizer';
 import IUser, {
-  IUserProfile,
   IUpdateUserProfile,
+  IUserProfile,
   IUserWithDate,
 } from '../types/IUser';
 

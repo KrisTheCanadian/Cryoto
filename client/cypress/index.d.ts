@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-namespace */
 /* eslint-disable spaced-comment */
 /* eslint-disable @typescript-eslint/triple-slash-reference */

@@ -4,7 +4,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("[controller]/[action]")]
-public class StatusController: ControllerBase
+public class StatusController : ControllerBase
 {
     [HttpGet]
     public ActionResult<string> Check()

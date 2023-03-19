@@ -1,32 +1,31 @@
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {
   Avatar,
-  Menu,
-  MenuItem,
-  ListItemIcon,
   Divider,
   IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   AccountCircle,
+  AdminPanelSettings,
   Brightness4,
   Brightness7,
-  Settings,
   Logout,
-  AdminPanelSettings,
+  Settings,
 } from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {NavLink, useLocation} from 'react-router-dom';
-import {useEffect, useState} from 'react';
 import {useMsal} from '@azure/msal-react';
 import {useThemeModeContext} from '@shared/hooks/ThemeContextProvider';
 import {useTheme} from '@mui/material/styles';
 
 import {getUserId} from '@/data/api/helpers';
 import {getUserProfilePhoto} from '@/data/api/requests/users';
-import {routeAdmin, routeProfile, routeSettings} from '@/pages/routes';
+import {routeAdmin, routeSettings} from '@/pages/routes';
 import Role from '@/pages/roles';
 
 function ProfileMenu() {
@@ -133,7 +132,8 @@ function ProfileMenu() {
         transformOrigin={{horizontal: 'right', vertical: 'top'}}
         anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
       >
-        <MenuItem data-testid="profile"
+        <MenuItem
+          data-testid="profile"
           component={NavLink}
           to={`/profile/${oId}`}
           selected={location.pathname === `/profile/${oId}}`}
@@ -172,14 +172,17 @@ function ProfileMenu() {
             selected={location.pathname === '/admin'}
           >
             <ListItemIcon>
-              <AdminPanelSettings fontSize="small" data-testid="admin-panel-settings"/>
+              <AdminPanelSettings
+                fontSize="small"
+                data-testid="admin-panel-settings"
+              />
             </ListItemIcon>
             {t('adminDashboard.pageTitle')}
           </MenuItem>
         )}
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>
-            <Logout fontSize="small" data-testid="logout"/>
+            <Logout fontSize="small" data-testid="logout" />
           </ListItemIcon>
           {t('layout.Logout')}
         </MenuItem>

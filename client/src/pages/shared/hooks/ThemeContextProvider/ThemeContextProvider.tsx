@@ -8,12 +8,14 @@ interface ThemeContextState {
   mode: string | null;
   colorMode: {toggleColorMode: () => void};
 }
+
 // set an empty object as default state
 const ThemeContext = createContext({} as ThemeContextState);
 
 interface ThemeContextProviderProps {
   children: ReactNode | string | ReactNode[];
 }
+
 function ThemeContextProvider(props: ThemeContextProviderProps) {
   const {children} = props;
   let prevColorMode = localStorage.getItem('prevColorMode') as PaletteMode;

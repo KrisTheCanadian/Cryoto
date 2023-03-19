@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using API.Models.MarketPlace;
 using API.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 
@@ -13,12 +13,13 @@ namespace API.Controllers;
 [Route("[controller]/[action]")]
 public class MarketPlaceController : ControllerBase
 {
-    private readonly IMarketPlaceService _marketPlaceService;
-    private readonly ICryptoService _cryptoService;
-    private readonly INotificationService _notificationService;
     private readonly string _actorId;
+    private readonly ICryptoService _cryptoService;
+    private readonly IMarketPlaceService _marketPlaceService;
+    private readonly INotificationService _notificationService;
 
-    public MarketPlaceController(IMarketPlaceService marketPlaceService, ICryptoService cryptoService,  INotificationService notificationService,
+    public MarketPlaceController(IMarketPlaceService marketPlaceService, ICryptoService cryptoService,
+        INotificationService notificationService,
         IHttpContextAccessor contextAccessor)
     {
         _marketPlaceService = marketPlaceService;
@@ -44,10 +45,10 @@ public class MarketPlaceController : ControllerBase
         {
             var marketPlaceItem = _marketPlaceService.GetItemById(product.Id);
 
-            if (marketPlaceItem?.Availabilities == null || marketPlaceItem?.Availabilities < product.Quantity)
+            if (marketPlaceItem?.Availabilities == null || marketPlaceItem.Availabilities < product.Quantity)
                 return BadRequest("Item not available");
 
-            subtotal += product.Quantity * marketPlaceItem!.Points;
+            subtotal += product.Quantity * marketPlaceItem.Points;
         }
 
         if (subtotal > actorBalance)
@@ -64,24 +65,25 @@ public class MarketPlaceController : ControllerBase
         var ordersList = JsonConvert.DeserializeObject<List<Order>>(jsonData)
                          ?? new List<Order>();
 
-        ordersList.Add(new Order(order.Id, order.Items, subtotal, _actorId, order.Email, order.ShippingAddress, order.Timestamp));
+        ordersList.Add(new Order(order.Id, order.Items, subtotal, _actorId, order.Email, order.ShippingAddress,
+            order.Timestamp));
 
         jsonData = JsonConvert.SerializeObject(ordersList);
         System.IO.File.WriteAllText(filePath, jsonData);
-        
+
         // send email confirmation
         var subject = "You have successfully placed an order!";
         var htmlContent = "<h1>We got your order!" + "</h1>" +
                           "<h3>" + "Order #" + order.Id + "<h3><br>" +
                           "<h3>" + "<u>Shipping Address</u>" + "<h3>" +
-                          
-                          "<p>" + order.ShippingAddress.StreetNumber + " " + order.ShippingAddress.Street + " " + order.ShippingAddress.Apartment + "</p>" +
-                          "<p>" + order.ShippingAddress.City + ", " + order.ShippingAddress.Province + " " + order.ShippingAddress.Country + "</p>" +
+                          "<p>" + order.ShippingAddress.StreetNumber + " " + order.ShippingAddress.Street + " " +
+                          order.ShippingAddress.Apartment + "</p>" +
+                          "<p>" + order.ShippingAddress.City + ", " + order.ShippingAddress.Province + " " +
+                          order.ShippingAddress.Country + "</p>" +
                           "<p>" + order.ShippingAddress.PostalCode + "</p><br>" +
-                          
                           "<p>" + "You used " + subtotal + " coins for this purchase." + "<p>" +
-                          
-                          "<p>" + "The shipping provider will send you more details on when you can expect your delivery " +
+                          "<p>" +
+                          "The shipping provider will send you more details on when you can expect your delivery " +
                           "as well as provide you with tracking information." + "</p>";
 
         await _notificationService.SendEmailAsync(order.Email, subject, htmlContent, true);

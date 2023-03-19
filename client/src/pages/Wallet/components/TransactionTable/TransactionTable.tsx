@@ -1,9 +1,11 @@
-/* eslint-disable id-length */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {
+  Avatar,
   Box,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -14,8 +16,6 @@ import {
   TableSortLabel,
   Toolbar,
   Typography,
-  Paper,
-  Avatar,
 } from '@mui/material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {useTheme} from '@mui/material/styles';
@@ -26,7 +26,6 @@ import 'moment/dist/locale/fr';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
 import {useAlertContext} from '@shared/hooks/Alerts';
-import {useEffect, useState} from 'react';
 
 import getTransactions from '@/data/api/requests/transactions';
 import ITransaction from '@/data/api/types/ITransaction';

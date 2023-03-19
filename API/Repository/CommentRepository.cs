@@ -5,14 +5,15 @@ using API.Repository.Interfaces;
 namespace API.Repository;
 
 [ExcludeFromCodeCoverage]
-public class CommentRepository: ICommentRepository
+public class CommentRepository : ICommentRepository
 {
     private readonly IDataContext _dataContext;
-    
+
     public CommentRepository(IDataContext dataContext)
     {
         _dataContext = dataContext;
     }
+
     public async Task<CommentModel?> GetCommentById(string id)
     {
         return await _dataContext.Comments.FindAsync(id);

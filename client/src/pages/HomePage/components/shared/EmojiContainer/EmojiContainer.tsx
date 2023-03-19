@@ -3,7 +3,7 @@ import {keyframes, useTheme} from '@mui/material/styles';
 import {Box, Typography} from '@mui/material';
 import {ReactNode, useEffect, useRef, useState} from 'react';
 import {useMsal} from '@azure/msal-react';
-import {motion, AnimatePresence} from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 
 interface EmojiContainerProps {
   type: number;

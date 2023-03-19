@@ -1,5 +1,4 @@
-﻿using API.Models;
-using API.Models.Users;
+﻿using API.Models.Users;
 
 namespace API.Repository.Interfaces;
 

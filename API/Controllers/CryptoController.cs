@@ -16,8 +16,8 @@ public class CryptoController : ControllerBase
 {
     private readonly ICryptoService _cryptoService;
     private readonly ClaimsIdentity? _identity;
-    private readonly ITransactionService _transactionService;
     private readonly string _oId;
+    private readonly ITransactionService _transactionService;
 
 
     public CryptoController(ICryptoService cryptoService, ITransactionService transactionService,
@@ -28,7 +28,7 @@ public class CryptoController : ControllerBase
         _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
         _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
-    
+
     [HttpPost]
     public async Task<ActionResult<RpcTransactionResult>> SelfTransferTokens(double amount)
     {
@@ -41,7 +41,7 @@ public class CryptoController : ControllerBase
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
         await _transactionService.AddTransactionAsync(new TransactionModel("self", "toAward", _oId,
             "toSpend", amount, "SelfTransfer", DateTimeOffset.UtcNow));
-       _cryptoService.QueueTokenUpdate(new List<List<string>>
+        _cryptoService.QueueTokenUpdate(new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { _oId, _oId } });
         return Ok(rpcTransactionResult);
     }
@@ -95,7 +95,7 @@ public class CryptoController : ControllerBase
             { new() { "monthlyTokenQueue" }, new() { oid } });
         return Ok();
     }
-    
+
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public ActionResult InitiateAnniversaryBonusGifting()

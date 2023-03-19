@@ -1,5 +1,4 @@
 import {Box, Card, Divider, Typography} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 import {t} from 'i18next';
 import {useEffect, useState} from 'react';
 import {useQuery} from 'react-query';
@@ -7,7 +6,7 @@ import {useQuery} from 'react-query';
 import {AnniversaryItem} from './components';
 
 import {getUpcomingAnniversaries} from '@/data/api/requests/users';
-import IUser, {IUserWithDate} from '@/data/api/types/IUser';
+import {IUserWithDate} from '@/data/api/types/IUser';
 
 export default function AnniversaryBoard() {
   const [upcomingAnniversaries, setUpcomingAnniversaries] = useState<

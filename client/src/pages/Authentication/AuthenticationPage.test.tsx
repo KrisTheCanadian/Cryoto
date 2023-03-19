@@ -10,8 +10,6 @@ import {act, render, screen} from '@testing-library/react';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';
 
-import {LandingPage} from '../LandingPage';
-
 import i18n from '@/i18n/i18n';
 import {AuthenticationPage} from '.';
 

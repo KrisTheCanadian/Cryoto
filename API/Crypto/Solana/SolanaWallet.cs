@@ -5,10 +5,10 @@ using Solnet.Wallet.Bip39;
 
 namespace API.Crypto.Solana;
 
-public class SolanaWallet
+public static class SolanaWallet
 {
     /// <summary>
-    /// Creates a new wallet
+    ///     Creates a new wallet
     /// </summary>
     /// <returns></returns>
     public static Wallet CreateWallet()
@@ -18,7 +18,7 @@ public class SolanaWallet
     }
 
     /// <summary>
-    /// Encrypts the mnemonic associated with the wallet in a web3 secret storage encrypted json data
+    ///     Encrypts the mnemonic associated with the wallet in a web3 secret storage encrypted json data
     /// </summary>
     /// <param name="wallet">User's wallet</param>
     /// <param name="password">User's password</param>
@@ -36,10 +36,11 @@ public class SolanaWallet
     }
 
     /// <summary>
-    /// Decrypts the mnemonic associated with the wallet
+    ///     Decrypts the mnemonic associated with the wallet
     /// </summary>
     /// <param name="encryptedKeystoreJson">User's encrypted Mnemonic</param>
     /// <param name="password">User's password</param>
+    /// <param name="passphrase"></param>
     /// <returns>The user's restored wallet</returns>
     public static Wallet DecryptWallet(string encryptedKeystoreJson, string password, string passphrase = "")
     {
@@ -55,7 +56,7 @@ public class SolanaWallet
     }
 
     /// <summary>
-    /// Get a wallet object with associated mnemonic and passphrase (if needed)
+    ///     Get a wallet object with associated mnemonic and passphrase (if needed)
     /// </summary>
     /// <param name="mnemonicString"></param>
     /// <param name="passphrase">optional</param>
@@ -68,9 +69,9 @@ public class SolanaWallet
 
         return new Wallet(mnemonicString, WordList.English);
     }
-    
+
     /// <summary>
-    /// Transform string object to PublicKey Object
+    ///     Transform string object to PublicKey Object
     /// </summary>
     /// <param name="publicKey"></param>
     /// <returns>PublicKey Object</returns>

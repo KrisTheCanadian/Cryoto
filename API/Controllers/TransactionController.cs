@@ -11,18 +11,17 @@ namespace API.Controllers;
 public class TransactionController : ControllerBase
 {
     private readonly ITransactionService _transactionService;
-    
+
     public TransactionController(ITransactionService transactionService)
     {
         _transactionService = transactionService;
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<List<TransactionResponseModel>>> GetTransactionsBySenderOId(string senderOId)
     {
         var senderList = await _transactionService.GetTransactionsBySenderAsync(senderOId);
         return Ok(senderList);
-
     }
 
     [HttpGet]
@@ -41,5 +40,4 @@ public class TransactionController : ControllerBase
         var createdTransaction = await _transactionService.GetTransactionByIdAsync(transaction.Id);
         return Ok(createdTransaction);
     }
-
 }

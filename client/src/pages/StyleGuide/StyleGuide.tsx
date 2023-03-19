@@ -21,6 +21,7 @@ interface ColorBoxProps {
   title: string;
   description: string;
 }
+
 interface CodeBlockProps {
   children: ReactNode | string | ReactNode[];
 }

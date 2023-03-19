@@ -7,12 +7,12 @@ namespace API.Services;
 public class TransactionService : ITransactionService
 {
     private readonly ITransactionRepository _transactionRepository;
-    
+
     public TransactionService(ITransactionRepository transactionRepository)
     {
         _transactionRepository = transactionRepository;
     }
-    
+
     public async Task<List<TransactionResponseModel>> GetTransactionsBySenderAsync(string senderOId)
     {
         return await _transactionRepository.GetTransactionsBySenderAsync(senderOId);

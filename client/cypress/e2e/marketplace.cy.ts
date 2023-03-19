@@ -89,8 +89,8 @@ describe('Marketplace', () => {
     cy.get('[data-testid="price-button"]').click();
     cy.wait(100);
     cy.get('[data-testid="CheckBoxOutlineBlankIcon"]')
-        .first()
-        .click({force: true});
+      .first()
+      .click({force: true});
     cy.get('[data-testid="mFilterButton"]').click({force: true});
     cy.wait(100);
   });

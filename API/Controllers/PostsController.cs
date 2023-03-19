@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Security.Claims;
 using API.Models.Comments;
 using API.Models.Notifications;
@@ -19,18 +18,19 @@ namespace API.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly string _actorId;
+    private readonly ICommentService _commentService;
     private readonly ICryptoService _cryptoService;
     private readonly ILogger<PostsController> _logger;
     private readonly INotificationService _notificationService;
     private readonly IPostService _postService;
     private readonly ITransactionService _transactionService;
     private readonly IUserProfileService _userProfileService;
-    private readonly ICommentService _commentService;
 
 
     public PostsController(IPostService postService, ICryptoService cryptoService,
         ITransactionService transactionService, IHttpContextAccessor contextAccessor,
-        INotificationService notificationService, IUserProfileService userProfileService, ICommentService commentService,
+        INotificationService notificationService, IUserProfileService userProfileService,
+        ICommentService commentService,
         ILogger<PostsController> logger)
     {
         _commentService = commentService;
@@ -79,11 +79,11 @@ public class PostsController : ControllerBase
         var created = await _postService.CommentOnPostAsync(postModel, commentModel);
         if (!created) return BadRequest("Could not comment on the post");
 
-        var notificationSent = await _notificationService.SendCommentNotification(_actorId, postId.ToString(), postModel);
+        var notificationSent =
+            await _notificationService.SendCommentNotification(_actorId, postId.ToString(), postModel);
         if (!notificationSent)
-        {
-            _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}", postId.ToString(), _actorId);
-        }
+            _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}",
+                postId.ToString(), _actorId);
         return Ok(commentModel);
     }
 
@@ -171,7 +171,7 @@ public class PostsController : ControllerBase
 
         await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId,
             postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
-        
+
         var senderName = actorProfile.Name;
         var subject = "You have been awarded " + amount + " tokens" + " by " + senderName + "!";
         var htmlContent = "<h1>You have been awarded " + amount + " tokens" + " by " + senderName + "!</h1>" +
@@ -179,16 +179,16 @@ public class PostsController : ControllerBase
 
         await _notificationService.SendEmailAsync(actorProfile.Email, subject, htmlContent, true);
     }
-    
+
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteComment(Guid id)
     {
         var comment = await _commentService.GetCommentById(id.ToString());
         if (comment == null) return NotFound();
-        if(comment.Author != _actorId) return Unauthorized();
+        if (comment.Author != _actorId) return Unauthorized();
         var isSuccessful = await _commentService.DeleteComment(comment);
         if (!isSuccessful) return BadRequest();
-        
+
         return Ok();
     }
 
@@ -201,14 +201,13 @@ public class PostsController : ControllerBase
         var liked = await _postService.ReactAsync(type, guid, _actorId);
         if (!liked) return BadRequest("Could not like the post");
 
-        var notificationSent = await _notificationService.SendReactionNotification(_actorId, guid, type, existingPost);
+        var notificationSent = await _notificationService.SendReactionNotification(_actorId, type, existingPost);
         if (!notificationSent)
-        {
-            _logger.LogWarning("Failed to send reaction notification on post '{guid}' by user {_actorId}", guid, _actorId);
-        }
+            _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}", guid,
+                _actorId);
         return Ok(await _postService.GetByIdAsync(guid));
     }
-    
+
     [HttpPost]
     [Authorize(Roles = "Partner,SeniorPartner")]
     public async Task<ActionResult<PostModel>> Boost(string guid)
@@ -216,14 +215,14 @@ public class PostsController : ControllerBase
         var existingPost = await _postService.GetByIdAsync(guid);
         if (existingPost == null)
         {
-            _logger.LogError("Could not retrieve post '{guid}'", guid);
+            _logger.LogError("Could not retrieve post '{Guid}'", guid);
             return BadRequest("Cannot boost to the post because it does not exist.");
         }
-        
+
         var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
         if (actorProfile == null)
         {
-            _logger.LogError("Could not retrieve user '{_actorId}'", _actorId);
+            _logger.LogError("Could not retrieve user '{ActorId}'", _actorId);
             return BadRequest("Cannot boost the post because user does not exist.");
         }
 
@@ -231,22 +230,22 @@ public class PostsController : ControllerBase
         var transactionSuccess = await _cryptoService.BoostRecognition(_actorId, recipients);
         if (!transactionSuccess)
         {
-            _logger.LogError("Could not complete transaction to boost post '{guid}' by booster '{_actorId}'.", guid, _actorId);
+            _logger.LogError("Could not complete transaction to boost post '{Guid}' by booster '{ActorId}'", guid,
+                _actorId);
             return BadRequest("Could not complete boost transaction.");
         }
 
         var boosted = await _postService.BoostAsync(guid, actorProfile);
         if (!boosted)
         {
-            _logger.LogError("Could not complete boost reaction to boost post '{guid}' by booster '{_actorId}'.", guid, _actorId);
+            _logger.LogError("Could not complete boost reaction to boost post '{Guid}' by booster '{ActorId}'", guid,
+                _actorId);
             return BadRequest("Could not boost the post.");
         }
 
-        var notificationSent = await _notificationService.SendBoostNotification(_actorId, guid, existingPost);
+        var notificationSent = await _notificationService.SendBoostNotification(_actorId, existingPost);
         if (!notificationSent)
-        {
-            _logger.LogWarning("Failed to send boost notification on post '{guid}' by user {_actorId}", guid, _actorId);
-        }
+            _logger.LogWarning("Failed to send boost notification on post '{Guid}' by user {ActorId}", guid, _actorId);
         return Ok(await _postService.GetByIdAsync(guid));
     }
 }

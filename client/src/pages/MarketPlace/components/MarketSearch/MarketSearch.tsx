@@ -1,14 +1,13 @@
-/* eslint-disable id-length */
 /* eslint-disable @shopify/jsx-prefer-fragment-wrappers */
 import {Search} from '@mui/icons-material';
 import {
   Box,
-  InputBase,
-  IconButton,
-  Paper,
   Divider,
-  Typography,
+  IconButton,
+  InputBase,
   ListItem,
+  Paper,
+  Typography,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {useRef, useState} from 'react';

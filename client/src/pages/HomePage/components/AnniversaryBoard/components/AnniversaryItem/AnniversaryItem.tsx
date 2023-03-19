@@ -9,7 +9,7 @@ import {
   ListItemAvatar,
   Typography,
 } from '@mui/material';
-import {useTheme, styled} from '@mui/material/styles';
+import {styled, useTheme} from '@mui/material/styles';
 import {useEffect, useState} from 'react';
 import {stringAvatar} from '@shared/utils/colorUtils';
 import {useTranslation} from 'react-i18next';
@@ -23,6 +23,7 @@ interface AnniversaryItemProps {
   name: string;
   startDate: string;
 }
+
 const StyledBadge = styled(Badge)<BadgeProps>(({theme}) => ({
   '& .MuiBadge-badge': {
     right: -4,

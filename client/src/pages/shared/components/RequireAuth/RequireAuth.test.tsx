@@ -1,9 +1,9 @@
 import {act, render, screen} from '@testing-library/react';
 import {
-  PublicClientApplication,
-  IPublicClientApplication,
-  Configuration,
   AccountInfo,
+  Configuration,
+  IPublicClientApplication,
+  PublicClientApplication,
 } from '@azure/msal-browser';
 import {MsalProvider} from '@azure/msal-react';
 import {MemoryRouter} from 'react-router-dom';

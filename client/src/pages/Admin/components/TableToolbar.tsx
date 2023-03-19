@@ -1,4 +1,3 @@
-/* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {InputAdornment, TextField, Toolbar, Typography} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';

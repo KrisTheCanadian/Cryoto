@@ -1,23 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
-  useTheme,
   Autocomplete,
+  Box,
   Button,
+  ClickAwayListener,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  useMediaQuery,
-  Box,
-  Collapse,
   Fade,
   FormControl,
+  IconButton,
   MenuItem,
   styled,
   TextareaAutosize,
   TextField,
-  IconButton,
-  ClickAwayListener,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useEffect, useState} from 'react';
@@ -33,7 +33,7 @@ import {useMutationCreatePost} from './hooks/useMutationCreatePost';
 import {ImageUploader} from './components';
 
 import {searchUsers} from '@/data/api/requests/users';
-import {INewPost, IUser} from '@/data/api/types';
+import {INewPost} from '@/data/api/types';
 import {PostType} from '@/data/api/enums';
 import {IUserMinimal} from '@/data/api/types/IUser';
 
@@ -48,6 +48,7 @@ interface Recipient {
   name: string;
   id: string;
 }
+
 interface FormValidation {
   recipients: boolean;
   companyValue: boolean;
@@ -392,4 +393,5 @@ function NewPostDialog(props: NewPostDialogProps) {
     </Dialog>
   );
 }
+
 export default NewPostDialog;

@@ -12,4 +12,5 @@ interface IMarketPlaceItem {
   description_Fr: string;
   size?: string[];
 }
+
 export default IMarketPlaceItem;

@@ -1,7 +1,13 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import {
+  Backdrop,
   Box,
+  CircularProgress,
+  IconButton,
+  Modal,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -10,11 +16,6 @@ import {
   TablePagination,
   TableRow,
   TableSortLabel,
-  Paper,
-  IconButton,
-  Modal,
-  CircularProgress,
-  Backdrop,
 } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import {useTheme} from '@mui/material/styles';
@@ -23,7 +24,6 @@ import {visuallyHidden} from '@mui/utils';
 import moment from 'moment';
 import 'moment/dist/locale/fr';
 import {useTranslation} from 'react-i18next';
-import {useEffect, useState} from 'react';
 
 import {TableToolbar} from './TableToolbar';
 import {EditUserRolesModal} from './EditUserRolesModal';

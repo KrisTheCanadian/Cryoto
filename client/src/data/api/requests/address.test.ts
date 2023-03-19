@@ -2,18 +2,18 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  apiRouteAddressGetDefaultAddressOrCreate,
-  apiRouteAddressGetDefaultAddress,
-  apiRouteAddressUpdate,
   apiRouteAddressAdd,
+  apiRouteAddressGetDefaultAddress,
+  apiRouteAddressGetDefaultAddressOrCreate,
+  apiRouteAddressUpdate,
 } from '../routes';
-import {IUpdateAddress, IAddAddress} from '../types/IAddress';
+import {IAddAddress, IUpdateAddress} from '../types/IAddress';
 
 import {
+  addAddress,
   getDefaultAddress,
   getDefaultAddressOrCreate,
   updateAddress,
-  addAddress,
 } from './address';
 
 const mock = new MockAdapter(axios);

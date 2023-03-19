@@ -1,7 +1,7 @@
 /* eslint-disable @shopify/strict-component-boundaries */
 import {Suspense} from 'react';
 import {CssBaseline} from '@mui/material';
-import {Routes, Route} from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {RequireAuth} from '@shared/components/RequireAuth';
 import {QueryClient, QueryClientProvider} from 'react-query';
@@ -17,19 +17,19 @@ import {ScrollToTop} from '@shared/components/ScrollToTop';
 import './App.css';
 import Role from './pages/roles';
 import {
+  routeAdmin,
   routeAuthentication,
+  routeCheckout,
   routeHome,
   routeLandingPage,
   routeMarket,
-  routeProduct,
   routeOrders,
+  routeProduct,
   routeProfile,
   routeSettings,
+  routeShoppingCart,
   routeStyleGuide,
   routeWallet,
-  routeShoppingCart,
-  routeCheckout,
-  routeAdmin,
 } from './pages/routes';
 import {StyleGuide} from './pages/StyleGuide';
 import {AuthenticationPage} from './pages/Authentication';

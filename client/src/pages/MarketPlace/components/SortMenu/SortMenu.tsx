@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {
+  Badge,
   Box,
-  useTheme,
   Button,
-  Menu,
   FormControl,
   FormControlLabel,
-  RadioGroup,
-  Radio,
+  Menu,
   MenuItem,
-  Badge,
+  Radio,
+  RadioGroup,
+  useTheme,
 } from '@mui/material';
-import {Sort, KeyboardArrowUp, KeyboardArrowDown} from '@mui/icons-material';
+import {KeyboardArrowDown, KeyboardArrowUp, Sort} from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
@@ -55,6 +55,7 @@ function SortMenuItems() {
     </FormControl>
   );
 }
+
 function SortMenu() {
   const theme = useTheme();
   const {t} = useTranslation();

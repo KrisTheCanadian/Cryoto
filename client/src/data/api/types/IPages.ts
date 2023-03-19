@@ -1,5 +1,4 @@
 import IPage from './IPage';
-import IPost from './IPost';
 
 interface IPages {
   pageParams: [];

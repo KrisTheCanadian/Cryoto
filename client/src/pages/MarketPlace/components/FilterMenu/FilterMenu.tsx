@@ -1,26 +1,25 @@
-/* eslint-disable id-length */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import {
+  Badge,
   Box,
-  useTheme,
   Button,
+  Checkbox,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
   Menu,
   MenuItem,
-  FormControl,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
-  IconButton,
   Typography,
-  Badge,
-  Divider,
+  useTheme,
 } from '@mui/material';
 import {
   Clear,
   FilterList,
-  KeyboardArrowUp,
   KeyboardArrowDown,
+  KeyboardArrowUp,
 } from '@mui/icons-material';
 import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -95,7 +94,8 @@ function FilterMenuItems() {
             mr: 1,
           }}
         >
-          <Button data-testid="remove-all-filters"  
+          <Button
+            data-testid="remove-all-filters"
             sx={{fontSize: 11}}
             style={{textTransform: 'none'}}
             onClick={() => {
@@ -163,7 +163,7 @@ function FilterMenuItems() {
               <FormControlLabel
                 key={t}
                 control={
-                  <Checkbox 
+                  <Checkbox
                     // id={"types-"+t}
                     name={t}
                     onChange={() => handleSelectedFilterChange(t, 2)}
@@ -178,7 +178,8 @@ function FilterMenuItems() {
         </FormControl>
       )}
       <Divider sx={{ml: 2, mr: 2}} />
-      <MenuItem data-testid="brand-button"
+      <MenuItem
+        data-testid="brand-button"
         onClick={() => setOpenBrand(!openBrand)}
         sx={{display: 'flex', justifyContent: 'space-between'}}
       >
@@ -200,7 +201,8 @@ function FilterMenuItems() {
               <FormControlLabel
                 key={b}
                 control={
-                  <Checkbox id={"checkbox-"+b}
+                  <Checkbox
+                    id={`checkbox-${b}`}
                     name={b}
                     onChange={() => handleSelectedFilterChange(b, 1)}
                     checked={isSelectedFilter(b)}
@@ -326,7 +328,8 @@ function FilterMenu() {
   };
   return (
     <Box>
-      <Button data-testid="mFilterButton"
+      <Button
+        data-testid="mFilterButton"
         onClick={handleFilterButtonClick}
         sx={{
           mr: 1,

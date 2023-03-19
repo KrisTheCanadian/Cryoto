@@ -1,4 +1,3 @@
-/* eslint-disable id-length */
 /* eslint-disable promise/catch-or-return */
 
 /* eslint-disable no-negated-condition */

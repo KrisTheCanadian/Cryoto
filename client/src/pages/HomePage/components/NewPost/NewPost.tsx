@@ -1,12 +1,12 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import {
+  Avatar,
+  Box,
   Card,
   CardContent,
-  Box,
   InputBase,
-  styled,
-  Avatar,
   ListItemAvatar,
+  styled,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {RoundedInput} from '@shared/components/interface-elements/RoundedInput';
@@ -86,4 +86,5 @@ function NewPost(props: NewPostProps) {
     </>
   );
 }
+
 export default NewPost;

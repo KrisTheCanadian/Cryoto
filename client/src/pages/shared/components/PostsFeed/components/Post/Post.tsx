@@ -4,7 +4,7 @@
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable react-hooks/rules-of-hooks */
-import {Avatar, Typography, Box, Chip, Stack} from '@mui/material';
+import {Avatar, Box, Chip, Stack, Typography} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import moment from 'moment';
@@ -340,11 +340,16 @@ function Post(props: PostProps) {
 
           <Stack sx={{ml: 2}}>
             <Typography variant="body1">
-              <b data-testid="poster-name" style={{cursor: 'pointer'}} onClick={handleAvatarClickAuthor}>
+              <b
+                data-testid="poster-name"
+                style={{cursor: 'pointer'}}
+                onClick={handleAvatarClickAuthor}
+              >
                 {firstName}
               </b>
               {` ${t('homePage.Recognized')}`}
-              <b data-testid="rewardee-name"
+              <b
+                data-testid="rewardee-name"
                 style={{cursor: 'pointer'}}
                 onClick={handleAvatarClickRecipient}
               >
@@ -382,7 +387,8 @@ function Post(props: PostProps) {
                 <Chip sx={ChipStyles} key={tag} label={tag} />
               ))}
             </Box>
-            <Typography data-testid="body2"
+            <Typography
+              data-testid="body2"
               variant="body2"
               sx={{color: theme.palette.text.disabled}}
             >
@@ -390,14 +396,16 @@ function Post(props: PostProps) {
             </Typography>
           </Stack>
         </Stack>
-        <Typography data-testid="body1"
+        <Typography
+          data-testid="body1"
           variant="body1"
           sx={{marginTop: theme.spacing(2), marginBottom: theme.spacing(2)}}
         >
           {message}
         </Typography>
         {imageUrl !== '' ? (
-          <img data-testid="image-url"
+          <img
+            data-testid="image-url"
             src={imageUrl}
             alt="imageUrl"
             width="100%"
@@ -427,7 +435,8 @@ function Post(props: PostProps) {
         </Box>
         <Divider sx={{my: theme.spacing(1)}} />
         <NewComment name={props.name} oId={props.oId} postid={props.id} />
-        <PreviewCommentSection data-testid="preview-comments"
+        <PreviewCommentSection
+          data-testid="preview-comments"
           id={id}
           postId={props.id}
           max={3}
@@ -451,4 +460,5 @@ function Post(props: PostProps) {
     </Box>
   );
 }
+
 export default Post;

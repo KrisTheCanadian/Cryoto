@@ -1,5 +1,5 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
-/* eslint-disable id-length */
+
 import {
   Box,
   Button,

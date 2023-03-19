@@ -148,7 +148,7 @@ internal static class Program
         builder.Services.AddHostedService<CryotoBackgroundService>();
         builder.Services.AddAzureClients(factoryBuilder =>
         {
-            factoryBuilder.AddClient<QueueClient, QueueClientOptions>((_) =>
+            factoryBuilder.AddClient<QueueClient, QueueClientOptions>(_ =>
             {
                 var queueName = configuration.GetSection("queueName").Value;
                 var queueConnectionString = configuration.GetSection("queueConnectionString").Value;

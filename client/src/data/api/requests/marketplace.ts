@@ -2,8 +2,8 @@ import axios from 'axios';
 
 import {
   apiEndpoint,
-  apiRouteMarketPlaceGetAllItems,
   apiRouteMarketPlaceCompletePurchase,
+  apiRouteMarketPlaceGetAllItems,
 } from '../routes';
 import {getAccessToken} from '../helpers';
 import IMarketPlaceItem from '../types/IMarketPlaceItem';

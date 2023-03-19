@@ -3,11 +3,10 @@ import {RoundedInput} from '@shared/components/interface-elements/RoundedInput';
 import {useEffect, useRef, useState} from 'react';
 import {Search} from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
-import {useMsal} from '@azure/msal-react';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {stringAvatar} from '@shared/utils/colorUtils';
 
-import {routeMarket, routeProfile} from '@/pages/routes';
+import {routeMarket} from '@/pages/routes';
 import {searchUsers} from '@/data/api/requests/users';
 import {IUserWithDate} from '@/data/api/types/IUser';
 

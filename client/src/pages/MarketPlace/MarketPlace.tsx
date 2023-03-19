@@ -1,14 +1,14 @@
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
-/* eslint-disable id-length */
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Box,
+  Divider,
+  Drawer,
   Grid,
+  IconButton,
   Pagination,
   useTheme,
-  IconButton,
-  Drawer,
-  Divider,
 } from '@mui/material';
 import {Close} from '@mui/icons-material';
 import PageFrame from '@shared/components/PageFrame';
@@ -16,11 +16,11 @@ import {useEffect, useState} from 'react';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 
 import {
-  ProductCard,
-  FilterMenu,
-  SortMenu,
-  MarketSearch,
   CartButton,
+  FilterMenu,
+  MarketSearch,
+  ProductCard,
+  SortMenu,
 } from './components';
 
 import {IItem} from '@/data/api/types/ICart';

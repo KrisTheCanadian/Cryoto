@@ -17,19 +17,14 @@ public class SolanaService : ISolanaService
         return SolanaWallet.EncryptWallet(wallet, password);
     }
 
-    public Wallet DecryptWallet(string encryptedKeystoreJson, string password, string passphrase = "")
+    public Wallet DecryptWallet(string encryptedJsonWallet, string password, string passphrase = "")
     {
-        return SolanaWallet.DecryptWallet(encryptedKeystoreJson, password, passphrase);
+        return SolanaWallet.DecryptWallet(encryptedJsonWallet, password, passphrase);
     }
 
-    public Wallet GetWallet(string mnemonicString, string passphrase = "")
+    public Wallet GetWallet(string mnemonic, string passphrase = "")
     {
-        return SolanaWallet.RetrieveWallet(mnemonicString, passphrase);
-    }
-
-    public PublicKey GetPublicKeyFromString(string pb)
-    {
-        return SolanaWallet.GetPublicKeyFromString(pb);
+        return SolanaWallet.RetrieveWallet(mnemonic, passphrase);
     }
 
     public RpcTransactionResult SendTokens(double amount, Wallet sender, Wallet feePayer, PublicKey receiver,
@@ -41,5 +36,10 @@ public class SolanaService : ISolanaService
     public double GetTokenBalance(PublicKey pb, string tokenAddress)
     {
         return SolanaTransactions.GetTokenWalletBalance(pb, tokenAddress);
+    }
+
+    public PublicKey GetPublicKeyFromString(string pb)
+    {
+        return SolanaWallet.GetPublicKeyFromString(pb);
     }
 }

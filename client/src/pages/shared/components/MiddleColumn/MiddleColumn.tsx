@@ -21,4 +21,5 @@ function MiddleColumn(props: MiddleColumnProps) {
     </Box>
   );
 }
+
 export default MiddleColumn;

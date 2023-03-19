@@ -1,21 +1,21 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 import {
   Box,
+  CircularProgress,
+  Divider,
   List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  styled,
   Typography,
   useTheme,
-  styled,
-  ListSubheader,
-  ListItemIcon,
-  ListItemButton,
-  ListItemText,
-  Divider,
-  CircularProgress,
 } from '@mui/material';
 import {
   HomeOutlined,
-  WalletOutlined,
   StorefrontOutlined,
+  WalletOutlined,
 } from '@mui/icons-material';
 import {NavLink, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
@@ -25,7 +25,7 @@ import {MenuItem} from './components';
 
 import {getTokenBalance} from '@/data/api/requests/wallet';
 import IWalletsBalance from '@/data/api/types/IWalletsBalance';
-import {routeHome, routeMarket, routeOrders, routeWallet} from '@/pages/routes';
+import {routeHome, routeMarket, routeWallet} from '@/pages/routes';
 
 export const walletBalanceQuery = 'walletsBalance';
 

@@ -17,26 +17,28 @@ public class CommentServiceTests
         _commentRepository = A.Fake<ICommentRepository>(x => x.Strict());
         _commentService = new CommentService(_commentRepository);
     }
-    
+
     [Fact]
-    public async void GetCommentByIdReturnsComment()
+    public async Task GetCommentByIdReturnsComment()
     {
         // Arrange
         var comment = A.Fake<CommentModel>();
-        A.CallTo(() => _commentRepository.GetCommentById(A<string>.That.Matches(x => x == comment.Id))).Returns(comment);
+        A.CallTo(() => _commentRepository.GetCommentById(A<string>.That.Matches(x => x == comment.Id)))
+            .Returns(comment);
 
         // Act
         var actionResult = await _commentService.GetCommentById(comment.Id);
-        
+
         // Assert
         Assert.NotNull(actionResult);
         Assert.Equal(comment, actionResult);
-        
-        A.CallTo(() => _commentRepository.GetCommentById(A<string>.That.Matches(x => x == comment.Id))).MustHaveHappenedOnceExactly();
+
+        A.CallTo(() => _commentRepository.GetCommentById(A<string>.That.Matches(x => x == comment.Id)))
+            .MustHaveHappenedOnceExactly();
     }
-    
+
     [Fact]
-    public async void DeleteCommentReturnsTrue()
+    public async Task DeleteCommentReturnsTrue()
     {
         // Arrange
         var comment = A.Fake<CommentModel>();
@@ -44,10 +46,11 @@ public class CommentServiceTests
 
         // Act
         var actionResult = await _commentService.DeleteComment(comment);
-        
+
         // Assert
         Assert.True(actionResult);
-        
-        A.CallTo(() => _commentRepository.DeleteComment(A<CommentModel>.That.Matches(x => x == comment))).MustHaveHappenedOnceExactly();
+
+        A.CallTo(() => _commentRepository.DeleteComment(A<CommentModel>.That.Matches(x => x == comment)))
+            .MustHaveHappenedOnceExactly();
     }
 }

@@ -1,12 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
 
@@ -26,6 +19,7 @@ interface Filter {
   min?: number;
   max?: number;
 }
+
 interface MarketplaceContextState {
   allItems: IItem[];
   selectedFilters: Filter[];

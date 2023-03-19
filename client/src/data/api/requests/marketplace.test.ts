@@ -2,12 +2,12 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  apiRouteMarketPlaceGetAllItems,
   apiRouteMarketPlaceCompletePurchase,
+  apiRouteMarketPlaceGetAllItems,
 } from '../routes';
 import {IOrder} from '../types/ICart';
 
-import {getAllItems, completePurchase} from './marketplace';
+import {completePurchase, getAllItems} from './marketplace';
 
 const mock = new MockAdapter(axios);
 

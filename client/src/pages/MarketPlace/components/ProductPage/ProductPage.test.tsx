@@ -1,6 +1,6 @@
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
 import {MarketplaceContext} from '@shared/hooks/MarketplaceContext';
-import {fireEvent, render, screen} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
 import {MemoryRouter} from 'react-router-dom';

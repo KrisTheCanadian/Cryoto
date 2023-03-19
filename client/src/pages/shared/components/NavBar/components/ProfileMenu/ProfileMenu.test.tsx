@@ -3,8 +3,6 @@ import {act, render, screen} from '@testing-library/react';
 
 import ProfileMenu from './ProfileMenu';
 
-import {Profile} from '@/pages/Profile';
-
 it('Should display menu when clicked', async () => {
   await act(async () => {
     render(

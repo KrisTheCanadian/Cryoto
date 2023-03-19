@@ -16,8 +16,8 @@ namespace API.Tests.ControllersTests;
 
 public class CryptoControllerTests
 {
-    private readonly ICryptoService _cryptoService;
     private readonly CryptoController _controller;
+    private readonly ICryptoService _cryptoService;
     private readonly ITransactionService _transactionService;
 
 
@@ -30,7 +30,7 @@ public class CryptoControllerTests
     }
 
     [Fact]
-    public async void CryptoController_SelfTransferTokens_ReturnsOK()
+    public async Task CryptoController_SelfTransferTokens_ReturnsOK()
     {
         //Arrange
         var rpcTransactionResult = GetRpcTransactionResultSuccessful();
@@ -40,7 +40,7 @@ public class CryptoControllerTests
         var amount = A.Dummy<double>();
         A.CallTo(() => _cryptoService.SelfTransferTokens(amount, A<string>._))
             .Returns(rpcTransactionResult);
-        A.CallTo(() => _cryptoService.UpdateTokenBalance((-amount), senderOId, "toSpend"))
+        A.CallTo(() => _cryptoService.UpdateTokenBalance(-amount, senderOId, "toSpend"))
             .Returns(true);
         A.CallTo(() => _cryptoService.UpdateTokenBalance(amount, receiverOId, "toAward"))
             .Returns(true);
@@ -63,9 +63,9 @@ public class CryptoControllerTests
         objectResultValue?.result.Should().Be(rpcTransactionResult.Result.result);
         objectResultValue?.error.Should().BeNull();
     }
-    
+
     [Fact]
-    public async void CryptoController_SelfTransferTokens_ReturnsBadRequest()
+    public async Task CryptoController_SelfTransferTokens_ReturnsBadRequest()
     {
         //Arrange
         var rpcTransactionResult = GetRpcTransactionResultError();
@@ -89,11 +89,12 @@ public class CryptoControllerTests
 
 
     [Fact]
-    public async void CryptoController_GetTokenBalance_ReturnsOK()
+    public async Task CryptoController_GetTokenBalance_ReturnsOK()
     {
         //Arrange
         var userWalletsModel = GetFakeUserWalletsModel();
-        A.CallTo(() => _cryptoService.GetWalletsBalanceAsync(A<string>._,A<ClaimsIdentity>._)).Returns(userWalletsModel);
+        A.CallTo(() => _cryptoService.GetWalletsBalanceAsync(A<string>._, A<ClaimsIdentity>._))
+            .Returns(userWalletsModel);
 
         //Act
         var actionResult = await _controller.GetTokenBalance();
@@ -143,6 +144,5 @@ public class CryptoControllerTests
             50.50,
             25
         );
-
     }
 }

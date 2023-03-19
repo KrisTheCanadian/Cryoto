@@ -10,5 +10,4 @@ public interface ITransactionRepository
     public Task<bool> AddTransactionAsync(TransactionModel transaction);
     public Task<bool> DeleteTransactionAsync(TransactionModel transaction);
     public Task<bool> UpdateTransactionAsync(TransactionModel transaction);
-
 }

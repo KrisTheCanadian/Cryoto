@@ -19,32 +19,32 @@ public class PostServiceTest
         _postRepository = A.Fake<IPostRepository>();
         _postService = new PostService(_postRepository);
     }
-    
+
     [Fact]
     public void BoostAsync_Partner_ReturnsTrue()
     {
         // Arrange
-        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"Partner"});
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new[] { "Partner" });
         A.CallTo(() => _postRepository.BoostAsync(A<string>._, A<string>._)).Returns(Task.FromResult(true));
-        
+
         // Act
         var result = _postService.BoostAsync("123", actorProfile);
-        
+
         // Assert
         result.Should().NotBeNull();
         Assert.True(result.Result);
     }
-    
+
     [Fact]
     public void BoostAsync_SeniorPartner_ReturnsTrue()
     {
         // Arrange
-        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"Senior Partner"});
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new[] { "Senior Partner" });
         A.CallTo(() => _postRepository.BoostAsync(A<string>._, A<string>._)).Returns(Task.FromResult(true));
-        
+
         // Act
         var result = _postService.BoostAsync("123", actorProfile);
-        
+
         // Assert
         result.Should().NotBeNull();
         Assert.True(result.Result);
@@ -54,27 +54,28 @@ public class PostServiceTest
     public void BoostAsync_ReturnsTrue()
     {
         // Arrange
-        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"Senior Partner", "Partner"});
+        var actorProfile =
+            new UserProfileModel("actorId", "name", "email", "en", new[] { "Senior Partner", "Partner" });
         A.CallTo(() => _postRepository.BoostAsync(A<string>._, A<string>._)).Returns(Task.FromResult(true));
-        
+
         // Act
         var result = _postService.BoostAsync("123", actorProfile);
-        
+
         // Assert
         result.Should().NotBeNull();
         Assert.True(result.Result);
     }
-    
+
     [Fact]
     public void BoostAsync_ReturnsFalse()
     {
         // Arrange
-        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new []{"role"});
+        var actorProfile = new UserProfileModel("actorId", "name", "email", "en", new[] { "role" });
         A.CallTo(() => _postRepository.BoostAsync(A<string>._, A<string>._)).Returns(Task.FromResult(true));
-        
+
         // Act
         var result = _postService.BoostAsync("123", actorProfile);
-        
+
         // Assert
         result.Should().NotBeNull();
         Assert.False(result.Result);

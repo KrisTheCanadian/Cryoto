@@ -21,5 +21,4 @@ public class WalletModel
     public string WalletType { get; set; }
     public double TokenBalance { get; set; }
     [ForeignKey("UserProfileModel")] public string OId { get; set; }
-    public UserProfileModel UserProfileModel { get; set; } = null!;
 }

@@ -1,12 +1,12 @@
 import {
-  Card,
   Box,
-  Typography,
-  CardMedia,
-  CardContent,
   Button,
+  Card,
+  CardContent,
+  CardMedia,
   createTheme,
   ThemeProvider,
+  Typography,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';

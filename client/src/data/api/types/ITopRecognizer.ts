@@ -1,4 +1,4 @@
-import {IUserMinimal, IUserWithDate} from './IUser';
+import {IUserWithDate} from './IUser';
 
 export interface ITopRecognizer {
   count: number;

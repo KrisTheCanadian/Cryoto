@@ -3,19 +3,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @shopify/strict-component-boundaries */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
-/* eslint-disable id-length */
+
 import {
   Box,
-  Divider,
-  IconButton,
-  Typography,
-  Paper,
   Button,
-  TextField,
-  Grid,
   CircularProgress,
+  Divider,
+  Grid,
+  IconButton,
+  Paper,
+  TextField,
+  Typography,
 } from '@mui/material';
-import {Check, CheckCircle, Edit, ArrowBackIosNew} from '@mui/icons-material';
+import {ArrowBackIosNew, Check, CheckCircle, Edit} from '@mui/icons-material';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 import {useTheme} from '@mui/material/styles';
 import {Trans, useTranslation} from 'react-i18next';
@@ -35,7 +35,7 @@ import {EditAddressDialog} from './components';
 import {completePurchase} from '@/data/api/requests/marketplace';
 import IAddress, {IAddAddress} from '@/data/api/types/IAddress';
 import {ICartItem, IOrder, IOrderItem} from '@/data/api/types/ICart';
-import {getDefaultAddress, addAddress} from '@/data/api/requests/address';
+import {addAddress, getDefaultAddress} from '@/data/api/requests/address';
 import {getUserProfile} from '@/data/api/requests/users';
 import {IUserProfile} from '@/data/api/types/IUser';
 import {getTokenBalance} from '@/data/api/requests/wallet';

@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using API.Models.Address;
 
 namespace API.Models.Users;
 
@@ -37,16 +35,10 @@ public class UserProfileModel
     public string? Fax { get; set; }
     public string? Mobile { get; set; }
     public string? Bio { get; set; }
-    
-    
-    [NotMapped]public ICollection<AddressModel> Addresses { get; set; } = null!;
     public string? TimeZone { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? Birthday { get; set; }
     public string? City { get; set; }
     [DefaultValue(0)] public int RecognitionsReceived { get; set; }
     [DefaultValue(0)] public int RecognitionsSent { get; set; }
-
-
-    [NotMapped] public ICollection<WalletModel> Wallets { get; set; } = null!;
 }

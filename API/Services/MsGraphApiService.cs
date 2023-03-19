@@ -43,9 +43,9 @@ public class MsGraphApiService : IMsGraphApiService
             if (!response.IsSuccessStatusCode) failureResponses.Add(await response.Content.ReadAsStringAsync());
         }
 
-        var successResponses = !(failureResponses.Count > 0);
+        var successResponses = failureResponses.Count <= 0;
         if (!successResponses)
-            _logger.LogError("Could not add the roles {roles} for the user {oid}. Error: {failureResponses}",
+            _logger.LogError("Could not add the roles {Roles} for the user {Oid}. Error: {FailureResponses}",
                 roles, oid, failureResponses);
 
         return successResponses;
@@ -67,9 +67,9 @@ public class MsGraphApiService : IMsGraphApiService
             if (!response.IsSuccessStatusCode) failureResponses.Add(await response.Content.ReadAsStringAsync());
         }
 
-        var successResponses = !(failureResponses.Count > 0);
+        var successResponses = failureResponses.Count <= 0;
         if (!successResponses)
-            _logger.LogError("Could not remove the roles {roles} for the user {oid}. Error: {failureResponses}",
+            _logger.LogError("Could not remove the roles {Roles} for the user {Oid}. Error: {FailureResponses}",
                 roles, oid, failureResponses);
 
         return successResponses;

@@ -1,14 +1,14 @@
 /* eslint-disable @shopify/jsx-no-complex-expressions */
-/* eslint-disable id-length */
+
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {
+  Badge,
   Box,
   CardMedia,
   Divider,
+  Grid,
   IconButton,
   Typography,
-  Grid,
-  Badge,
 } from '@mui/material';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 import {Add, Clear, Remove} from '@mui/icons-material';

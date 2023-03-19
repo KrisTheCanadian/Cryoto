@@ -1,6 +1,6 @@
 import axios, {AxiosError} from 'axios';
 
-import {getAccessToken, getUserId} from '../helpers';
+import {getAccessToken} from '../helpers';
 import {
   apiEndpoint,
   apiRoutePostsBoostPost,

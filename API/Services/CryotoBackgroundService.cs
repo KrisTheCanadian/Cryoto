@@ -1,20 +1,18 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
+using API.Models.Posts;
 using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using static System.Threading.Tasks.Task;
-using System.Text.Json;
-using API.Models.Posts;
-using API.Models.Users;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services;
 
 [ExcludeFromCodeCoverage]
 public class CryotoBackgroundService : BackgroundService
 {
+    private readonly IConfiguration _configuration;
     private readonly QueueClient _queueClient;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IConfiguration _configuration;
 
 
     public CryotoBackgroundService(QueueClient queueClient,
@@ -95,7 +93,6 @@ public class CryotoBackgroundService : BackgroundService
                         case "tokenUpdateQueue":
                         {
                             foreach (var oid in messageList[1].Select((value, index) => new { index, value }))
-                            {
                                 if (oid.index == 0)
                                 {
                                     var senderTokenBalance =
@@ -109,7 +106,6 @@ public class CryotoBackgroundService : BackgroundService
                                         await cryptoService.GetSolanaTokenBalanceAsync(oid.value, "toSpend");
                                     await cryptoService.UpdateSolanaTokenBalance(tokenBalance, oid.value, "toSpend");
                                 }
-                            }
 
                             break;
                         }
@@ -138,10 +134,15 @@ public class CryotoBackgroundService : BackgroundService
                                     "Thank you for being an essential part of our success. Happy Anniversary!",
                                     "On your anniversary, we appreciate all your hard work and dedication. Best wishes for another successful year."
                                 };
-                                var anniversaryMessage = anniversaryMessages[new Random().NextInt64(anniversaryMessages.Length)];
-                                await postService.CreateAsync(new PostModel("da6e9ec4-6c5d-45b3-bf3c-22ad1c4b9800", anniversaryMessage, new []{userProfileModel.OId},new []{"Anniversary"},DateTimeOffset.UtcNow, "Anniversary", true, (ulong)Math.Round(Math.Abs(anniversaryBonus))));
+                                var anniversaryMessage =
+                                    anniversaryMessages[new Random().NextInt64(anniversaryMessages.Length)];
+                                await postService.CreateAsync(new PostModel("da6e9ec4-6c5d-45b3-bf3c-22ad1c4b9800",
+                                    anniversaryMessage, new[] { userProfileModel.OId }, new[] { "Anniversary" },
+                                    DateTimeOffset.UtcNow, "Anniversary", true,
+                                    (ulong)Math.Round(Math.Abs(anniversaryBonus))));
                                 await cryptoService.SendAnniversaryTokenByOId(userProfileModel.OId);
                             }
+
                             cryptoService.QueueAnniversaryBonus(new List<List<string>>
                                 { new() { "anniversaryBonusQueue" }, new() { "null" } });
                             break;

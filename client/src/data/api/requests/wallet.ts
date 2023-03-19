@@ -4,8 +4,8 @@ import IWalletsBalance from '../types/IWalletsBalance';
 import {getAccessToken} from '../helpers';
 import {
   apiEndpoint,
-  apiRouteCryptoSelfTransferTokens,
   apiRouteCryptoGetTokenBalance,
+  apiRouteCryptoSelfTransferTokens,
 } from '../routes';
 
 async function selfTransferTokens(amount: number) {

@@ -2,25 +2,16 @@ import axios from 'axios';
 
 import {
   apiEndpoint,
-  apiRouteAddressGetDefaultAddressOrCreate,
-  apiRouteAddressGetDefaultAddress,
-  apiRouteAddressUpdate,
   apiRouteAddressAdd,
+  apiRouteAddressGetDefaultAddress,
+  apiRouteAddressGetDefaultAddressOrCreate,
+  apiRouteAddressUpdate,
 } from '../routes';
-import IAddress, {IUpdateAddress, IAddAddress} from '../types/IAddress';
+import IAddress, {IAddAddress, IUpdateAddress} from '../types/IAddress';
 
 import {getAccessToken} from '@/data/api/helpers';
 
 export async function getDefaultAddress(): Promise<IAddress> {
-  const nullAddress: IAddress = {
-    city: '',
-    country: '',
-    id: -1,
-    postalCode: '',
-    province: '',
-    street: '',
-    streetNumber: '',
-  };
   const accessToken = await getAccessToken();
 
   const response = await axios.get<IAddress>(apiRouteAddressGetDefaultAddress, {
@@ -33,15 +24,6 @@ export async function getDefaultAddress(): Promise<IAddress> {
 }
 
 export async function getDefaultAddressOrCreate(): Promise<IAddress> {
-  const nullAddress: IAddress = {
-    city: '',
-    country: '',
-    id: -1,
-    postalCode: '',
-    province: '',
-    street: '',
-    streetNumber: '',
-  };
   const accessToken = await getAccessToken();
 
   const response = await axios.get<IAddress>(

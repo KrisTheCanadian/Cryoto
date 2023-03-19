@@ -4,7 +4,7 @@ import {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {StarBorderRounded} from '@mui/icons-material';
 import {useMsal} from '@azure/msal-react';
-import {motion, AnimatePresence} from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 import {useAlertContext} from '@shared/hooks/Alerts';
 import {useQuery, useQueryClient} from 'react-query';
 import {InteractionStatus} from '@azure/msal-browser';

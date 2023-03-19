@@ -1,9 +1,8 @@
-import {MiddleColumn} from '@shared/components/MiddleColumn';
 import {useTheme} from '@mui/material/styles';
 import PageFrame from '@shared/components/PageFrame';
 import {RightBar} from '@shared/components/RightBar';
 import {useEffect} from 'react';
-import {useMsal, AuthenticatedTemplate} from '@azure/msal-react';
+import {AuthenticatedTemplate, useMsal} from '@azure/msal-react';
 import {useAlertContext} from '@shared/hooks/Alerts/AlertContext';
 import {useLocation} from 'react-router-dom';
 import {PostsFeed} from '@shared/components/PostsFeed';
@@ -11,7 +10,7 @@ import {Box} from '@mui/material';
 
 import {getNextPage} from '../../data/api/requests/posts';
 
-import {NewPost, TopRecognizersBoard, AnniversaryBoard} from './components';
+import {AnniversaryBoard, NewPost, TopRecognizersBoard} from './components';
 
 export const postsQuery = ['posts-query'];
 

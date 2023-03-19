@@ -29,6 +29,7 @@ declare module '@mui/material/styles' {
       medium: number;
     };
   }
+
   // allow configuration using `createTheme`
   interface ThemeOptions {
     interface?: {

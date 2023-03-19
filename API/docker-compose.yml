@@ -1,7 +1,7 @@
 version: "3.8"
 
 volumes:
-  local_postgres_data: {}
+  local_postgres_data: { }
 
 services:
   client:

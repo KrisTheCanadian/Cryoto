@@ -1,42 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Hub;
 using API.Models.Notifications;
-using API.Models.Transactions;
 using API.Repository.Interfaces;
 using API.Services;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace API.Tests.ServicesTests;
 
 public class NotificationServiceTests
 {
-    private readonly IHubContext<NotificationsHub> _hubContext;
-    private readonly INotificationRepository _repository;
-    private readonly ILogger<NotificationService> _logger;
-    private readonly IUserProfileRepository _userProfileRepository;
-    private readonly IConfiguration _configuration;
     private readonly NotificationService _controller;
+    private readonly INotificationRepository _repository;
 
     public NotificationServiceTests()
     {
-        _configuration = A.Fake<IConfiguration>();
-        _logger = A.Fake<ILogger<NotificationService>>();
-        _userProfileRepository = A.Fake<IUserProfileRepository>();
-        _hubContext = A.Fake<IHubContext<NotificationsHub>>();
+        var configuration = A.Fake<IConfiguration>();
+        var logger = A.Fake<ILogger<NotificationService>>();
+        var userProfileRepository = A.Fake<IUserProfileRepository>();
+        var hubContext = A.Fake<IHubContext<NotificationsHub>>();
         _repository = A.Fake<INotificationRepository>();
-        _controller = new NotificationService(_hubContext, _repository, _logger, _userProfileRepository, _configuration);
+        _controller =
+            new NotificationService(hubContext, _repository, logger, userProfileRepository, configuration);
     }
 
     [Fact]
-    public async void NotificationService_GetUserNotificationsAsync_ReturnsNotificationList()
+    public async Task NotificationService_GetUserNotificationsAsync_ReturnsNotificationList()
     {
         //Arrange
         var notificationModel = GetNotificationModel();
@@ -51,9 +46,9 @@ public class NotificationServiceTests
         notifications.Should().NotBeNull();
         notifications.Should().BeOfType(typeof(List<Notification>));
     }
-    
+
     [Fact]
-    public async void NotificationService_GetNotificationAsync_ReturnsNotification()
+    public async Task NotificationService_GetNotificationAsync_ReturnsNotification()
     {
         //Arrange
         var notificationModel = GetNotificationModel();
@@ -67,12 +62,11 @@ public class NotificationServiceTests
         actionResult.Should().NotBeNull();
         actionResult.Should().BeOfType(typeof(Notification));
     }
-    
+
     [Fact]
-    public async void NotificationService_UpdateReadAsync_ReturnsTrue()
+    public async Task NotificationService_UpdateReadAsync_ReturnsTrue()
     {
         //Arrange
-        var notificationModel = GetNotificationModel();
         A.CallTo(() => _repository.UpdateReadAsync(A<string>._))
             .Returns(true);
 
@@ -82,12 +76,11 @@ public class NotificationServiceTests
         //Assert
         actionResult.Should().BeTrue();
     }
-    
+
     [Fact]
-    public async void NotificationService_DeleteAsync_ReturnsTrue()
+    public async Task NotificationService_DeleteAsync_ReturnsTrue()
     {
         //Arrange
-        var notificationModel = GetNotificationModel();
         A.CallTo(() => _repository.DeleteAsync(A<string>._))
             .Returns(true);
 
@@ -103,7 +96,7 @@ public class NotificationServiceTests
         IEnumerable<Notification> notificationModel = new List<Notification>
         {
             new("senderId1", "receiverId1", "message1", "type1", 10),
-            new("senderId2", "receiverId2", "message2", "type2", 20),
+            new("senderId2", "receiverId2", "message2", "type2", 20)
         };
 
         return Task.FromResult(notificationModel);

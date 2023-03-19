@@ -1,28 +1,27 @@
 ﻿using System.Security.Claims;
+using System.Text.Json;
 using API.Crypto.Services.Interfaces;
 using API.Crypto.Solana.SolanaObjects;
-using API.Repository.Interfaces;
-using API.Services.Interfaces;
-using Azure.Storage.Queues;
-using Solnet.Wallet;
-using System.Text.Json;
-using Solnet.Rpc;
 using API.Models.Notifications;
 using API.Models.Transactions;
 using API.Models.Users;
-
+using API.Repository.Interfaces;
+using API.Services.Interfaces;
+using Azure.Storage.Queues;
+using Solnet.Rpc;
+using Solnet.Wallet;
 
 namespace API.Services;
 
 public class CryptoService : ICryptoService
 {
-    private readonly IWalletRepository _context;
-    private readonly ISolanaService _solanaService;
-    private readonly IUserProfileService _userProfileService;
     private readonly IConfiguration _configuration;
-    private readonly QueueClient _queueClient;
-    private readonly ITransactionService _transactionService;
+    private readonly IWalletRepository _context;
     private readonly INotificationService _notificationService;
+    private readonly QueueClient _queueClient;
+    private readonly ISolanaService _solanaService;
+    private readonly ITransactionService _transactionService;
+    private readonly IUserProfileService _userProfileService;
 
 
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
@@ -36,54 +35,6 @@ public class CryptoService : ICryptoService
         _userProfileService = userProfileService;
         _transactionService = transactionService;
         _notificationService = notificationService;
-    }
-
-    private Wallet GetOwnerWallet()
-    {
-        return _solanaService.GetWallet(_configuration["OwnerWallet-Mnemonics"],
-            _configuration["OwnerWallet-Passphrase"]);
-    }
-
-    private async Task<Wallet> GetWalletByOIdAsync(string oid, string walletType)
-    {
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        return _solanaService.DecryptWallet(walletModel!.Wallet, oid);
-    }
-
-    private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
-    {
-        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
-        if (walletModel != null)
-            return walletModel;
-
-        // Creat new wallet if it does not exist.
-        var wallet = _solanaService.CreateWallet();
-        var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
-        var walletPublicKey = wallet.Account.PublicKey;
-        walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
-
-        if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
-
-        var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
-        if (rpcTransactionResult.error == null)
-        {
-            await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
-                "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
-        }
-
-        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
-
-
-        await SendNotification(oid, userProfileModel);
-
-        QueueTokenUpdate(new List<List<string>>
-            { new() { "tokenUpdateQueue" }, new() { oid, oid } });
-
-        // Register the user to receive the monthly tokens gift
-        QueueMonthlyTokensGift(new List<List<string>>
-            { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
-
-        return walletModel;
     }
 
     public async Task<UserWalletsModel> GetWalletsBalanceAsync(string oid, ClaimsIdentity? user = null)
@@ -131,7 +82,7 @@ public class CryptoService : ICryptoService
             _configuration["tokenAddress"]);
         if (rpcTransactionResult.error == null)
         {
-            await UpdateTokenBalance((-amount), senderOId, "toAward");
+            await UpdateTokenBalance(-amount, senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
         }
 
@@ -236,10 +187,7 @@ public class CryptoService : ICryptoService
     public async Task<bool> SendAnniversaryTokenByOId(string oid)
     {
         const string walletType = "toSpend";
-        if (await _context.GetWalletModelByOIdAsync(oid, walletType) == null)
-        {
-            return false;
-        }
+        if (await _context.GetWalletModelByOIdAsync(oid, walletType) == null) return false;
 
         var amount = GetAnniversaryBonusAmountOfRoleByOIdAsync(oid).Result;
 
@@ -289,6 +237,89 @@ public class CryptoService : ICryptoService
         return Convert.ToDouble(rpcClient.GetBalance(publicKey).Result.Value);
     }
 
+    public async Task<bool> BoostRecognition(string senderId, List<string> recipientIds)
+    {
+        const string walletType = "toAward";
+        const float boostAmount = 10;
+        var maxResend = 10;
+
+        var senderWallet = await _context.GetWalletModelByOIdAsync(senderId, walletType);
+        if (senderWallet == null) return false;
+
+        if (senderWallet.TokenBalance < boostAmount * recipientIds.Count) return false;
+        var recipientsList = recipientIds.ConvertAll(id => id);
+        while (maxResend > 0 && recipientsList.Count > 0)
+        {
+            var didNotReceiveTransaction = new List<string>();
+            foreach (var recipientId in recipientsList)
+            {
+                var rpcTransactionResult = await SendTokens(boostAmount, senderId, recipientId);
+                if (rpcTransactionResult?.error != null)
+                {
+                    didNotReceiveTransaction.Add(recipientId);
+                }
+                else
+                {
+                    await _transactionService.AddTransactionAsync(new TransactionModel(recipientId, "toSpend", senderId,
+                        "toAward", boostAmount, "boost", DateTimeOffset.UtcNow));
+                    QueueTokenUpdate(new List<List<string>>
+                        { new() { "tokenUpdateQueue" }, new() { senderId, recipientId } });
+                }
+            }
+
+            maxResend -= 1;
+            recipientsList = didNotReceiveTransaction.ConvertAll(id => id);
+        }
+
+        return recipientsList.Count == 0;
+    }
+
+    private Wallet GetOwnerWallet()
+    {
+        return _solanaService.GetWallet(_configuration["OwnerWallet-Mnemonics"],
+            _configuration["OwnerWallet-Passphrase"]);
+    }
+
+    private async Task<Wallet> GetWalletByOIdAsync(string oid, string walletType)
+    {
+        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+        return _solanaService.DecryptWallet(walletModel!.Wallet, oid);
+    }
+
+    private async Task<WalletModel?> GetOrCreateUserWallet(string oid, string walletType)
+    {
+        var walletModel = await _context.GetWalletModelByOIdAsync(oid, walletType);
+        if (walletModel != null)
+            return walletModel;
+
+        // Creat new wallet if it does not exist.
+        var wallet = _solanaService.CreateWallet();
+        var walletEncrypted = _solanaService.EncryptWallet(wallet, oid);
+        var walletPublicKey = wallet.Account.PublicKey;
+        walletModel = new WalletModel(walletPublicKey, walletEncrypted, oid, walletType, 100);
+
+        if (await _context.AddWalletModelAsync(walletModel) <= 0) return null;
+
+        var rpcTransactionResult = await AddTokensAsync(100, oid, walletType);
+        if (rpcTransactionResult.error == null)
+            await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
+                "master", 100, "WelcomeTransfer", DateTimeOffset.UtcNow));
+
+        var userProfileModel = await _userProfileService.GetUserByIdAsync(oid);
+
+
+        await SendNotification(oid, userProfileModel);
+
+        QueueTokenUpdate(new List<List<string>>
+            { new() { "tokenUpdateQueue" }, new() { oid, oid } });
+
+        // Register the user to receive the monthly tokens gift
+        QueueMonthlyTokensGift(new List<List<string>>
+            { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
+
+        return walletModel;
+    }
+
     // sending notification to user using notification service
     private async Task SendNotification(string oid, UserProfileModel? userProfileModel)
     {
@@ -302,45 +333,5 @@ public class CryptoService : ICryptoService
             await _notificationService.SendNotificationAsync(new Notification("System", oid,
                 "Welcome to the team!", "Kudos", 100));
         }
-    }
-
-    public async Task<bool> BoostRecognition(string senderId, List<string> recipientIds)
-    {
-        const string walletType = "toAward";
-        const float boostAmount = 10;
-        var maxResend = 10;
-
-        var senderWallet = await _context.GetWalletModelByOIdAsync(senderId, walletType);
-        if (senderWallet == null)
-        {
-            return false;
-        }
-
-        if (senderWallet.TokenBalance < boostAmount * recipientIds.Count)
-        {
-            return false;
-        }
-        var recipientsList = recipientIds.ConvertAll(id => id);
-        while (maxResend > 0 && recipientsList.Count > 0)
-        {
-           var didNotReceiveTransaction = new List<string>();
-           foreach (var recipientId in recipientsList)
-           {
-               var rpcTransactionResult = await SendTokens(boostAmount, senderId, recipientId);
-               if (rpcTransactionResult?.error != null)
-               {
-                   didNotReceiveTransaction.Add(recipientId);
-               }
-               else
-               {
-                   await _transactionService.AddTransactionAsync(new TransactionModel(recipientId, "toSpend", senderId,
-                       "toAward", boostAmount, "boost", DateTimeOffset.UtcNow));
-                   QueueTokenUpdate(new List<List<string>> { new() { "tokenUpdateQueue" }, new() { senderId, recipientId } });
-               }
-           }
-           maxResend -= 1;
-           recipientsList = didNotReceiveTransaction.ConvertAll(id => id);
-        }
-        return recipientsList.Count == 0;
     }
 }

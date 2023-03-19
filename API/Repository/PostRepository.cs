@@ -3,7 +3,6 @@ using API.Models.Comments;
 using API.Models.Posts;
 using API.Models.Users;
 using API.Repository.Interfaces;
-using API.Services.Interfaces;
 using API.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,16 +11,14 @@ namespace API.Repository;
 [ExcludeFromCodeCoverage]
 public class PostRepository : IPostRepository
 {
-    public PostRepository(IDataContext context, INotificationService notificationService,
+    public PostRepository(IDataContext context,
         ILogger<PostRepository> logger)
     {
         Context = context;
-        NotificationService = notificationService;
         Logger = logger;
     }
 
     private IDataContext Context { get; }
-    private INotificationService NotificationService { get; }
     private ILogger<PostRepository> Logger { get; }
 
     public async Task<PostModel?> GetByIdAsync(string guid)
@@ -72,7 +69,7 @@ public class PostRepository : IPostRepository
         return posts;
     }
 
-    public async Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount = 10,
+    public async Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount,
         string oid = "oid")
     {
         pageCount = pageCount < 1 ? 10 : pageCount;
@@ -93,7 +90,7 @@ public class PostRepository : IPostRepository
                 .Take(pageCount)
                 .ToListAsync();
         var totalNumberOfPosts = Context.Posts.Count();
-        var totalNumberOfPages = (totalNumberOfPosts / pageCount) + 1;
+        var totalNumberOfPages = totalNumberOfPosts / pageCount + 1;
         foreach (var post in posts)
         {
             await GetAllProfiles(post);
@@ -118,7 +115,7 @@ public class PostRepository : IPostRepository
     {
         var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
         if (post == null) return false;
-        
+
         switch (type)
         {
             case 0:
@@ -136,10 +133,8 @@ public class PostRepository : IPostRepository
         }
 
         if (!post.UsersWhoReacted.Contains(actorId))
-        {
             post.UsersWhoReacted = post.UsersWhoReacted.Append(actorId).ToArray();
-        }
- 
+
         Context.Posts.Update(post);
 
         return await Context.SaveChangesAsync() > 0;
@@ -153,21 +148,36 @@ public class PostRepository : IPostRepository
         Context.Comments.Add(commentModel);
         // add the comment to the post
         Context.Posts.Update(postModel);
-        
+
+        return await Context.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> BoostAsync(string guid, string actorId)
+    {
+        var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
+        if (post == null) return false;
+        if (post.Boosts.Contains(actorId)) return false;
+
+        post.Boosts = post.Boosts.Append(actorId).ToArray();
+
+        Context.Posts.Update(post);
+
         return await Context.SaveChangesAsync() > 0;
     }
 
     private async Task GetAllComments(PostModel postModel)
     {
-        var comments = await Context.Comments.AsNoTracking().Where(x => x.ParentType == "Post" && x.ParentId == postModel.Id).OrderByDescending(x=> x.CreatedDate).ToListAsync();
+        var comments = await Context.Comments.AsNoTracking()
+            .Where(x => x.ParentType == "Post" && x.ParentId == postModel.Id).OrderByDescending(x => x.CreatedDate)
+            .ToListAsync();
         foreach (var comment in comments)
         {
             var author = await Context.UserProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.OId.Equals(comment.Author));
-            
-            if (author != null) { comment.AuthorProfile = new UserDto(author); }
-            
+
+            if (author != null) comment.AuthorProfile = new UserDto(author);
         }
+
         postModel.Comments = comments;
     }
 
@@ -176,8 +186,8 @@ public class PostRepository : IPostRepository
         // get profile of author
         var profile = await Context.UserProfiles.AsNoTracking()
             .FirstOrDefaultAsync(x => x.OId.Equals(postModel.Author));
-        
-        if(profile != null){ postModel.AuthorProfile = new UserDto(profile); }
+
+        if (profile != null) postModel.AuthorProfile = new UserDto(profile);
 
         var recipientProfiles = new List<UserDto>();
         // get profiles of recipients
@@ -185,7 +195,7 @@ public class PostRepository : IPostRepository
         {
             var recipientProfile = await Context.UserProfiles.AsNoTracking()
                 .FirstOrDefaultAsync(x => x.OId.Equals(author));
-            if(recipientProfile != null) recipientProfiles.Add(new UserDto(recipientProfile));
+            if (recipientProfile != null) recipientProfiles.Add(new UserDto(recipientProfile));
         }
 
         postModel.RecipientProfiles = recipientProfiles.ToList();
@@ -211,21 +221,5 @@ public class PostRepository : IPostRepository
         post.Hearts = post.Hearts.Contains(actorId)
             ? post.Hearts.Where(x => !x.Equals(actorId)).ToArray()
             : post.Hearts.Append(actorId).ToArray();
-    }
-    
-    public async Task<bool> BoostAsync(string guid, string actorId)
-    {
-        var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
-        if (post == null) return false;
-        if (post.Boosts.Contains(actorId))
-        {
-            return false;
-        }
-
-        post.Boosts = post.Boosts.Append(actorId).ToArray();
-
-        Context.Posts.Update(post);
-
-        return await Context.SaveChangesAsync() > 0;
     }
 }

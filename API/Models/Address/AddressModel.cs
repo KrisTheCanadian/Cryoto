@@ -7,18 +7,6 @@ namespace API.Models.Address;
 [ExcludeFromCodeCoverage]
 public class AddressModel
 {
-    [Key] public long Id { get; set; }
-    [ForeignKey("UserProfileModel")] public string OId { get; set; }
-    [Required] public string StreetNumber { get; set; }
-    [Required] public string Street { get; set; }
-    public string? Apartment { get; set; }
-    public string? AdditionalInfo { get; set; }
-    [Required] public string City { get; set; }
-    [Required] public string Province { get; set; }
-    [Required] public string Country { get; set; }
-    [Required] public string PostalCode { get; set; }
-    public bool? IsDefault { get; set; }
-
     public AddressModel(string oId)
     {
         OId = oId;
@@ -32,8 +20,9 @@ public class AddressModel
         PostalCode = "";
         IsDefault = null;
     }
-    
-    public AddressModel(string oId, string streetNumber, string street, string city, string province, string country, string postalCode, string? apartment=null, string? additionalInfo=null, bool? isDefault=null)
+
+    public AddressModel(string oId, string streetNumber, string street, string city, string province, string country,
+        string postalCode, string? apartment = null, string? additionalInfo = null, bool? isDefault = null)
     {
         OId = oId;
         StreetNumber = streetNumber;
@@ -46,7 +35,7 @@ public class AddressModel
         PostalCode = postalCode;
         IsDefault = isDefault;
     }
-    
+
     public AddressModel(string oId, AddressCreateModel addressCreateModel)
     {
         OId = oId;
@@ -60,4 +49,16 @@ public class AddressModel
         PostalCode = addressCreateModel.PostalCode;
         IsDefault = addressCreateModel.IsDefault;
     }
+
+    [Key] public long Id { get; set; }
+    [ForeignKey("UserProfileModel")] public string OId { get; set; }
+    [Required] public string StreetNumber { get; set; }
+    [Required] public string Street { get; set; }
+    public string? Apartment { get; set; }
+    public string? AdditionalInfo { get; set; }
+    [Required] public string City { get; set; }
+    [Required] public string Province { get; set; }
+    [Required] public string Country { get; set; }
+    [Required] public string PostalCode { get; set; }
+    public bool? IsDefault { get; set; }
 }

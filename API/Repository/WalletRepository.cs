@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using API.Models;
 using API.Models.Users;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +8,12 @@ namespace API.Repository;
 [ExcludeFromCodeCoverage]
 public class WalletRepository : IWalletRepository
 {
-    private IDataContext Context { get; set; }
-
     public WalletRepository(IDataContext context)
     {
         Context = context;
     }
+
+    private IDataContext Context { get; }
 
     public async Task<WalletModel?> GetWalletModelByOIdAsync(string oid, string walletType)
     {

@@ -5,6 +5,7 @@ import {ReactNode} from 'react';
 interface Props {
   children: ReactNode[] | ReactNode | string;
 }
+
 function RightBar(props: Props) {
   const {children} = props;
   const theme = useTheme();
@@ -37,4 +38,5 @@ function RightBar(props: Props) {
     </Box>
   );
 }
+
 export default RightBar;

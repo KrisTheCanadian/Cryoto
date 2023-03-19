@@ -8,15 +8,18 @@ namespace API.Repository;
 [ExcludeFromCodeCoverage]
 public class AddressRepository : IAddressRepository
 {
-    private IDataContext Context { get; set; }
     public AddressRepository(IDataContext context)
     {
         Context = context;
     }
+
+    private IDataContext Context { get; }
+
     public async Task<List<AddressModel>> GetAllAddressesByOIdAsync(string oid)
     {
         return await Context.Addresses.AsNoTracking().Where(address => address.OId == oid).ToListAsync();
     }
+
     public async Task<List<AddressModel>> GetAllAddressesAsync()
     {
         return await Context.Addresses.AsNoTracking().ToListAsync();
@@ -29,7 +32,8 @@ public class AddressRepository : IAddressRepository
 
     public async Task<AddressModel?> GetDefaultAddressByOIdAsync(string oid)
     {
-        return await Context.Addresses.AsNoTracking().FirstOrDefaultAsync(address => address.OId == oid && address.IsDefault == true);
+        return await Context.Addresses.AsNoTracking()
+            .FirstOrDefaultAsync(address => address.OId == oid && address.IsDefault == true);
     }
 
     public async Task<bool> CreateAddressAsync(AddressModel addressModel)
@@ -43,7 +47,7 @@ public class AddressRepository : IAddressRepository
         Context.Addresses.Remove(addressModel);
         return await Context.SaveChangesAsync() > 0;
     }
-    
+
     public async Task<bool> UpdateAddressAsync(AddressModel addressModel)
     {
         Context.Addresses.Update(addressModel);

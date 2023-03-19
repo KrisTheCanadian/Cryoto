@@ -13,14 +13,13 @@ namespace API.Controllers;
 public class AddressController : ControllerBase
 {
     private readonly IAddressService _addressService;
-    private readonly ClaimsIdentity? _identity;
     private readonly string _oId;
 
     public AddressController(IAddressService addressService, IHttpContextAccessor contextAccessor)
     {
         _addressService = addressService;
-        _identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
-        _oId = _identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
+        var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
+        _oId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
     }
 
     [HttpGet]
@@ -32,17 +31,14 @@ public class AddressController : ControllerBase
             var newAddress = new AddressModel(_oId);
             newAddress.IsDefault = true;
             var createdSuccessfully = await _addressService.CreateAddressAsync(newAddress);
-            if (!createdSuccessfully)
-            {
-                return Problem("Could not create a blank default address.");
-            }
+            if (!createdSuccessfully) return Problem("Could not create a blank default address.");
 
             address = await _addressService.GetDefaultAddressByOIdAsync(_oId);
         }
 
         return Ok(address);
     }
-    
+
     [HttpGet]
     public async Task<ActionResult<AddressModel>> GetDefaultAddress()
     {
@@ -55,10 +51,7 @@ public class AddressController : ControllerBase
     {
         var addressModel = new AddressModel(_oId, addressCreateModel);
         var result = await _addressService.CreateAddressAsync(addressModel);
-        if (result)
-        {
-            return Ok(await _addressService.GetAddressByIdAsync(addressModel.Id));
-        }
+        if (result) return Ok(await _addressService.GetAddressByIdAsync(addressModel.Id));
 
         return BadRequest("Couldn't create address.");
     }
@@ -67,16 +60,10 @@ public class AddressController : ControllerBase
     public async Task<ActionResult<AddressModel>> Delete(long id)
     {
         var addressModel = await _addressService.GetAddressByIdAsync(id);
-        if (addressModel == null)
-        {
-            return BadRequest("Address doesn't exist.");
-        }
+        if (addressModel == null) return BadRequest("Address doesn't exist.");
 
         var result = await _addressService.DeleteAddressAsync(addressModel);
-        if (result)
-        {
-            return Ok(addressModel);
-        }
+        if (result) return Ok(addressModel);
 
         return BadRequest("Couldn't delete address.");
     }
@@ -85,10 +72,7 @@ public class AddressController : ControllerBase
     public async Task<ActionResult<AddressModel>> Update(long id, AddressUpdateModel addressUpdateModel)
     {
         var addressModel = await _addressService.GetAddressByIdAsync(id);
-        if (addressModel == null)
-        {
-            return BadRequest("Address doesn't exist.");
-        }
+        if (addressModel == null) return BadRequest("Address doesn't exist.");
 
         var changeCounter = 0;
 
@@ -128,6 +112,7 @@ public class AddressController : ControllerBase
             addressModel.Province = addressUpdateModel.Province;
             changeCounter++;
         }
+
         if (addressUpdateModel.Country != null)
         {
             addressModel.Country = addressUpdateModel.Country;
@@ -147,17 +132,11 @@ public class AddressController : ControllerBase
         }
 
         // validate received data
-        if (changeCounter == 0)
-        {
-            return BadRequest("No new data is provided.");
-        }
+        if (changeCounter == 0) return BadRequest("No new data is provided.");
 
         // update record in the DB
         var updated = await _addressService.UpdateAddressAsync(addressModel);
-        if (!updated)
-        {
-            return BadRequest("Could not update user profile.");
-        }
+        if (!updated) return BadRequest("Could not update user profile.");
 
         // fetch updated user profile form the DB
         var updatedAddress = await _addressService.GetAddressByIdAsync(id);

@@ -25,8 +25,7 @@ const Wallet = 'Wallet';
 const Amount = 'Amount';
 
 describe('Transaction Table', () => {
-    it('Renders the right columns', async () => {
-      
+  it('Renders the right columns', async () => {
     await act(async () => {
       render(
         <MockAppProviders>

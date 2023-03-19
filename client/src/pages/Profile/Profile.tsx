@@ -6,12 +6,12 @@ import {MiddleColumn} from '@shared/components/MiddleColumn';
 import {RightBar} from '@shared/components/RightBar';
 import {
   AccessTime,
-  LocationCity,
-  WorkOutline,
+  Cake,
   CalendarMonth,
+  LocationCity,
   MoveToInbox,
   Outbox,
-  Cake,
+  WorkOutline,
 } from '@mui/icons-material';
 import {
   Avatar,

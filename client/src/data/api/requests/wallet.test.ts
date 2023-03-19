@@ -2,11 +2,11 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import {
-  apiRouteCryptoSelfTransferTokens,
   apiRouteCryptoGetTokenBalance,
+  apiRouteCryptoSelfTransferTokens,
 } from '../routes';
 
-import {selfTransferTokens, getTokenBalance} from './wallet';
+import {getTokenBalance, selfTransferTokens} from './wallet';
 
 const mock = new MockAdapter(axios);
 

@@ -1,10 +1,11 @@
 import {ReactNode} from 'react';
 import {SideBar} from '@shared/components/SideBar';
-import {Stack, Box} from '@mui/material';
+import {Box, Stack} from '@mui/material';
 
 interface PageFrameProps {
   children: ReactNode | string | ReactNode[];
 }
+
 function PageFrame(props: PageFrameProps) {
   const {children} = props;
   return (

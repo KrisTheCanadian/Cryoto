@@ -1,8 +1,6 @@
 import React from 'react';
 import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {MemoryRouter} from 'react-router-dom';
-import {MsalProvider} from '@azure/msal-react';
 import {MockAppProviders} from '@shared/testing/mocks';
 
 import SearchNavBar from './SearchNavBar';

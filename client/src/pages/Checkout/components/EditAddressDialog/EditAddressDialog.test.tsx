@@ -1,4 +1,4 @@
-import {render, screen, fireEvent, waitFor} from '@testing-library/react';
+import {fireEvent, render, screen} from '@testing-library/react';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {MockAppProviders} from '@shared/testing/mocks';
 import {act} from 'react-dom/test-utils';

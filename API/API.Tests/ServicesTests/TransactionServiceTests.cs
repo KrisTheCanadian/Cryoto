@@ -12,8 +12,8 @@ namespace API.Tests.ServicesTests;
 
 public class TransactionServiceTests
 {
-    private readonly ITransactionRepository _transactionRepository;
     private readonly TransactionService _controller;
+    private readonly ITransactionRepository _transactionRepository;
 
     public TransactionServiceTests()
     {
@@ -22,7 +22,7 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_GetTransactionsBySenderAsync_ReturnsTransactionResponseModelList()
+    public async Task TransactionService_GetTransactionsBySenderAsync_ReturnsTransactionResponseModelList()
     {
         //Arrange
         var transactionResponseModelList = GetTransactionResponseModelList();
@@ -39,7 +39,7 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_GetTransactionsByReceiverAsync_ReturnsTransactionResponseModelList()
+    public async Task TransactionService_GetTransactionsByReceiverAsync_ReturnsTransactionResponseModelList()
     {
         //Arrange
         var transactionResponseModelList = GetTransactionResponseModelList();
@@ -56,7 +56,7 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_GetTransactionByIdAsync_ReturnsTransactionModel()
+    public async Task TransactionService_GetTransactionByIdAsync_ReturnsTransactionModel()
     {
         //Arrange
         var transactionModel = GetTransactionModel();
@@ -72,11 +72,11 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_AddTransactionAsync_ReturnsTrue()
+    public async Task TransactionService_AddTransactionAsync_ReturnsTrue()
     {
         //Arrange
         var transactionModel = GetTransactionModel();
-        A.CallTo(() => _transactionRepository.AddTransactionAsync(A<TransactionModel>._))!.Returns(true);
+        A.CallTo(() => _transactionRepository.AddTransactionAsync(A<TransactionModel>._)).Returns(true);
 
 
         //Act
@@ -87,11 +87,11 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_DeleteTransactionAsync_ReturnsTrue()
+    public async Task TransactionService_DeleteTransactionAsync_ReturnsTrue()
     {
         //Arrange
         var transactionModel = GetTransactionModel();
-        A.CallTo(() => _transactionRepository.DeleteTransactionAsync(A<TransactionModel>._))!.Returns(true);
+        A.CallTo(() => _transactionRepository.DeleteTransactionAsync(A<TransactionModel>._)).Returns(true);
 
 
         //Act
@@ -102,11 +102,11 @@ public class TransactionServiceTests
     }
 
     [Fact]
-    public async void TransactionService_UpdateTransactionAsync_ReturnsTrue()
+    public async Task TransactionService_UpdateTransactionAsync_ReturnsTrue()
     {
         //Arrange
         var transactionModel = GetTransactionModel();
-        A.CallTo(() => _transactionRepository.UpdateTransactionAsync(A<TransactionModel>._))!.Returns(true);
+        A.CallTo(() => _transactionRepository.UpdateTransactionAsync(A<TransactionModel>._)).Returns(true);
 
 
         //Act
@@ -122,7 +122,7 @@ public class TransactionServiceTests
         var transactionResponseModelList = new List<TransactionResponseModel>
         {
             new("id1", "oid1", "walletType1", 10, "description1", timestamp),
-            new("id2", "oid2", "walletType2", 20, "description2", timestamp),
+            new("id2", "oid2", "walletType2", 20, "description2", timestamp)
         };
         return Task.FromResult(transactionResponseModelList);
     }

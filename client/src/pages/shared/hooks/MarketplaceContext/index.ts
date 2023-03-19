@@ -1,6 +1,6 @@
 import {
-  MarketplaceProvider,
   MarketplaceContext,
+  MarketplaceProvider,
   useMarketplaceContext,
 } from './MarketplaceContext';
 

@@ -27,7 +27,7 @@ public class AddressService : IAddressService
     {
         return await _context.GetDefaultAddressByOIdAsync(oid);
     }
-    
+
     public async Task<List<AddressModel>> GetAllAddressesAsync()
     {
         return await _context.GetAllAddressesAsync();
@@ -38,13 +38,13 @@ public class AddressService : IAddressService
         return await _context.GetAddressByIdAsync(id);
     }
 
-    public async Task<List<AddressModel>> GetAllAddressesByOIdAsync(string oid)
-    {
-        return await _context.GetAllAddressesByOIdAsync(oid);
-    }
-    
     public async Task<bool> UpdateAddressAsync(AddressModel addressModel)
     {
         return await _context.UpdateAddressAsync(addressModel);
+    }
+
+    public async Task<List<AddressModel>> GetAllAddressesByOIdAsync(string oid)
+    {
+        return await _context.GetAllAddressesByOIdAsync(oid);
     }
 }

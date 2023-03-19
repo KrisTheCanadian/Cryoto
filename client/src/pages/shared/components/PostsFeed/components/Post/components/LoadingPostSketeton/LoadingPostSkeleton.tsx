@@ -1,4 +1,4 @@
-import {Card, CardHeader, CardContent, Box, Skeleton} from '@mui/material';
+import {Box, Card, CardContent, CardHeader, Skeleton} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 
 function LoadingPostSkeleton() {
@@ -41,4 +41,5 @@ function LoadingPostSkeleton() {
     </Box>
   );
 }
+
 export default LoadingPostSkeleton;

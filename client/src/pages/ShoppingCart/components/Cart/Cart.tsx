@@ -1,14 +1,13 @@
-/* eslint-disable id-length */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 
 import {
   Box,
-  Divider,
-  Paper,
-  Typography,
-  Grid,
   Button,
   CardMedia,
+  Divider,
+  Grid,
+  Paper,
+  Typography,
 } from '@mui/material';
 import {useMarketplaceContext} from '@shared/hooks/MarketplaceContext';
 import {useTheme} from '@mui/material/styles';

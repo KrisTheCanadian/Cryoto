@@ -1,14 +1,14 @@
-import {Search, Menu} from '@mui/icons-material';
+import {Menu, Search} from '@mui/icons-material';
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
   Box,
   Drawer,
+  IconButton,
+  Toolbar,
+  Typography,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import {useRef, useState} from 'react';
+import {useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {AuthenticatedTemplate} from '@azure/msal-react';
@@ -158,4 +158,5 @@ function NavBar() {
     </AuthenticatedTemplate>
   );
 }
+
 export default NavBar;

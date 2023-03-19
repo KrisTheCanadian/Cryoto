@@ -15,6 +15,7 @@ interface Recipient {
   name: string;
   id: string;
 }
+
 const tempUserFields = {
   email: '',
   language: '',

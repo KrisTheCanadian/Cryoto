@@ -21,13 +21,12 @@ public class UserProfileServicesTests
     public UserProfileServicesTests()
     {
         _context = A.Fake<IUserProfileRepository>();
-        var postContext = A.Fake<IPostRepository>();
         _msGraphApiService = A.Fake<IMsGraphApiService>();
-        _controller = new UserProfileService(_context, postContext, _msGraphApiService);
+        _controller = new UserProfileService(_context, _msGraphApiService);
     }
 
     [Fact]
-    public async void UserProfileService_GetAllUsersRolesDbServiceAsync_ReturnsUserProfileModelList()
+    public async Task UserProfileService_GetAllUsersRolesDbServiceAsync_ReturnsUserProfileModelList()
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
@@ -43,11 +42,12 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_GetSearchResultServiceAsync_ReturnsUserProfileModelList()
+    public async Task UserProfileService_GetSearchResultServiceAsync_ReturnsUserProfileModelList()
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
-        var userWithDateDtoList = userProfileModelList.Result.Select(x => new UserWithBusinessTitleAndDateDto(x)).ToList();
+        var userWithDateDtoList =
+            userProfileModelList.Result.Select(x => new UserWithBusinessTitleAndDateDto(x)).ToList();
         A.CallTo(() => _context.GetSearchResultAsync(A<string>._, A<string>._)).Returns(userWithDateDtoList);
 
         //Act
@@ -60,7 +60,7 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_GetUserByIdAsync_ReturnsUserProfileModelList()
+    public async Task UserProfileService_GetUserByIdAsync_ReturnsUserProfileModelList()
     {
         //Arrange
         var userProfileModelList = GetUserProfileModelList();
@@ -76,7 +76,7 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_UpdateAsync_ReturnsTrue()
+    public async Task UserProfileService_UpdateAsync_ReturnsTrue()
     {
         //Arrange
         var updatedUserProfile = new UserProfileModel("oid1", "name3", "email3", "lang3", new[] { "role3", "role4" });
@@ -143,7 +143,7 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_GetUpcomingAnniversaries_ReturnsUserProfileModelList()
+    public async Task UserProfileService_GetUpcomingAnniversaries_ReturnsUserProfileModelList()
     {
         //Arrange
         var userProfileModelList = await GetUserProfileModelList();
@@ -159,7 +159,7 @@ public class UserProfileServicesTests
     }
 
     [Fact]
-    public async void UserProfileService_GetTopRecognizers_ReturnsObjectList()
+    public async Task UserProfileService_GetTopRecognizers_ReturnsObjectList()
     {
         //Arrange
         var users = await GetUserProfileModelList();
@@ -186,17 +186,6 @@ public class UserProfileServicesTests
         };
         return Task.FromResult(userProfileModelList);
     }
-    
-    private static Task<List<UserDto>> GetUserProfileMiniModelList()
-    {
-        var userProfileModelList = new List<UserDto>
-        {
-            new("oid1", "name1"),
-            new("oid2", "name2")
-        };
-        return Task.FromResult(userProfileModelList);
-    }
-    
 
     private static List<UserRolesModel> GetUserRolesModelList()
     {

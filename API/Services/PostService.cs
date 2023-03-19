@@ -39,7 +39,6 @@ public class PostService : IPostService
     public async Task<bool> DeleteByIdAsync(string guid)
     {
         return await _postRepository.DeleteAsyncById(guid);
-
     }
 
 
@@ -50,7 +49,8 @@ public class PostService : IPostService
         return await _postRepository.GetAllByDatePaginatedAsync(page, pageCount);
     }
 
-    public async Task<PaginationWrapper<PostModel>> GetUserProfileFeedPaginatedAsync(string userId, int page, int pageCount)
+    public async Task<PaginationWrapper<PostModel>> GetUserProfileFeedPaginatedAsync(string userId, int page,
+        int pageCount)
     {
         return await _postRepository.GetAllByDatePaginatedAsync(page, pageCount, userId);
     }
@@ -67,26 +67,15 @@ public class PostService : IPostService
 
     public async Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel)
     {
-        return await _postRepository.CommentOnPostAsync(postModel, commentModel); 
+        return await _postRepository.CommentOnPostAsync(postModel, commentModel);
     }
-    
+
     public async Task<bool> BoostAsync(string guid, UserProfileModel userProfile)
     {
-        var allowedRoles = new [] { "Partner", "Senior Partner" };
-        var hasAllowedRole = false;
-        foreach (var role in userProfile.Roles) 
-        {
-            if (allowedRoles.Contains(role))
-            {
-                hasAllowedRole = true;
-                break;
-            }
-        }
+        var allowedRoles = new[] { "Partner", "Senior Partner" };
+        var hasAllowedRole = userProfile.Roles.Any(role => allowedRoles.Contains(role));
 
-        if (!hasAllowedRole)
-        {
-            return false;
-        }
+        if (!hasAllowedRole) return false;
         return await _postRepository.BoostAsync(guid, userProfile.OId);
     }
 }

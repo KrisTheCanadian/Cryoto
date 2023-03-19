@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Crypto.Solana.SolanaObjects;
@@ -17,25 +16,25 @@ namespace API.Tests.ControllersTests;
 
 public class MarketPlaceControllerTests
 {
-    private readonly IMarketPlaceService _marketPlaceService;
-    private readonly ICryptoService _cryptoService;
-    private readonly INotificationService _notificationService;
-    private readonly IHttpContextAccessor _contextAccessor;
     private readonly MarketPlaceController _controller;
+    private readonly ICryptoService _cryptoService;
+    private readonly IMarketPlaceService _marketPlaceService;
 
     public MarketPlaceControllerTests()
     {
         _marketPlaceService = A.Fake<IMarketPlaceService>();
         _cryptoService = A.Fake<ICryptoService>();
-        _notificationService = A.Fake<INotificationService>();
-        _contextAccessor = A.Fake<IHttpContextAccessor>();
-        _controller = new MarketPlaceController(_marketPlaceService, _cryptoService, _notificationService, _contextAccessor);
+        var notificationService = A.Fake<INotificationService>();
+        var contextAccessor = A.Fake<IHttpContextAccessor>();
+        _controller =
+            new MarketPlaceController(_marketPlaceService, _cryptoService, notificationService, contextAccessor);
     }
+
     private List<MarketPlaceItem> GetFakeMarketPlaceItems()
     {
-        List<MarketPlaceItem> items = new List<MarketPlaceItem>
+        var items = new List<MarketPlaceItem>
         {
-            new MarketPlaceItem(
+            new(
                 "afd380c1-c643-4c6f-8454-60cb22585582",
                 "Amazon 10$ Gift Card",
                 "Carte-cadeau Amazon de 10$",
@@ -48,7 +47,7 @@ public class MarketPlaceControllerTests
                 "Electronic gift cards will be sent to the recipient&apos;s email when order is processed.",
                 "Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée."
             ),
-            new MarketPlaceItem(
+            new(
                 "26b80e6e-9690-4748-b6ef-869d72b5e4ec",
                 "Amazon 50$ Gift Card",
                 "Carte-cadeau Amazon de 50$",
@@ -81,20 +80,19 @@ public class MarketPlaceControllerTests
             "Electronic gift cards will be sent to the recipient&apos;s email when order is processed.",
             "Les cartes-cadeaux électroniques seront envoyées à l&apos;adresse électronique du destinataire lorsque la commande sera traitée."
         );
-
     }
-    
+
     private Order GetFakeOrder()
     {
-        List<OrderItem> orderItems = new List<OrderItem>
-            { new ("26b80e6e-9690-4748-b6ef-869d72b5e4ec", 1), new ("afd380c1-c643-4c6f-8454-60cb22585582", 1) };
-        
+        var orderItems = new List<OrderItem>
+            { new("26b80e6e-9690-4748-b6ef-869d72b5e4ec", 1), new("afd380c1-c643-4c6f-8454-60cb22585582", 1) };
+
         var mockAddress = new AddressCreateModel("1", "20", "Test Street", "Test City", "Test Province",
             "Test Country", "Test Postal Code");
-        
-        return new Order("123456",orderItems, 50, "userID", "test@test.com", mockAddress, DateTimeOffset.Now);
+
+        return new Order("123456", orderItems, 50, "userID", "test@test.com", mockAddress, DateTimeOffset.Now);
     }
-    
+
     private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()
     {
         var rpcTransactionResult = new RpcTransactionResult
@@ -103,14 +101,14 @@ public class MarketPlaceControllerTests
         };
         return Task.FromResult(rpcTransactionResult);
     }
-    
+
     [Fact]
     public void MarketPlaceController_GetAllItems_ReturnsOK()
     {
         // Arrange
         var items = GetFakeMarketPlaceItems();
         A.CallTo(() => _marketPlaceService.GetAllItems()).Returns(items);
-        
+
         // Act
         var actionResult = _controller.GetAllItems();
         var objectResult = actionResult.Result as ObjectResult;
@@ -123,14 +121,15 @@ public class MarketPlaceControllerTests
     }
 
     [Fact]
-    public async void MarketPlaceController_CompletePurchase_ReturnsOK()
+    public async Task MarketPlaceController_CompletePurchase_ReturnsOK()
     {
         // Arrange
         var order = GetFakeOrder();
         var item = GetFakeMarketPlaceItem();
         var rpcTransactionSuccess = GetRpcTransactionResultSuccessful();
         A.CallTo(() => _cryptoService.GetTokenBalanceAsync(A<string>.Ignored, A<string>.Ignored)).Returns(200);
-        A.CallTo(() => _marketPlaceService.BuyItemsAsync(A<string>.Ignored, A<double>.Ignored)).Returns(rpcTransactionSuccess);
+        A.CallTo(() => _marketPlaceService.BuyItemsAsync(A<string>.Ignored, A<double>.Ignored))
+            .Returns(rpcTransactionSuccess);
         A.CallTo(() => _marketPlaceService.GetItemById(A<string>.Ignored)).Returns(item);
 
         // Act
@@ -142,7 +141,7 @@ public class MarketPlaceControllerTests
         // Assert
         objectResult.Should().NotBeNull();
         objectResult.Should().BeOfType(typeof(OkObjectResult));
-        
+
         Assert.Equal(order.Email, objectResultValue?.Email);
         Assert.Equal(order.UserId, objectResultValue?.UserId);
         Assert.Equal(order.Items, objectResultValue?.Items);

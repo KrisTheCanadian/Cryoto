@@ -15,7 +15,7 @@ public class UserProfileService : IUserProfileService
     private readonly IMsGraphApiService _msGraphApiService;
 
 
-    public UserProfileService(IUserProfileRepository context, IPostRepository postContext,
+    public UserProfileService(IUserProfileRepository context,
         IMsGraphApiService msGraphApiService)
     {
         _context = context;
@@ -23,7 +23,7 @@ public class UserProfileService : IUserProfileService
     }
 
     [ExcludeFromCodeCoverage]
-    public async Task<UserProfileModel?> GetOrAddUserProfileService(string oid, ClaimsIdentity? identity)
+    public async Task<UserProfileModel?> GetOrAddUserProfileService(string oid, ClaimsIdentity? user)
     {
         // Return userProfile if it is already exist.
         var userProfileModel = await _context.GetUserProfileAsync(oid);
@@ -35,10 +35,10 @@ public class UserProfileService : IUserProfileService
         userProfileModel = JsonConvert.DeserializeObject<UserProfileModel>(mockarooResponse);
 
         userProfileModel!.OId = oid;
-        userProfileModel.Name = identity?.FindFirst(ClaimConstants.Name)?.Value!;
-        userProfileModel.Email = identity?.FindFirst(ClaimConstants.PreferredUserName)?.Value!;
+        userProfileModel.Name = user?.FindFirst(ClaimConstants.Name)?.Value!;
+        userProfileModel.Email = user?.FindFirst(ClaimConstants.PreferredUserName)?.Value!;
         userProfileModel.Language = "en";
-        userProfileModel.Roles = identity?.FindAll(ClaimConstants.Role).Select(x => x.Value).ToArray()!;
+        userProfileModel.Roles = user?.FindAll(ClaimConstants.Role).Select(x => x.Value).ToArray()!;
         userProfileModel.StartDate = FakeStartDate();
         userProfileModel.Birthday = FakeBirthday();
 
@@ -132,14 +132,6 @@ public class UserProfileService : IUserProfileService
         return successResponses;
     }
 
-    public async Task<List<UserRolesModel>> GetAllUsersRolesDbServiceAsync()
-    {
-        var allUsersProfileModelList = await _context.GetAllUsersAsync();
-
-        return allUsersProfileModelList
-            .Select(user => new UserRolesModel(user.OId, user.Name, new List<string>(user.Roles))).ToList();
-    }
-
     public async Task<List<UserRolesModel>> GetAllUsersRolesServiceAsync(string msGraphAccessToken)
     {
         List<UserRolesModel> userRolesModelList = new();
@@ -151,6 +143,14 @@ public class UserProfileService : IUserProfileService
         }
 
         return userRolesModelList;
+    }
+
+    public async Task<List<UserRolesModel>> GetAllUsersRolesDbServiceAsync()
+    {
+        var allUsersProfileModelList = await _context.GetAllUsersAsync();
+
+        return allUsersProfileModelList
+            .Select(user => new UserRolesModel(user.OId, user.Name, new List<string>(user.Roles))).ToList();
     }
 
     private static DateTime FakeStartDate()

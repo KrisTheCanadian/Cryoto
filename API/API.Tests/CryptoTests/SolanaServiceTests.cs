@@ -123,7 +123,7 @@ public class SolanaServiceTests
             "zoo virtual sun kidney output brush sail whip inflict legal develop renew paddle " +
             "margin bicycle setup example winner session dwarf view priority multiply warfare";
         var wallet = new Wallet(mnemonics);
-        string pb = "EenBphLE9XLLBT7LEhY8wVfw2QZv89btznMYVgTw4DLV";
+        var pb = "EenBphLE9XLLBT7LEhY8wVfw2QZv89btznMYVgTw4DLV";
 
         // Act
         var publicKey = solanaCryptoService.GetPublicKeyFromString(pb);
@@ -147,7 +147,7 @@ public class SolanaServiceTests
         var ownerWallet = new Wallet(mnemonics1);
         var receivingWallet = new Wallet(mnemonics2);
         var newWallet = solanaCryptoService.CreateWallet();
-        string tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
+        var tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
 
         // Act
         //Owner account sends token
@@ -188,7 +188,7 @@ public class SolanaServiceTests
         var ownerWallet = new Wallet(mnemonics1);
         var walletWithTokens = new Wallet(mnemonics2);
         var newWallet = new Wallet(WordCount.TwentyFour, WordList.English);
-        string tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
+        var tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
 
         // Act
         //Wallet account sends tokens but fee payer is not owner account (which holds SOls)
@@ -222,7 +222,7 @@ public class SolanaServiceTests
             + "viable skull bleak certain click trap title aisle hold review stamp";
         var wallet1 = solanaCryptoService.CreateWallet();
         var wallet2 = new Wallet(mnemonics);
-        string tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
+        var tokenAddress = "DN8CViMVdgdFvCC9rogdLY7EjV6PCJ2RXUJg3YiFBRjA";
 
         // Act
         var balance1 = solanaCryptoService.GetTokenBalance(wallet1.Account.PublicKey, tokenAddress);

@@ -3,8 +3,8 @@ describe('Notifications', () => {
     cy.login();
     cy.visit('/');
     cy.get('[data-testid="NotificationsNoneIcon"]').should('exist');
-    
-    //Make sure notifications button exist
+
+    // Make sure notifications button exist
     cy.get('[data-testid="NotificationsButton"]').should('exist');
     // don't ask any questions, it just doesn't work otherwise...
     cy.get('[data-testid="NotificationsButton"]')

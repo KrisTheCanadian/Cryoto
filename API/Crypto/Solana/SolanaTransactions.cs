@@ -7,17 +7,18 @@ using Solnet.Wallet;
 
 namespace API.Crypto.Solana;
 
-public class SolanaTransactions
+public static class SolanaTransactions
 {
     private static readonly IRpcClient RpcClient = ClientFactory.GetClient(Cluster.DevNet);
-    //private const string cryotoTokenAddress = "58XtkzqzSCJhfnzqZivu7Pc8sw4Y7tLUYbMdfXMLHzfh";
 
     /// <summary>
-    /// Get the Token wallet and sub-accounts from a wallet's Public Key and the Solana Token
+    ///     Get the Token wallet and sub-accounts from a wallet's Public Key and the Solana Token
     /// </summary>
     /// <param name="pb">Wallet's Public Key</param>
-    /// <param name="tokenDescription">Token Definition object used by the TokenMintResolver
-    /// which uniquely identifies a token on the Solana blockchain</param>
+    /// <param name="tokenDescription">
+    ///     Token Definition object used by the TokenMintResolver
+    ///     which uniquely identifies a token on the Solana blockchain
+    /// </param>
     /// <returns>TokenWallet object</returns>
     private static TokenWallet GetTokenWallet(PublicKey pb, TokenDef tokenDescription)
     {
@@ -26,17 +27,19 @@ public class SolanaTransactions
         tokens.Add(tokenDescription);
 
         // load snapshot of wallet and sub-accounts
-        TokenWallet tokenWallet = TokenWallet.Load(RpcClient, tokens, pb);
+        var tokenWallet = TokenWallet.Load(RpcClient, tokens, pb);
 
         return tokenWallet;
     }
 
     /// <summary>
-    ///  Gets the individual Token Account associated with the user public key and the Token def
+    ///     Gets the individual Token Account associated with the user public key and the Token def
     /// </summary>
     /// <param name="tokenWallet"></param>
-    /// <param name="tokenDescription">Token Definition object used by the TokenMintResolver
-    /// which uniquely identifies a token on the Solana blockchain</param>
+    /// <param name="tokenDescription">
+    ///     Token Definition object used by the TokenMintResolver
+    ///     which uniquely identifies a token on the Solana blockchain
+    /// </param>
     /// <param name="pb">Wallet's Public Key</param>
     /// <returns>TokenWalletAccount object</returns>
     private static TokenWalletAccount GetTokenWalletAccount(TokenWallet tokenWallet, TokenDef tokenDescription,
@@ -49,7 +52,7 @@ public class SolanaTransactions
     }
 
     /// <summary>
-    /// Get the token balance of a wallet
+    ///     Get the token balance of a wallet
     /// </summary>
     /// <param name="pb">Wallet's Public Key</param>
     /// <param name="tokenAddress">Address of required token</param>
@@ -57,12 +60,12 @@ public class SolanaTransactions
     public static double GetTokenWalletBalance(PublicKey pb, string tokenAddress)
     {
         // Gets all SPL Token accounts by token owner and based on token address
-        var tokenAccounts = RpcClient.GetTokenAccountsByOwner(pb, tokenMintPubKey: tokenAddress);
+        var tokenAccounts = RpcClient.GetTokenAccountsByOwner(pb, tokenAddress);
         if (tokenAccounts.Result.Value.Count != 0)
         {
             var account = tokenAccounts.Result.Value[0];
             var balance = account.Account.Data.Parsed.Info.TokenAmount.Amount;
-            var balanceNumber = (double.Parse(balance)) / 1000000000;
+            var balanceNumber = double.Parse(balance) / 1000000000;
 
             return balanceNumber;
         }
@@ -71,7 +74,7 @@ public class SolanaTransactions
     }
 
     /// <summary>
-    /// Send Tokens from one wallet to another.
+    ///     Send Tokens from one wallet to another.
     /// </summary>
     /// <param name="amount">Amount to send</param>
     /// <param name="sender">Wallet of sender account</param>
@@ -82,7 +85,7 @@ public class SolanaTransactions
     public static RpcTransactionResult SendTokens(double amount, Wallet sender, Wallet feePayer, string receiver,
         string tokenAddress)
     {
-        decimal amountToSend = (decimal)amount;
+        var amountToSend = (decimal)amount;
         var tokenDescription = new TokenDef(tokenAddress, "Cryoto Token", "CT", 9);
 
         // Get source of token funds

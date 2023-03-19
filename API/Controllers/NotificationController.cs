@@ -11,10 +11,11 @@ namespace API.Controllers;
 [Authorize]
 [ApiController]
 [Route("[controller]/[action]")]
-public class NotificationController: ControllerBase
+public class NotificationController : ControllerBase
 {
-    private readonly INotificationService _notificationService;
     private readonly string _actorId;
+    private readonly INotificationService _notificationService;
+
     public NotificationController(INotificationService notificationService, IHttpContextAccessor contextAccessor)
     {
         _notificationService = notificationService;
@@ -23,7 +24,8 @@ public class NotificationController: ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginationWrapper<Notification>>> GetNotificationsPaginated([FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<ActionResult<PaginationWrapper<Notification>>> GetNotificationsPaginated([FromQuery] int page,
+        [FromQuery] int pageSize)
     {
         return Ok(await _notificationService.GetNotificationsPaginatedAsync(_actorId, page, pageSize));
     }
@@ -32,14 +34,12 @@ public class NotificationController: ControllerBase
     public async Task<ActionResult> ReadNotification(string id)
     {
         var notification = await _notificationService.GetNotificationAsync(id);
-        if (notification == null)
-        {
-            return Conflict($"Notification {id}.");
-        }
+        if (notification == null) return Conflict($"Notification {id}.");
         // validate if the user is the receiver
-        if(notification.ReceiverId != _actorId){ return Conflict($"User {_actorId} does not have access to modify notification {id}."); }
+        if (notification.ReceiverId != _actorId)
+            return Conflict($"User {_actorId} does not have access to modify notification {id}.");
         var updated = await _notificationService.UpdateReadAsync(id);
-        if (!updated) { return BadRequest("Cannot mark post as read."); }
+        if (!updated) return BadRequest("Cannot mark post as read.");
 
         return Ok();
     }

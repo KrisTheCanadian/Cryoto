@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using API.Controllers;
 using API.Models.Notifications;
 using API.Services.Interfaces;
@@ -16,8 +16,9 @@ namespace API.Tests.ControllersTests;
 public class NotificationsControllerTests
 {
     private readonly NotificationController _controller;
-    private readonly INotificationService _notificationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly INotificationService _notificationService;
+
     public NotificationsControllerTests()
     {
         _notificationService = A.Fake<INotificationService>();
@@ -26,15 +27,17 @@ public class NotificationsControllerTests
     }
 
     [Fact]
-    public async void GetNotificationsPaginatedReturnsOkResult()
+    public async Task GetNotificationsPaginatedReturnsOkResult()
     {
         // Arrange
-        A.CallTo(() => _notificationService.GetNotificationsPaginatedAsync(A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns(GetTestNotificationsPaginated());
-    
+        A.CallTo(() =>
+                _notificationService.GetNotificationsPaginatedAsync(A<string>.Ignored, A<int>.Ignored, A<int>.Ignored))
+            .Returns(GetTestNotificationsPaginated());
+
         // Act
         var actionResult = await _controller.GetNotificationsPaginated(1, 10);
-        
-        
+
+
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value as PaginationWrapper<Notification>;
 
@@ -43,28 +46,30 @@ public class NotificationsControllerTests
         Assert.IsAssignableFrom<PaginationWrapper<Notification>>(objectResultValue);
         Assert.NotNull(objectResultValue);
     }
-    
+
     [Fact]
-    public async void ReadNotificationReturnsConflictResultWhenActorDoesNotMatchNotificationReceiver()
+    public async Task ReadNotificationReturnsConflictResultWhenActorDoesNotMatchNotificationReceiver()
     {
         // Arrange
         var oid = "not123";
-        A.CallTo(() => _notificationService.GetNotificationAsync(A<string>.Ignored)).Returns(new Notification("s", oid, "m", "type", 100));
-        A.CallTo(() => _httpContextAccessor.HttpContext!.User.FindFirst(A<string>.Ignored)).Returns(new Claim("oid", oid));
+        A.CallTo(() => _notificationService.GetNotificationAsync(A<string>.Ignored))
+            .Returns(new Notification("s", oid, "m", "type", 100));
+        A.CallTo(() => _httpContextAccessor.HttpContext!.User.FindFirst(A<string>.Ignored))
+            .Returns(new Claim("oid", oid));
 
         // Act
         var controller = GetControllerWithIodContext(oid);
         var actionResult = await controller.ReadNotification(oid);
-        
-        
+
+
         var objectResult = actionResult as ObjectResult;
 
         // Assert
         Assert.IsType<ConflictObjectResult>(objectResult);
     }
-    
+
     [Fact]
-    public async void ReadNotificationReturnsConflictResultWhenNotificationIsNull()
+    public async Task ReadNotificationReturnsConflictResultWhenNotificationIsNull()
     {
         // Arrange
         Notification? notification = null;
@@ -73,16 +78,16 @@ public class NotificationsControllerTests
         // Act
         var controller = GetControllerWithIodContext("123");
         var actionResult = await controller.ReadNotification("123");
-        
-        
+
+
         var objectResult = actionResult as ObjectResult;
 
         // Assert
         Assert.IsType<ConflictObjectResult>(objectResult);
     }
-    
+
     [Fact]
-    public async void DeleteNotificationReturnsConflictWhenActorIdIsNotEqualToReceiverId()
+    public async Task DeleteNotificationReturnsConflictWhenActorIdIsNotEqualToReceiverId()
     {
         // Arrange
         var notification = new Notification("s", "r", "m", "type", 100);
@@ -92,16 +97,16 @@ public class NotificationsControllerTests
         // Act
         var controller = GetControllerWithIodContext("123");
         var actionResult = await controller.ReadNotification("123");
-        
-        
+
+
         var objectResult = actionResult as ObjectResult;
 
         // Assert
         Assert.IsType<ConflictObjectResult>(objectResult);
     }
-    
+
     [Fact]
-    public async void DeleteNotificationReturnsConflictWhenNotificationIsNull()
+    public async Task DeleteNotificationReturnsConflictWhenNotificationIsNull()
     {
         // Arrange
         Notification? notification = null;
@@ -110,14 +115,13 @@ public class NotificationsControllerTests
         // Act
         var controller = GetControllerWithIodContext("123");
         var actionResult = await controller.ReadNotification("123");
-        
-        
+
+
         var objectResult = actionResult as ObjectResult;
 
         // Assert
         Assert.IsType<ConflictObjectResult>(objectResult);
     }
-
 
 
     private NotificationController GetControllerWithIodContext(string iod)
@@ -141,23 +145,18 @@ public class NotificationsControllerTests
 
         return mockController;
     }
-    
-    private static Notification GetTestNotification()
-    {
-        return new Notification("Sender123", "Receiver123", "Test message 1", "Kudos", 100);
-    }
-    
+
     private static IEnumerable<Notification> GetTestNotifications()
     {
-        return new []
+        return new[]
         {
             new Notification("Sender123", "Receiver123", "Test message 1", "Kudos", 100),
             new Notification("Sender12345", "Receiver123", "Test message 2", "Kudos", 100),
             new Notification("Sender1234567", "Receiver123", "Test message 3", "Kudos", 100),
-            new Notification("Sender1236785", "Receiver123", "Test message 4", "Kudos", 100),
+            new Notification("Sender1236785", "Receiver123", "Test message 4", "Kudos", 100)
         };
     }
-    
+
     private static PaginationWrapper<Notification> GetTestNotificationsPaginated()
     {
         return new PaginationWrapper<Notification>(GetTestNotifications(), 1, 10, 4);

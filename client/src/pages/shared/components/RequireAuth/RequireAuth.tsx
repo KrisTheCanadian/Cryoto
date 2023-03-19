@@ -1,5 +1,5 @@
 import {useIsAuthenticated, useMsal} from '@azure/msal-react';
-import {Outlet, useNavigate, Navigate} from 'react-router-dom';
+import {Navigate, Outlet, useNavigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useEffect} from 'react';
 

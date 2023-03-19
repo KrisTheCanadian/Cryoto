@@ -21,7 +21,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_CreateAddressAsync_ReturnsBool()
+    public async Task AddressService_CreateAddressAsync_ReturnsBool()
     {
         //Arrange
         var addressModel = GetAddressModel();
@@ -35,7 +35,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_DeleteAddressAsync_ReturnsBool()
+    public async Task AddressService_DeleteAddressAsync_ReturnsBool()
     {
         //Arrange
         var addressModel = GetAddressModel();
@@ -49,7 +49,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_GetDefaultAddressByOIdAsync_ReturnsAddressModel()
+    public async Task AddressService_GetDefaultAddressByOIdAsync_ReturnsAddressModel()
     {
         //Arrange
         var addressModel = GetAddressModel();
@@ -70,7 +70,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_GetAllAddressesAsync_ReturnsAddressModelList()
+    public async Task AddressService_GetAllAddressesAsync_ReturnsAddressModelList()
     {
         //Arrange
         var addressModelList = GetAddressModelList();
@@ -91,7 +91,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_GetAddressByIdAsync_ReturnsAddressModel()
+    public async Task AddressService_GetAddressByIdAsync_ReturnsAddressModel()
     {
         //Arrange
         var addressModel = GetAddressModel();
@@ -112,7 +112,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_GetAllAddressesByOIdAsync_ReturnsAddressModelList()
+    public async Task AddressService_GetAllAddressesByOIdAsync_ReturnsAddressModelList()
     {
         //Arrange
         var addressModelList = GetAddressModelList();
@@ -133,7 +133,7 @@ public class AddressServicesTests
     }
 
     [Fact]
-    public async void AddressService_UpdateAddressAsync_ReturnsBool()
+    public async Task AddressService_UpdateAddressAsync_ReturnsBool()
     {
         //Arrange
         var addressModel = GetAddressModel();
@@ -151,7 +151,7 @@ public class AddressServicesTests
         var addressModelList = new List<AddressModel>
         {
             new("oid1", "1", "street1", "city1", "provine1", "country1", "pc1"),
-            new("oid2", "2", "street2", "city2", "provine2", "country2", "pc2"),
+            new("oid2", "2", "street2", "city2", "provine2", "country2", "pc2")
         };
         return Task.FromResult(addressModelList);
     }

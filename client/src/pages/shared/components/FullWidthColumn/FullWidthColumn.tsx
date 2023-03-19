@@ -15,4 +15,5 @@ function FullWidthColumn(props: FullWidthColumnProps) {
     </Box>
   );
 }
+
 export default FullWidthColumn;

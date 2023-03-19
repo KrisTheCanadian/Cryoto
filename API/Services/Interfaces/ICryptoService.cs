@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
 using API.Crypto.Solana.SolanaObjects;
-using API.Models;
 using API.Models.Users;
-using Solnet.Wallet;
 
 namespace API.Services.Interfaces;
 

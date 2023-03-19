@@ -12,16 +12,16 @@ namespace API.Services;
 
 public class NotificationService : INotificationService
 {
-    private readonly IHubContext<NotificationsHub> _hubContext;
-    private readonly INotificationRepository _repository;
-    private readonly ILogger<NotificationService> _logger;
-    private readonly IUserProfileRepository _userProfileRepository;
     private const string SenderEmail = "Cryoto@31286fb0-ff2a-4420-8b82-32f62d53c117.azurecomm.net";
     private readonly string _emailConnectionString;
+    private readonly IHubContext<NotificationsHub> _hubContext;
+    private readonly ILogger<NotificationService> _logger;
+    private readonly INotificationRepository _repository;
+    private readonly IUserProfileRepository _userProfileRepository;
 
 
     public NotificationService(IHubContext<NotificationsHub> hubContext, INotificationRepository repository,
-        ILogger<NotificationService> logger, IUserProfileRepository userProfileRepository, 
+        ILogger<NotificationService> logger, IUserProfileRepository userProfileRepository,
         IConfiguration configuration)
     {
         _hubContext = hubContext;
@@ -33,17 +33,20 @@ public class NotificationService : INotificationService
 
     public async Task SendEmailAsync(string to, string subject, string message, bool isHtml = false)
     {
-        try {
+        try
+        {
             var emailClient = new EmailClient(_emailConnectionString);
-            var emailContent = isHtml ? new EmailContent(subject) {Html = message} : new EmailContent(subject) { PlainText = message };
-            var emailAddresses = new List<EmailAddress> { new (to) };
-            var emailMessage = new EmailMessage(SenderEmail, emailContent, new EmailRecipients(emailAddresses) );
-            
+            var emailContent = isHtml
+                ? new EmailContent(subject) { Html = message }
+                : new EmailContent(subject) { PlainText = message };
+            var emailAddresses = new List<EmailAddress> { new(to) };
+            var emailMessage = new EmailMessage(SenderEmail, emailContent, new EmailRecipients(emailAddresses));
+
             var emailResult = await emailClient.SendAsync(emailMessage, CancellationToken.None);
-            
+
             await emailClient.GetSendStatusAsync(emailResult.Value.MessageId);
-            
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             _logger.LogError(e, "Error sending email");
         }
@@ -51,17 +54,20 @@ public class NotificationService : INotificationService
 
     public async Task SendEmailsAsync(List<string> to, string subject, string message, bool isHtml = false)
     {
-        try {
+        try
+        {
             var emailClient = new EmailClient(_emailConnectionString);
-            var emailContent = isHtml ? new EmailContent(subject) {Html = message} : new EmailContent(subject) { PlainText = message };
+            var emailContent = isHtml
+                ? new EmailContent(subject) { Html = message }
+                : new EmailContent(subject) { PlainText = message };
             var emailAddresses = to.Select(x => new EmailAddress(x)).ToList();
-            var emailMessage = new EmailMessage(SenderEmail, emailContent, new EmailRecipients(emailAddresses) );
-            
+            var emailMessage = new EmailMessage(SenderEmail, emailContent, new EmailRecipients(emailAddresses));
+
             var emailResult = await emailClient.SendAsync(emailMessage, CancellationToken.None);
-            
+
             await emailClient.GetSendStatusAsync(emailResult.Value.MessageId);
-            
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             _logger.LogError(e, "Error sending email");
         }
@@ -69,19 +75,21 @@ public class NotificationService : INotificationService
 
     public async Task SendNotificationAsync(Notification notification)
     {
-        var sender = notification.SenderId == "System" ? null : await _userProfileRepository.GetUserByIdAsync(notification.SenderId);
+        var sender = notification.SenderId == "System"
+            ? null
+            : await _userProfileRepository.GetUserByIdAsync(notification.SenderId);
         var receiver = await _userProfileRepository.GetUserByIdAsync(notification.ReceiverId);
-        
-        if(sender != null){ notification.SenderName = sender.Name; }
-        if (receiver != null) { notification.ReceiverName = receiver.Name; }
+
+        if (sender != null) notification.SenderName = sender.Name;
+        if (receiver != null) notification.ReceiverName = receiver.Name;
 
         await _hubContext.Clients.Groups(notification.ReceiverId)
             .SendAsync("ReceiveNotification", notification);
-        
+
         _logger.LogInformation("Notification sent to user {UserId}", notification.ReceiverId);
 
         var isCreated = await _repository.CreateNotificationAsync(notification);
-        if (!isCreated) { _logger.LogError("Notification not created"); }
+        if (!isCreated) _logger.LogError("Notification not created");
     }
 
     public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(string actorId)
@@ -104,12 +112,13 @@ public class NotificationService : INotificationService
         return await _repository.DeleteAsync(id);
     }
 
-    public async Task<PaginationWrapper<Notification>> GetNotificationsPaginatedAsync(string actorId, int page, int pageSize)
+    public async Task<PaginationWrapper<Notification>> GetNotificationsPaginatedAsync(string actorId, int page,
+        int pageSize)
     {
         return await _repository.GetNotificationsPaginatedAsync(actorId, page, pageSize);
     }
 
-    public async Task<bool> SendReactionNotification(string actorId, string postId, int type, PostModel post)
+    public async Task<bool> SendReactionNotification(string actorId, int type, PostModel post)
     {
         var react = true;
         switch (type)
@@ -124,7 +133,7 @@ public class NotificationService : INotificationService
                 react = post.Claps.Contains(actorId);
                 break;
         }
-        
+
         if (react)
         {
             string ReactionMessage(int reactionType)
@@ -138,9 +147,10 @@ public class NotificationService : INotificationService
                     case 2:
                         return "celebrated";
                 }
+
                 return "";
             }
-        
+
             var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
             // Send Notification to Post Author
             if (post.Author != actorId)
@@ -153,15 +163,15 @@ public class NotificationService : INotificationService
                     "Reaction",
                     null
                 );
-        
+
                 await SendNotificationAsync(notification);
-        
+
                 // send email notification
                 if (actorProfile.EmailNotifications)
                     await SendEmailAsync(post.Author, "New Reaction",
                         $"<h1>{actorProfile.Name} {ReactionMessage(type)} your post.</h1>");
             }
-        
+
             foreach (var postRecipient in post.RecipientProfiles)
                 if (postRecipient.OId != actorId)
                 {
@@ -174,12 +184,12 @@ public class NotificationService : INotificationService
                         "Reaction",
                         null
                     );
-        
+
                     await SendNotificationAsync(notificationToPostRecipient);
-                    
+
                     // get user profile of post recipient
                     var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
-        
+
                     // send email notification
                     if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
                         await SendEmailAsync(postRecipient.OId, "New Reaction",
@@ -189,21 +199,23 @@ public class NotificationService : INotificationService
 
         return true;
     }
-    
+
     public async Task<bool> SendCommentNotification(string actorId, string postId, PostModel post)
-    { 
+    {
         var commentAuthor = await _userProfileRepository.GetUserByIdAsync(actorId);
         if (commentAuthor == null)
         {
             _logger.LogError("Could not retrieve user profile of user '{ActorId}'", actorId);
             return false;
         }
+
         var postAuthor = post.AuthorProfile;
         if (postAuthor == null)
         {
             _logger.LogError("Could not retrieve author profile of post '{PostId}'", postId);
             return false;
         }
+
         // Send Notification to Post Author
         if (post.Author != actorId)
         {
@@ -215,18 +227,18 @@ public class NotificationService : INotificationService
                 "Comment",
                 null
             );
-        
+
             await SendNotificationAsync(notification);
-            
+
             // get user profile of post author
             var postAuthorProfile = await _userProfileRepository.GetUserByIdAsync(post.Author);
-        
+
             // send email notification
             if (postAuthorProfile != null && postAuthorProfile.EmailNotifications)
                 await SendEmailAsync(post.Author, "New Comment",
                     $"<h1>{commentAuthor.Name} commented on your post.</h1>");
         }
-        
+
         // Send Notification to Post Recipients
         foreach (var postRecipient in post.RecipientProfiles)
             if (postRecipient.OId != actorId)
@@ -238,9 +250,9 @@ public class NotificationService : INotificationService
                     "Comment",
                     null
                 );
-        
+
                 await SendNotificationAsync(notificationToPostRecipient);
-                
+
                 // get user profile of post recipient
                 var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
 
@@ -252,8 +264,8 @@ public class NotificationService : INotificationService
 
         return true;
     }
-    
-    public async Task<bool> SendBoostNotification(string actorId, string postId, PostModel post)
+
+    public async Task<bool> SendBoostNotification(string actorId, PostModel post)
     {
         var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
         // Send Notification to Post Author
@@ -267,18 +279,18 @@ public class NotificationService : INotificationService
                 "Boost",
                 null
             );
-    
+
             await SendNotificationAsync(notification);
-            
+
             // get user profile of post author
             var postAuthorProfile = await _userProfileRepository.GetUserByIdAsync(post.Author);
-    
+
             // send email notification
             if (postAuthorProfile != null && postAuthorProfile.EmailNotifications)
                 await SendEmailAsync(post.Author, "New Boost",
                     $"<h1>{actorProfile.Name} boosted your post.</h1>");
         }
-    
+
         foreach (var postRecipient in post.RecipientProfiles)
             if (postRecipient.OId != actorId)
             {
@@ -291,17 +303,18 @@ public class NotificationService : INotificationService
                     "Boost",
                     null
                 );
-    
+
                 await SendNotificationAsync(notificationToPostRecipient);
-                
+
                 // get user profile of post recipient
                 var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
-    
+
                 // send email notification
                 if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
                     await SendEmailAsync(postRecipient.OId, "New Boost",
                         $"<h1>{actorProfile.Name} boosted a post you are recognized in.</h1>");
             }
+
         return true;
     }
 }

@@ -1,12 +1,12 @@
 import {FullWidthColumn} from '@shared/components/FullWidthColumn';
 import PageFrame from '@shared/components/PageFrame';
-import {IconButton, Box, Typography} from '@mui/material';
+import {Box, IconButton, Typography} from '@mui/material';
 import {Autorenew} from '@mui/icons-material';
 import {useTheme} from '@mui/material/styles';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 
-import {CreditCard, TransactionTable, SelfTransferDialog} from './components';
+import {CreditCard, SelfTransferDialog, TransactionTable} from './components';
 
 function Wallet() {
   const theme = useTheme();

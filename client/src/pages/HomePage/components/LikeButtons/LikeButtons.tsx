@@ -7,7 +7,7 @@ import {useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {AddReaction, AddReactionOutlined} from '@mui/icons-material';
 import {useMsal} from '@azure/msal-react';
-import {motion, AnimatePresence} from 'framer-motion';
+import {AnimatePresence, motion} from 'framer-motion';
 import {useAlertContext} from '@shared/hooks/Alerts';
 
 import {EmojiContainer} from '../shared/EmojiContainer';

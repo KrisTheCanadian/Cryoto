@@ -1,5 +1,5 @@
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
-import {Card, Box, Grid, Typography} from '@mui/material';
+import {Box, Card, Grid, Typography} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';

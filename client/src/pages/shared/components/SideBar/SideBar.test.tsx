@@ -1,4 +1,4 @@
-import {render, screen, within} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import {act} from 'react-dom/test-utils';
 import {I18nextProvider} from 'react-i18next';
 import {MsalProvider} from '@azure/msal-react';
@@ -8,7 +8,6 @@ import {
   IPublicClientApplication,
   PublicClientApplication,
 } from '@azure/msal-browser';
-import {MemoryRouter} from 'react-router-dom';
 import {MockAppProviders} from '@shared/testing/mocks';
 import {QueryClient, QueryClientProvider} from 'react-query';
 
