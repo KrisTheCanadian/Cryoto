@@ -54,6 +54,7 @@ export const frenchTranslations = {
     Post: 'Poster',
     React: 'Réagir',
     Recognized: 'a reconnu ',
+    RecipientAnd: 'et ',
     UploadImageMessage: 'Déposez l’image ici',
     Celebrations: 'Célébrations',
     TopRecognizers: 'Meilleurs reconnaisseurs du mois',

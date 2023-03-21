@@ -51,6 +51,7 @@ export const englishTranslations = {
     Post: 'Post',
     React: 'React',
     Recognized: 'recognized ',
+    RecipientAnd: 'and ',
     UploadImageMessage: 'Drop image here',
     Celebrations: 'Celebrations',
     TopRecognizers: 'Top Recognizers of the Month',

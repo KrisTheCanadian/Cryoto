@@ -152,7 +152,7 @@ public class UserProfileRepository : IUserProfileRepository
     private async Task<List<UserProfileModel>?> GetRecognizedUsersByIdAsync(string oid)
     {
         var recognizedUsersOidList = Context.Posts.Where(postModel => postModel.Author == oid)
-            .Select(postModel => postModel.Recipients).AsEnumerable().SelectMany(array => array).Distinct();
+            .Select(postModel => postModel.Recipients).ToList().SelectMany(array => array).Distinct();
 
         var recognizedUsersList = new List<UserProfileModel?>();
 

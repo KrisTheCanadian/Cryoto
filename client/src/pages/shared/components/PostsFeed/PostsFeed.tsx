@@ -109,7 +109,6 @@ function PostsFeed(props: PostsFeedProps) {
             <Post
               key={`Skeleton-Card:${index}`}
               firstName=""
-              recipient=""
               coinsGiven={0}
               tags={['']}
               message=""
@@ -121,7 +120,8 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={[]}
               claps={[]}
               celebrations={[]}
-              recipientId=""
+              recipients={[]}
+              recipientProfiles={[]}
               name={undefined}
               oId={undefined}
               comments={[]}
@@ -136,9 +136,6 @@ function PostsFeed(props: PostsFeedProps) {
             <Post
               key={post?.id}
               firstName={post?.authorProfile?.name || 'Deleted Cryoto User'}
-              recipient={
-                post?.recipientProfiles[0]?.name || 'Deleted Cryoto User'
-              }
               coinsGiven={post?.coins}
               tags={post?.tags}
               message={post?.message}
@@ -150,7 +147,8 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={post?.hearts || []}
               claps={post?.claps || []}
               celebrations={post?.celebrations || []}
-              recipientId={post?.recipientProfiles[0]?.oId}
+              recipients={post?.recipients || []}
+              recipientProfiles={post?.recipientProfiles || []}
               name={name}
               oId={accounts[0].idTokenClaims?.oid}
               comments={post?.comments || []}
@@ -169,7 +167,6 @@ function PostsFeed(props: PostsFeedProps) {
             <Post
               key={`Skeleton-Card:${index}`}
               firstName=""
-              recipient=""
               coinsGiven={0}
               tags={['']}
               message=""
@@ -181,7 +178,8 @@ function PostsFeed(props: PostsFeedProps) {
               hearts={[]}
               claps={[]}
               celebrations={[]}
-              recipientId=""
+              recipients={[]}
+              recipientProfiles={[]}
               name={undefined}
               oId={undefined}
               comments={[]}

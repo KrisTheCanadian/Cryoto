@@ -15,6 +15,7 @@ import {QueryClient, QueryClientProvider} from 'react-query';
 import Post from './Post';
 
 import i18n from '@/i18n/i18n';
+import {IUserMinimal} from '@/data/api/types/IUser';
 
 const TEST_CONFIG = {
   MSAL_CLIENT_ID: '0813e1d1-ad72-46a9-8665-399bba48c201',
@@ -67,8 +68,9 @@ it('should render Posts', async () => {
     firstName: string;
     date: string;
     imageURL?: string;
-    recipient: string;
+    recipients: string[];
     message: string;
+    recipientProfiles: IUserMinimal[];
     coinsGiven: number;
     tags?: string[];
     loading: boolean;
@@ -79,8 +81,9 @@ it('should render Posts', async () => {
     firstName: 'test first name',
     date: 'today',
     imageURL: '',
-    recipient: 'test recipient',
+    recipients: ['recipient'],
     message: 'message',
+    recipientProfiles: [{oId: 'id', name: 'firstName'}],
     coinsGiven: 100,
     tags: [],
     loading: false,
@@ -107,7 +110,6 @@ it('should render Posts', async () => {
                   name={undefined}
                   oId={undefined}
                   comments={[]}
-                  recipientId=""
                   id=""
                   hearts={[]}
                   claps={[]}
@@ -124,6 +126,6 @@ it('should render Posts', async () => {
   });
 
   expect(screen.getByText(postProps.firstName)).toBeInTheDocument();
-  expect(screen.getByText(postProps.recipient)).toBeInTheDocument();
+  expect(screen.getByText(postProps.coinsGiven)).toBeInTheDocument();
   expect(screen.getByText(postProps.message)).toBeInTheDocument();
 });

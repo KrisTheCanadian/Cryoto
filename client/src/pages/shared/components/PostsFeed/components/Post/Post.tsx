@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable @shopify/strict-component-boundaries */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-negated-condition */
@@ -9,7 +10,7 @@ import {useTheme} from '@mui/material/styles';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -27,6 +28,7 @@ import PreviewCommentSection from '@/pages/HomePage/components/Comments/Componen
 import {IUser} from '@/data/api/types';
 import {getUserById} from '@/data/api/requests/admin';
 import {BoostButton} from '@/pages/HomePage/components/BoostButton';
+import {IUserMinimal} from '@/data/api/types/IUser';
 
 interface PostProps {
   name: string | undefined;
@@ -35,8 +37,8 @@ interface PostProps {
   firstName: string;
   date: string;
   imageUrl?: string;
-  recipient: string;
-  recipientId: string;
+  recipients: string[];
+  recipientProfiles: IUserMinimal[];
   message: string;
   coinsGiven: number;
   tags?: string[];
@@ -57,8 +59,8 @@ function Post(props: PostProps) {
   const {
     id,
     firstName,
-    recipient,
-    recipientId,
+    recipients,
+    recipientProfiles,
     message,
     imageUrl,
     tags,
@@ -101,7 +103,7 @@ function Post(props: PostProps) {
     navigate(`/profile/${authorId}`);
   };
 
-  const handleAvatarClickRecipient = () => {
+  const handleAvatarClickRecipient = (recipientId: string) => {
     navigate(`/profile/${recipientId}`);
   };
 
@@ -144,12 +146,12 @@ function Post(props: PostProps) {
   // fetch anniversary user profile for years worked
   const [anniversaryUserProfile, setAnniversaryUserProfile] = useState<IUser>();
   useEffect(() => {
-    getUserById(recipientId)
+    getUserById(recipientProfiles[0].oId)
       .then((response) => {
         setAnniversaryUserProfile(response);
       })
       .catch((err) => {});
-  }, [recipientId]);
+  }, [recipientProfiles]);
 
   if (tags?.includes('Anniversary')) {
     return (
@@ -213,9 +215,11 @@ function Post(props: PostProps) {
                     >
                       <b
                         style={{cursor: 'pointer'}}
-                        onClick={handleAvatarClickRecipient}
+                        onClick={() =>
+                          handleAvatarClickRecipient(recipientProfiles[0]?.oId)
+                        }
                       >
-                        {` ${recipient}!`}
+                        {` ${recipientProfiles[0]?.name}!`}
                       </b>
                     </span>
                   </Typography>
@@ -340,21 +344,31 @@ function Post(props: PostProps) {
 
           <Stack sx={{ml: 2}}>
             <Typography variant="body1">
-              <b
-                data-testid="poster-name"
-                style={{cursor: 'pointer'}}
-                onClick={handleAvatarClickAuthor}
-              >
-                {firstName}
-              </b>
-              {` ${t('homePage.Recognized')}`}
-              <b
-                data-testid="rewardee-name"
-                style={{cursor: 'pointer'}}
-                onClick={handleAvatarClickRecipient}
-              >
-                {recipient}
-              </b>
+              <>
+                <b
+                  data-testid="poster-name"
+                  style={{cursor: 'pointer'}}
+                  onClick={handleAvatarClickAuthor}
+                >
+                  {firstName}
+                </b>
+                {` ${t('homePage.Recognized')}`}
+
+                {recipientProfiles.map((profile, index) => (
+                  <React.Fragment key={index}>
+                    <b
+                      data-testid="rewardee-name"
+                      style={{cursor: 'pointer'}}
+                      onClick={() => handleAvatarClickRecipient(profile.oId)}
+                    >
+                      {profile.name}
+                    </b>
+                    {index < recipientProfiles.length - 2 && ', '}
+                    {index === recipientProfiles.length - 2 &&
+                      ` ${t('homePage.RecipientAnd')}`}
+                  </React.Fragment>
+                ))}
+              </>
             </Typography>
             <Box
               sx={{display: 'flex', alignItems: 'center', mt: 0.25, mb: 0.25}}
