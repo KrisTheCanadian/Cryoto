@@ -81,10 +81,7 @@ public class CryptoService : ICryptoService
         var rpcTransactionResult = _solanaService.SendTokens(amount, senderWallet, ownerWallet, receiverPublicKey,
             _configuration["tokenAddress"]);
         if (rpcTransactionResult.error == null)
-        {
-            await UpdateTokenBalance(-amount, senderOId, "toAward");
             await UpdateTokenBalance(amount, receiverOId, "toSpend");
-        }
 
         return rpcTransactionResult;
     }
@@ -248,6 +245,8 @@ public class CryptoService : ICryptoService
 
         if (senderWallet.TokenBalance < boostAmount * recipientIds.Count) return false;
         var recipientsList = recipientIds.Where(id => !id.Equals(senderId)).ToList();
+        await UpdateTokenBalance(-(boostAmount * recipientsList.Count), senderId, "toAward");
+
         while (maxResend > 0 && recipientsList.Count > 0)
         {
             var didNotReceiveTransaction = new List<string>();
@@ -270,6 +269,8 @@ public class CryptoService : ICryptoService
             maxResend -= 1;
             recipientsList = didNotReceiveTransaction;
         }
+
+        await UpdateTokenBalance(boostAmount * recipientsList.Count, senderId, "toAward");
 
         return recipientsList.Count == 0;
     }

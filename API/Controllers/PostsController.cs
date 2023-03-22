@@ -117,10 +117,13 @@ public class PostsController : ControllerBase
             return BadRequest("Your balance is not enough");
         }
 
+        await _cryptoService.UpdateTokenBalance(-(amount * createdPostModel.RecipientProfiles.Count()), _actorId,
+            "toAward");
 
-        var oIdsList = new List<List<string>>
+        var queueTokenUpdateOIdsList = new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { _actorId } };
-        var successfulRecipients = new List<UserDto>();
+        var successfulRecipientsProfiles = new List<UserDto>();
+        var successfulRecipients = new List<string>();
         foreach (var recipientProfile in createdPostModel.RecipientProfiles)
             try
             {
@@ -132,8 +135,9 @@ public class PostsController : ControllerBase
 
                 await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
                 await SendNotification(postCreateModel, recipientProfile, postModel, amount);
-                oIdsList[1].Add(recipientProfile.OId);
-                successfulRecipients.Add(recipientProfile);
+                queueTokenUpdateOIdsList[1].Add(recipientProfile.OId);
+                successfulRecipients.Add(recipientProfile.OId);
+                successfulRecipientsProfiles.Add(recipientProfile);
             }
             catch
             {
@@ -141,17 +145,27 @@ public class PostsController : ControllerBase
                     recipientProfile.OId);
             }
 
-        if (successfulRecipients.Count == 0)
+        if (successfulRecipientsProfiles.Count == 0)
         {
+            await _cryptoService.UpdateTokenBalance(amount * createdPostModel.RecipientProfiles.Count(), _actorId,
+                "toAward");
+
             await _postService.DeleteByIdAsync(createdPostModel.Id);
             return BadRequest("Could not process any transaction and create the post");
         }
 
-        if (createdPostModel.RecipientProfiles.Count() > successfulRecipients.Count)
-            createdPostModel.RecipientProfiles = successfulRecipients;
+        if (createdPostModel.RecipientProfiles.Count() > successfulRecipientsProfiles.Count)
+        {
+            var failedRecipientCount = createdPostModel.RecipientProfiles.Count() - successfulRecipientsProfiles.Count;
+            await _cryptoService.UpdateTokenBalance(amount * failedRecipientCount, _actorId, "toAward");
+
+            createdPostModel.RecipientProfiles = successfulRecipientsProfiles;
+            createdPostModel.Recipients = successfulRecipients.ToArray();
+            await _postService.UpdateAsync(createdPostModel);
+        }
 
         await _userProfileService.IncrementRecognitionsSent(_actorId);
-        _cryptoService.QueueTokenUpdate(oIdsList);
+        _cryptoService.QueueTokenUpdate(queueTokenUpdateOIdsList);
 
         return Ok(createdPostModel);
     }
