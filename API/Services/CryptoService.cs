@@ -247,7 +247,7 @@ public class CryptoService : ICryptoService
         if (senderWallet == null) return false;
 
         if (senderWallet.TokenBalance < boostAmount * recipientIds.Count) return false;
-        var recipientsList = recipientIds.ConvertAll(id => id);
+        var recipientsList = recipientIds.Where(id => !id.Equals(senderId)).ToList();
         while (maxResend > 0 && recipientsList.Count > 0)
         {
             var didNotReceiveTransaction = new List<string>();
@@ -268,7 +268,7 @@ public class CryptoService : ICryptoService
             }
 
             maxResend -= 1;
-            recipientsList = didNotReceiveTransaction.ConvertAll(id => id);
+            recipientsList = didNotReceiveTransaction;
         }
 
         return recipientsList.Count == 0;

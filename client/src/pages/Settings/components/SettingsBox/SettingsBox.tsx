@@ -122,9 +122,8 @@ function TextFieldInput(props: TextFieldInputProps) {
     textFieldInputProps: TextFieldInputProps,
   ): string => {
     let validationResult: ValidateResult = {result: true, message: ''};
-    switch (textFieldInputProps.title) {
-      case t<string>('settings.JobTitle'):
-        validationResult = validateJobTitle(newValue);
+    if (textFieldInputProps.title === t<string>('settings.JobTitle')) {
+      validationResult = validateJobTitle(newValue);
     }
     setError(!validationResult.result);
     setErrorMessage(t<string>(validationResult.message));

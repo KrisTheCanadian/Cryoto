@@ -18,4 +18,5 @@ public interface IPostRepository
     Task<bool> ReactAsync(int type, string guid, string actorId);
     Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
     Task<bool> BoostAsync(string guid, string actorId);
+    Task<bool> UnboostAsync(string guid, string actorId);
 }

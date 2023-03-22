@@ -226,15 +226,11 @@ public class PostsController : ControllerBase
             return BadRequest("Cannot boost the post because user does not exist.");
         }
 
-        var recipients = existingPost.Recipients.ToList();
-        var transactionSuccess = await _cryptoService.BoostRecognition(_actorId, recipients);
-        if (!transactionSuccess)
+        if (existingPost.Boosts.Contains(_actorId))
         {
-            _logger.LogError("Could not complete transaction to boost post '{Guid}' by booster '{ActorId}'", guid,
-                _actorId);
-            return BadRequest("Could not complete boost transaction.");
+            return BadRequest("Post already boosted.");
         }
-
+        
         var boosted = await _postService.BoostAsync(guid, actorProfile);
         if (!boosted)
         {
@@ -242,7 +238,22 @@ public class PostsController : ControllerBase
                 _actorId);
             return BadRequest("Could not boost the post.");
         }
-
+        
+        var recipients = existingPost.Recipients;
+        var transactionSuccess = await _cryptoService.BoostRecognition(_actorId, recipients.ToList());
+        if (!transactionSuccess)
+        {
+            _logger.LogError("Could not complete transaction to boost post '{Guid}' by booster '{ActorId}'", guid,
+                _actorId);
+            var unboosted = await _postService.UnboostAsync(guid, actorProfile);
+            if (!unboosted)
+            {
+                _logger.LogError("Could not unboost post '{Guid}' by booster '{ActorId}'", guid,
+                    _actorId);
+            }
+            return BadRequest("Could not complete boost transaction.");
+        }
+        
         var notificationSent = await _notificationService.SendBoostNotification(_actorId, existingPost);
         if (!notificationSent)
             _logger.LogWarning("Failed to send boost notification on post '{Guid}' by user {ActorId}", guid, _actorId);

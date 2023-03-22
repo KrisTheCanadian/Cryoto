@@ -156,9 +156,21 @@ public class PostRepository : IPostRepository
     {
         var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
         if (post == null) return false;
-        if (post.Boosts.Contains(actorId)) return false;
+        if (post.Boosts.Contains(actorId)) return true;
 
         post.Boosts = post.Boosts.Append(actorId).ToArray();
+
+        Context.Posts.Update(post);
+
+        return await Context.SaveChangesAsync() > 0;
+    }
+    public async Task<bool> UnboostAsync(string guid, string actorId)
+    {
+        var post = Context.Posts.FirstOrDefault(x => x.Id.Equals(guid));
+        if (post == null) return false;
+        if (! post.Boosts.Contains(actorId)) return true;
+
+        post.Boosts = post.Boosts.Where(id => !id.Equals(actorId)).ToArray();
 
         Context.Posts.Update(post);
 

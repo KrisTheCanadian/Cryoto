@@ -72,10 +72,10 @@ public class PostService : IPostService
 
     public async Task<bool> BoostAsync(string guid, UserProfileModel userProfile)
     {
-        var allowedRoles = new[] { "Partner", "Senior Partner" };
-        var hasAllowedRole = userProfile.Roles.Any(role => allowedRoles.Contains(role));
-
-        if (!hasAllowedRole) return false;
         return await _postRepository.BoostAsync(guid, userProfile.OId);
+    }
+    public async Task<bool> UnboostAsync(string guid, UserProfileModel userProfile)
+    {
+        return await _postRepository.UnboostAsync(guid, userProfile.OId);
     }
 }

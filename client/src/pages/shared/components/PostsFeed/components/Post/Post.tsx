@@ -1,5 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable @shopify/strict-component-boundaries */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-negated-condition */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
@@ -16,6 +15,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import {stringAvatar} from '@shared/utils/colorUtils';
 import Divider from '@mui/material/Divider';
+import {useMsal} from '@azure/msal-react';
 
 import {LikeButtons} from '../../../../../HomePage/components/LikeButtons';
 
@@ -55,6 +55,7 @@ function Post(props: PostProps) {
   const theme = useTheme();
   const {t, i18n} = useTranslation();
   const navigate = useNavigate();
+  const {accounts} = useMsal();
 
   const {
     id,
@@ -143,6 +144,16 @@ function Post(props: PostProps) {
 
     return newTranslation;
   };
+
+  const allowedToBoost = () => {
+    const userRoles = accounts[0].idTokenClaims?.roles;
+    if (userRoles === undefined || userRoles.length === 0) {
+      return false;
+    }
+    const acceptedRoles = ['Partner', 'SeniorPartner'];
+    return acceptedRoles.some((role) => userRoles.includes(role));
+  };
+
   // fetch anniversary user profile for years worked
   const [anniversaryUserProfile, setAnniversaryUserProfile] = useState<IUser>();
   useEffect(() => {
@@ -442,8 +453,19 @@ function Post(props: PostProps) {
           <Box sx={{ml: theme.spacing(2)}}>
             <BoostButton
               data-testid="postboostbutton"
-              id={id}
+              postId={id}
+              userId={accounts[0].idTokenClaims?.oid!}
+              interactionEnabled={allowedToBoost()}
               boosts={boosts}
+              onBoost={() => {
+                boosts.push(accounts[0].idTokenClaims?.oid!);
+              }}
+              onFail={() => {
+                boosts.splice(
+                  boosts.indexOf(accounts[0].idTokenClaims?.oid!),
+                  boosts.indexOf(accounts[0].idTokenClaims?.oid!) >= 0 ? 1 : 0,
+                );
+              }}
             />
           </Box>
         </Box>

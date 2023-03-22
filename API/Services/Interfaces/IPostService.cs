@@ -18,4 +18,5 @@ public interface IPostService
     Task<bool> ReactAsync(int type, string guid, string actorId);
     Task<bool> CommentOnPostAsync(PostModel postModel, CommentModel commentModel);
     Task<bool> BoostAsync(string guid, UserProfileModel userProfile);
+    Task<bool> UnboostAsync(string guid, UserProfileModel userProfile);
 }
