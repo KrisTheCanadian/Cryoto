@@ -124,26 +124,39 @@ public class PostsController : ControllerBase
             { new() { "tokenUpdateQueue" }, new() { _actorId } };
         var successfulRecipientsProfiles = new List<UserDto>();
         var successfulRecipients = new List<string>();
-        foreach (var recipientProfile in createdPostModel.RecipientProfiles)
-            try
-            {
-                var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
-                if (rpcTransactionResult?.error != null) continue;
-                await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
-                    _actorId,
-                    "toAward", amount, "Recognition", postCreateModel.CreatedDate));
+        var maxResend = 10;
+        var recipientProfilesList = createdPostModel.RecipientProfiles.ToList();
 
-                await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
-                await SendNotification(postCreateModel, recipientProfile, postModel, amount);
-                queueTokenUpdateOIdsList[1].Add(recipientProfile.OId);
-                successfulRecipients.Add(recipientProfile.OId);
-                successfulRecipientsProfiles.Add(recipientProfile);
-            }
-            catch
-            {
-                _logger.LogWarning("Failed to send tokens to {Name} with oId: {Id}", recipientProfile.Name,
-                    recipientProfile.OId);
-            }
+        while (maxResend > 0 && recipientProfilesList.Count > 0)
+        {
+            var didNotReceiveTransaction = new List<UserDto>();
+ 
+            foreach (var recipientProfile in recipientProfilesList)
+                try
+                {
+                    var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
+                    if (rpcTransactionResult.error != null)
+                        didNotReceiveTransaction.Add(recipientProfile);
+                    else
+                    {
+                        await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
+                            _actorId, "toAward", amount, "Recognition", postCreateModel.CreatedDate));
+                        await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
+                        await SendNotification(postCreateModel, recipientProfile, postModel, amount);
+                        queueTokenUpdateOIdsList[1].Add(recipientProfile.OId);
+                        successfulRecipients.Add(recipientProfile.OId);
+                        successfulRecipientsProfiles.Add(recipientProfile);
+                    }
+                }
+                catch
+                {
+                    _logger.LogWarning("Failed to send tokens to {Name} with oId: {Id}", recipientProfile.Name,
+                        recipientProfile.OId);
+                }
+
+            maxResend -= 1;
+            recipientProfilesList = didNotReceiveTransaction;
+        }
 
         if (successfulRecipientsProfiles.Count == 0)
         {

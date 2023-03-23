@@ -72,7 +72,7 @@ public class CryptoService : ICryptoService
         return walletModel.Result!.TokenBalance;
     }
 
-    public async Task<RpcTransactionResult?> SendTokens(double amount, string senderOId, string receiverOId)
+    public async Task<RpcTransactionResult> SendTokens(double amount, string senderOId, string receiverOId)
     {
         var senderWallet = await GetWalletByOIdAsync(senderOId, "toAward");
         var receiverWallet = await GetWalletByOIdAsync(receiverOId, "toSpend");
@@ -253,7 +253,7 @@ public class CryptoService : ICryptoService
             foreach (var recipientId in recipientsList)
             {
                 var rpcTransactionResult = await SendTokens(boostAmount, senderId, recipientId);
-                if (rpcTransactionResult?.error != null)
+                if (rpcTransactionResult.error != null)
                 {
                     didNotReceiveTransaction.Add(recipientId);
                 }

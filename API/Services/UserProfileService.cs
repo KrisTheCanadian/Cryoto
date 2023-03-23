@@ -105,12 +105,12 @@ public class UserProfileService : IUserProfileService
         return _context.GetTopRecognizers();
     }
 
-    public async Task<bool> UpdateUserRolesService(string msGraphAccessToken, string oid, string[] newRoles)
+    public async Task<bool> UpdateUserRolesService(string msGraphAccessToken, string oid, string[] roles)
     {
         var userProfileModel = await GetUserByIdAsync(oid);
-        var userRolesDb = userProfileModel!.Roles;
-        var rolesToBeDeleted = userRolesDb.Except(newRoles).ToArray();
-        var rolesToBeAdded = newRoles.Except(userRolesDb).ToArray();
+        var userRolesDb = await _msGraphApiService.GetAzureUserRolesAsync(msGraphAccessToken, oid);
+        var rolesToBeDeleted = userRolesDb!.Except(roles).ToArray();
+        var rolesToBeAdded = roles.Except(userRolesDb!).ToArray();
         var removedRolesSuccessfully = false;
         var addedRolesSuccessfully = false;
 
@@ -125,7 +125,7 @@ public class UserProfileService : IUserProfileService
                                (rolesToBeDeleted.Length > 0 && removedRolesSuccessfully);
         if (!successResponses) return successResponses;
 
-        userProfileModel.Roles = newRoles;
+        userProfileModel!.Roles = roles;
         // This is used as a cache to store the user role in the DB for faster retrieve.
         await _context.UpdateUserProfile(userProfileModel);
 
