@@ -160,7 +160,26 @@ public class CryptoService : ICryptoService
         await UpdateTokenBalance(amount, oid, walletType);
         await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
             "master", amount, "MonthlyTokensGift", DateTimeOffset.UtcNow));
+        
+        var notification = new Notification(
+            "System",
+            oid,
+            "You received your monthly gift!",
+            "MonthlyTokensGift",
+            amount
+        );
 
+        await _notificationService.SendNotificationAsync(notification);
+
+        // get user that received anniversary gift
+        var monthlyGiftUser = await _userProfileService.GetUserByIdAsync(oid);
+
+        // send email notification
+        if (monthlyGiftUser  != null && monthlyGiftUser.EmailNotifications)
+            await _notificationService.SendEmailAsync(monthlyGiftUser.Email, "Monthly Gift",
+                "<h1>You received your monthly gift!</h1> <p>Hi " + monthlyGiftUser.Name +
+                ",</p> <p>" + amount + " coins have been added to your To Award wallet. </p> <p>Best regards,</p> <p>Cryoto Team</p>", true);
+        
         return true;
     }
 
@@ -190,11 +209,28 @@ public class CryptoService : ICryptoService
 
         var rpcTransactionResult = await AddTokensAsync(amount, oid, walletType);
         if (rpcTransactionResult.error != null) return false;
-
         await UpdateTokenBalance(amount, oid, walletType);
         await _transactionService.AddTransactionAsync(new TransactionModel(oid, walletType, "master",
             "master", amount, "AnniversaryGift", DateTimeOffset.UtcNow));
 
+        var notification = new Notification(
+            "System",
+            oid,
+            "You received a work anniversary gift!",
+            "AnniversaryGift",
+            amount
+        );
+
+        await _notificationService.SendNotificationAsync(notification);
+
+        // get user that received anniversary gift
+        var workAnniversaryUser = await _userProfileService.GetUserByIdAsync(oid);
+        
+        // send email notification
+        if (workAnniversaryUser != null && workAnniversaryUser.EmailNotifications)
+            await _notificationService.SendEmailAsync(workAnniversaryUser.Email, "Happy Work Anniversary!",
+                $"<h1>You received a work anniversary gift!</h1> <p>Hi " + workAnniversaryUser.Name +
+                ",</p> <p>Congratulations on reaching another work anniversary milestone!</p> <p>" + amount + " coins have been added to your To Spend wallet. </p> <p>Best regards,</p> <p>Cryoto Team</p>", true);
         return true;
     }
 

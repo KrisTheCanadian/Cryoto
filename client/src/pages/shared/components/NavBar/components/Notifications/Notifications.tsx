@@ -306,7 +306,26 @@ function Notifications() {
                     </Box>
                     {n.amount !== null && (
                       <Chip
-                        icon={<VolunteerActivism />}
+                        sx={{
+                          backgroundColor: theme.interface.contrastMain,
+                          border: '3px solid',
+                          borderColor: theme.palette.primary.main,
+                          fontSize: '1rem',
+                          fontWeight: theme.typography.fontWeightMedium,
+                          marginRight: theme.spacing(1),
+                          '& .MuiChip-label': {
+                            color: theme.palette.primary.main,
+                          },
+                        }}
+                        icon={
+                          <VolunteerActivism
+                            style={{
+                              fill: theme.palette.primary.main,
+                              fontSize: '1.2rem',
+                              marginLeft: '10px',
+                            }}
+                          />
+                        }
                         label={n.amount.toString()}
                       />
                     )}

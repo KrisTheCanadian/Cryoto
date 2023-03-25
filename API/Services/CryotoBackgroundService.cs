@@ -157,7 +157,6 @@ public class CryotoBackgroundService : BackgroundService
                 await _queueClient.DeleteMessageAsync(queueMessage.Value.MessageId, queueMessage.Value.PopReceipt,
                     stoppingToken);
             }
-
             await Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
