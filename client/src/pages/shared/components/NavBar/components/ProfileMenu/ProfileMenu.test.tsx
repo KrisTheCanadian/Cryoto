@@ -20,7 +20,7 @@ it('Should display menu when clicked', async () => {
 
 it('dark mode toggle should work', async () => {
   await act(async () => {
-    const profileMenu = render(
+    render(
       <MockAppProviders>
         <ProfileMenu />
       </MockAppProviders>,

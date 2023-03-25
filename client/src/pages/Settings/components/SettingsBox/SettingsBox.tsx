@@ -65,7 +65,7 @@ interface SettingsElement {
     | GenericSettingsElement
     | AddressSettingsElement
     | SwitchableSettingsElement;
-  inputType: SettingsElementInputType;
+  inputType: SettingsElementInputType | number;
   callback: any | undefined;
 }
 

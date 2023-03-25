@@ -15,10 +15,7 @@ function CreditCard() {
   const {accounts} = useMsal();
   const username = accounts[0] && accounts[0].name;
 
-  const {data, status} = useQuery<IWalletsBalance>(
-    'walletsBalance',
-    getTokenBalance,
-  );
+  const {data} = useQuery<IWalletsBalance>('walletsBalance', getTokenBalance);
 
   return (
     <Card

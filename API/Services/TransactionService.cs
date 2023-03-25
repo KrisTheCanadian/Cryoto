@@ -32,14 +32,4 @@ public class TransactionService : ITransactionService
     {
         return await _transactionRepository.AddTransactionAsync(transaction);
     }
-
-    public async Task<bool> DeleteTransactionAsync(TransactionModel transaction)
-    {
-        return await _transactionRepository.DeleteTransactionAsync(transaction);
-    }
-
-    public async Task<bool> UpdateTransactionAsync(TransactionModel transaction)
-    {
-        return await _transactionRepository.UpdateTransactionAsync(transaction);
-    }
 }

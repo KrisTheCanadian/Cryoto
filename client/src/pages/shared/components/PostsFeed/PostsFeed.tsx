@@ -12,7 +12,6 @@ import {Post} from '@/pages/HomePage/components';
 
 interface PostsFeedProps {
   name: string | undefined;
-  oId: string | undefined;
   queryKey: string[];
   getNextPage: (
     page: number,
@@ -23,10 +22,10 @@ interface PostsFeedProps {
 }
 
 function PostsFeed(props: PostsFeedProps) {
-  const {name, oId, queryKey, getNextPage, userId} = props;
+  const {name, queryKey, getNextPage, userId} = props;
   const {accounts} = useMsal();
   const dispatchAlert = useAlertContext();
-  const [postsPerLoad, setPostsPerLoad] = useState(10);
+  const [postsPerLoad, _] = useState(10);
   const {t, i18n} = useTranslation();
   const loader = useRef();
   const [bottom, setBottom] = useState(false);

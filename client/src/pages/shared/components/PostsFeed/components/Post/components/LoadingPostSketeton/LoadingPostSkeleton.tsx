@@ -1,9 +1,6 @@
 import {Box, Card, CardContent, CardHeader, Skeleton} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 
 function LoadingPostSkeleton() {
-  const theme = useTheme();
-
   return (
     <Box sx={{width: '100%', display: 'flex', justifyContent: 'center'}}>
       <Card sx={{maxWidth: 600, mb: 2, flex: 1}}>

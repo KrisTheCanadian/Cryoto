@@ -22,7 +22,7 @@ function EmojiContainer(props: EmojiContainerProps) {
 
   const handleClick = async () => {
     if (enabled) {
-      const isRemoved = await handleReactionClick(type);
+      await handleReactionClick(type);
     }
   };
 

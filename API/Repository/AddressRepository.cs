@@ -15,16 +15,6 @@ public class AddressRepository : IAddressRepository
 
     private IDataContext Context { get; }
 
-    public async Task<List<AddressModel>> GetAllAddressesByOIdAsync(string oid)
-    {
-        return await Context.Addresses.AsNoTracking().Where(address => address.OId == oid).ToListAsync();
-    }
-
-    public async Task<List<AddressModel>> GetAllAddressesAsync()
-    {
-        return await Context.Addresses.AsNoTracking().ToListAsync();
-    }
-
     public async Task<AddressModel?> GetAddressByIdAsync(long id)
     {
         return await Context.Addresses.AsNoTracking().FirstOrDefaultAsync(address => address.Id == id);

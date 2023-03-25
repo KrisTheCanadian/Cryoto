@@ -50,7 +50,6 @@ function HomePage() {
               )}
               <PostsFeed
                 name={accounts[0].name}
-                oId={accounts[0].idTokenClaims?.oid}
                 queryKey={postsQuery}
                 getNextPage={getNextPage}
                 userId={accounts[0].idTokenClaims?.oid!}

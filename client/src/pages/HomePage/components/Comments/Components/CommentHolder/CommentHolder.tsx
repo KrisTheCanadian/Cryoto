@@ -56,7 +56,7 @@ function CommentHolder(props: CommentHolderProps) {
         setIsAuthor(true);
       }
     };
-    getUserProfilePhoto(props.comment.author!)
+    getUserProfilePhoto(props.comment.author)
       .then((response) => {
         setUserProfilePhoto(response);
       })

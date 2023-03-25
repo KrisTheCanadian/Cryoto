@@ -52,27 +52,6 @@ public class NotificationService : INotificationService
         }
     }
 
-    public async Task SendEmailsAsync(List<string> to, string subject, string message, bool isHtml = false)
-    {
-        try
-        {
-            var emailClient = new EmailClient(_emailConnectionString);
-            var emailContent = isHtml
-                ? new EmailContent(subject) { Html = message }
-                : new EmailContent(subject) { PlainText = message };
-            var emailAddresses = to.Select(x => new EmailAddress(x)).ToList();
-            var emailMessage = new EmailMessage(SenderEmail, emailContent, new EmailRecipients(emailAddresses));
-
-            var emailResult = await emailClient.SendAsync(emailMessage, CancellationToken.None);
-
-            await emailClient.GetSendStatusAsync(emailResult.Value.MessageId);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Error sending email");
-        }
-    }
-
     public async Task SendNotificationAsync(Notification notification)
     {
         var sender = notification.SenderId == "System"
@@ -120,82 +99,71 @@ public class NotificationService : INotificationService
 
     public async Task<bool> SendReactionNotification(string actorId, int type, PostModel post)
     {
-        var react = true;
-        switch (type)
+        var react = type switch
         {
-            case 0:
-                react = post.Hearts.Contains(actorId);
-                break;
-            case 1:
-                react = post.Claps.Contains(actorId);
-                break;
-            case 2:
-                react = post.Claps.Contains(actorId);
-                break;
+            0 => post.Hearts.Contains(actorId),
+            1 => post.Claps.Contains(actorId),
+            2 => post.Claps.Contains(actorId),
+            _ => true
+        };
+
+        if (!react) return true;
+
+        string ReactionMessage(int reactionType)
+        {
+            return reactionType switch
+            {
+                0 => "loved",
+                1 => "clapped to",
+                2 => "celebrated",
+                _ => ""
+            };
         }
 
-        if (react)
+        var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
+        // Send Notification to Post Author
+        if (post.Author != actorId)
         {
-            string ReactionMessage(int reactionType)
-            {
-                switch (reactionType)
-                {
-                    case 0:
-                        return "loved";
-                    case 1:
-                        return "clapped to";
-                    case 2:
-                        return "celebrated";
-                }
+            // public Notification(string senderId, string receiverId, string message, string type, double amount)
+            var notification = new Notification(
+                actorId,
+                post.Author,
+                $"{actorProfile!.Name} {ReactionMessage(type)} your post.",
+                "Reaction",
+                null
+            );
 
-                return "";
-            }
+            await SendNotificationAsync(notification);
 
-            var actorProfile = await _userProfileRepository.GetUserByIdAsync(actorId);
-            // Send Notification to Post Author
-            if (post.Author != actorId)
+            // send email notification
+            if (actorProfile.EmailNotifications)
+                await SendEmailAsync(post.Author, "New Reaction",
+                    $"<h1>{actorProfile.Name} {ReactionMessage(type)} your post.</h1>");
+        }
+
+        foreach (var postRecipient in post.RecipientProfiles)
+            if (postRecipient.OId != actorId)
             {
+                // Send Notification to Post Recipients
                 // public Notification(string senderId, string receiverId, string message, string type, double amount)
-                var notification = new Notification(
+                var notificationToPostRecipient = new Notification(
                     actorId,
-                    post.Author,
-                    $"{actorProfile!.Name} {ReactionMessage(type)} your post.",
+                    postRecipient.OId,
+                    $"{actorProfile!.Name} {ReactionMessage(type)} a post you are recognized in.",
                     "Reaction",
                     null
                 );
 
-                await SendNotificationAsync(notification);
+                await SendNotificationAsync(notificationToPostRecipient);
+
+                // get user profile of post recipient
+                var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
 
                 // send email notification
-                if (actorProfile.EmailNotifications)
-                    await SendEmailAsync(post.Author, "New Reaction",
-                        $"<h1>{actorProfile.Name} {ReactionMessage(type)} your post.</h1>");
+                if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
+                    await SendEmailAsync(postRecipient.OId, "New Reaction",
+                        $"<h1>{actorProfile.Name} {ReactionMessage(type)} a post you are recognized in.</h1>");
             }
-
-            foreach (var postRecipient in post.RecipientProfiles)
-                if (postRecipient.OId != actorId)
-                {
-                    // Send Notification to Post Recipients
-                    // public Notification(string senderId, string receiverId, string message, string type, double amount)
-                    var notificationToPostRecipient = new Notification(
-                        actorId,
-                        postRecipient.OId,
-                        $"{actorProfile!.Name} {ReactionMessage(type)} a post you are recognized in.",
-                        "Reaction",
-                        null
-                    );
-
-                    await SendNotificationAsync(notificationToPostRecipient);
-
-                    // get user profile of post recipient
-                    var postRecipientProfile = await _userProfileRepository.GetUserByIdAsync(postRecipient.OId);
-
-                    // send email notification
-                    if (postRecipientProfile != null && postRecipientProfile.EmailNotifications)
-                        await SendEmailAsync(postRecipient.OId, "New Reaction",
-                            $"<h1>{actorProfile.Name} {ReactionMessage(type)} a post you are recognized in.</h1>");
-                }
-        }
 
         return true;
     }

@@ -48,7 +48,7 @@ public class PostsController : ControllerBase
     public async Task<ActionResult<PaginationWrapper<PostModel>>> GetUserFeedPaginated(string userId, int page = 1,
         int pageCount = 10)
     {
-        return Ok(await _postService.GetUserFeedPaginatedAsync(userId, page, pageCount));
+        return Ok(await _postService.GetUserFeedPaginatedAsync(page, pageCount));
     }
 
     [HttpGet]

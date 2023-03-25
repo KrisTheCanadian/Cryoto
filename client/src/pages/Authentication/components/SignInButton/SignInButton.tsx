@@ -20,8 +20,7 @@ function SignInButton() {
     <Button
       id="sign-in-button"
       variant="outlined"
-      // eslint-disable-next-line no-return-await
-      onClick={async () => await handleLogin(instance, inProgress)}
+      onClick={() => handleLogin(instance, inProgress)}
     >
       {t('landingPage.SignIn')}
     </Button>

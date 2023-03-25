@@ -205,7 +205,7 @@ export default function TransactionTable() {
   const [orderBy, setOrderBy] = useState<keyof Data>('date');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Data[]>([]);
+  const [rows, _] = useState<Data[]>([]);
 
   const theme = useTheme();
   const dispatchAlert = useAlertContext();

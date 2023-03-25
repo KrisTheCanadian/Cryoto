@@ -65,7 +65,6 @@ function NavBar() {
   };
 
   const companyName = 'Cryoto';
-  const sampleSearchResults = "I'm a search result";
 
   const logoIcon = () => {
     const logoUrl =

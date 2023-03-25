@@ -50,7 +50,7 @@ function Notifications() {
   const queryClient = useQueryClient();
   const dispatchAlert = useAlertContext();
 
-  const [notificationsPerLoad, setNotificationsPerLoad] = useState(5);
+  const [notificationsPerLoad, _] = useState(5);
   const [notificationsCount, setNotificationsCount] = useState(0);
   const notificationsQuery = ['notifications-query'];
 
@@ -131,6 +131,11 @@ function Notifications() {
       setNotificationsCount(newNotifications.size);
     };
 
+    // set notifications count
+    unreadNotifications();
+  }, [data, notifications, status]);
+
+  useEffect(() => {
     if (data && status === 'success') {
       data.pages.forEach((page: INotificationPage) => {
         page.data.forEach((n: INotification) => {
@@ -141,10 +146,7 @@ function Notifications() {
         });
       });
     }
-
-    // set notifications count
-    unreadNotifications();
-  }, [data, notifications, status]);
+  }, [data, status]);
 
   useEffect(() => {
     const handleConnectionStart = async () => {

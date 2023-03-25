@@ -39,16 +39,4 @@ public class TransactionRepository : ITransactionRepository
         Context.Transactions.Add(transaction);
         return await Context.SaveChangesAsync() > 0;
     }
-
-    public async Task<bool> DeleteTransactionAsync(TransactionModel transaction)
-    {
-        Context.Transactions.Remove(transaction);
-        return await Context.SaveChangesAsync() > 0;
-    }
-
-    public async Task<bool> UpdateTransactionAsync(TransactionModel transaction)
-    {
-        Context.Transactions.Update(transaction);
-        return await Context.SaveChangesAsync() > 0;
-    }
 }

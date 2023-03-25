@@ -127,10 +127,7 @@ function Checkout() {
 
   const handleEditAddressOpen = () => setEditAddressOpen(true);
 
-  const {data, status} = useQuery<IWalletsBalance>(
-    'walletsBalance',
-    getTokenBalance,
-  );
+  const {data} = useQuery<IWalletsBalance>('walletsBalance', getTokenBalance);
 
   // Get Cart Total
   useEffect(() => {

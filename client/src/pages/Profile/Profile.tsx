@@ -38,6 +38,14 @@ import {getNextPageUserProfile} from '@/data/api/requests/posts';
 import i18n from '@/i18n/i18n';
 import {getUserById} from '@/data/api/requests/admin';
 
+const ProfilePhoto = (userProfilePhoto: any) => {
+  return userProfilePhoto ? (
+    <Avatar sx={{width: 75, height: 75}} src={userProfilePhoto} />
+  ) : (
+    <Avatar sx={{width: 75, height: 75}} />
+  );
+};
+
 function Profile() {
   const {id} = useParams();
   const [userProfilePhoto, setUserProfilePhoto] = useState();
@@ -71,14 +79,6 @@ function Profile() {
       .catch((err) => {});
   }, [id]);
 
-  const ProfilePhoto = () => {
-    return userProfilePhoto ? (
-      <Avatar sx={{width: 75, height: 75}} src={userProfilePhoto} />
-    ) : (
-      <Avatar sx={{width: 75, height: 75}} />
-    );
-  };
-
   const iconStyle = {
     marginRight: theme.spacing(0.8),
   };
@@ -111,7 +111,7 @@ function Profile() {
           <Card sx={{maxWidth: 600, mb: 2, flex: 1}} data-testid="profile-card">
             <CardHeader
               sx={{alignItems: 'flex-start'}}
-              avatar={ProfilePhoto()}
+              avatar={ProfilePhoto(userProfilePhoto)}
               title={
                 <Typography gutterBottom variant="h5">
                   {userProfile?.name}
@@ -183,7 +183,6 @@ function Profile() {
             getNextPage={getNextPageUserProfile}
             userId={id!}
             name={accounts[0].name}
-            oId={id!}
           />
         </Box>
       </MiddleColumn>

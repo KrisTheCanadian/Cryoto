@@ -132,7 +132,7 @@ public class PostsControllerTests
         var postsPaginated = new PaginationWrapper<PostModel>(posts, 1, posts.Count, 1);
 
         A.CallTo(() => _postService
-                .GetUserFeedPaginatedAsync(A<string>.Ignored, A<int>.Ignored, A<int>.Ignored))
+                .GetUserFeedPaginatedAsync(A<int>.Ignored, A<int>.Ignored))
             .Returns(postsPaginated);
         // Act
         var actionResult = await _controller.GetUserFeedPaginated("6ef89e64-4325-3543-b3fc-2a963f66afa6");

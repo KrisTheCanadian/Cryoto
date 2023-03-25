@@ -1,4 +1,5 @@
-/* eslint-disable react/no-array-index-key */
+/* eslint-disable @shopify/strict-component-boundaries */
+
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable no-negated-condition */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
@@ -57,10 +58,14 @@ function Post(props: PostProps) {
   const navigate = useNavigate();
   const {accounts} = useMsal();
 
+  const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
+  const [showAllComments, setShowAllComments] = useState(false);
+
+  const [anniversaryUserProfile, setAnniversaryUserProfile] = useState<IUser>();
+
   const {
     id,
     firstName,
-    recipients,
     recipientProfiles,
     message,
     imageUrl,
@@ -78,6 +83,22 @@ function Post(props: PostProps) {
     return <LoadingPostSkeleton />;
   }
 
+  useEffect(() => {
+    getUserProfilePhoto(authorId)
+      .then((response) => {
+        setUserProfilePhoto(response);
+      })
+      .catch((err) => {});
+  }, [authorId]);
+
+  useEffect(() => {
+    getUserById(recipientProfiles[0].oId)
+      .then((response) => {
+        setAnniversaryUserProfile(response);
+      })
+      .catch((err) => {});
+  }, [recipientProfiles]);
+
   const ChipStyles = {
     backgroundColor: theme.interface.contrastMain,
     border: theme.border.default,
@@ -87,18 +108,6 @@ function Post(props: PostProps) {
   };
 
   const timeAgo = moment.utc(date).local().startOf('seconds').fromNow();
-
-  const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
-
-  const [showAllComments, setShowAllComments] = useState(false);
-
-  useEffect(() => {
-    getUserProfilePhoto(authorId)
-      .then((response) => {
-        setUserProfilePhoto(response);
-      })
-      .catch((err) => {});
-  }, [authorId]);
 
   const handleAvatarClickAuthor = () => {
     navigate(`/profile/${authorId}`);
@@ -153,16 +162,6 @@ function Post(props: PostProps) {
     const acceptedRoles = ['Partner', 'SeniorPartner'];
     return acceptedRoles.some((role) => userRoles.includes(role));
   };
-
-  // fetch anniversary user profile for years worked
-  const [anniversaryUserProfile, setAnniversaryUserProfile] = useState<IUser>();
-  useEffect(() => {
-    getUserById(recipientProfiles[0].oId)
-      .then((response) => {
-        setAnniversaryUserProfile(response);
-      })
-      .catch((err) => {});
-  }, [recipientProfiles]);
 
   if (tags?.includes('Anniversary')) {
     return (
@@ -366,7 +365,7 @@ function Post(props: PostProps) {
                 {` ${t('homePage.Recognized')}`}
 
                 {recipientProfiles.map((profile, index) => (
-                  <React.Fragment key={index}>
+                  <React.Fragment key={profile.oId}>
                     <b
                       data-testid="rewardee-name"
                       style={{cursor: 'pointer'}}

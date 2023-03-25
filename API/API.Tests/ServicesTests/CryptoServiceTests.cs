@@ -10,6 +10,7 @@ using API.Services.Interfaces;
 using Azure.Storage.Queues;
 using FakeItEasy;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Solnet.Wallet;
 using Solnet.Wallet.Bip39;
 using Xunit;
@@ -33,9 +34,10 @@ public class CryptoServiceTests
         var userProfileService = A.Fake<IUserProfileService>();
         _transactionService = A.Fake<ITransactionService>();
         var notificationService = A.Fake<INotificationService>();
+        var logger = A.Fake<ILogger<CryptoService>>();
         _cryptoService = A.Fake<ICryptoService>();
         _cryptoServiceObject = new CryptoService(_walletRepository, _solanaService, configuration, queueClient,
-            userProfileService, _transactionService, notificationService);
+            userProfileService, _transactionService, notificationService, logger);
     }
 
     [Fact]

@@ -42,31 +42,12 @@ public class PostRepository : IPostRepository
         Context.Posts.Update(postModel);
         return await Context.SaveChangesAsync() > 0;
     }
-
-    public async Task DeleteAsync(PostModel postModel)
-    {
-        Context.Posts.Remove(postModel);
-        await Context.SaveChangesAsync();
-    }
-
+    
     public async Task<bool> DeleteAsyncById(string guid)
     {
         var postModel = await GetByIdAsync(guid);
         Context.Posts.Remove(postModel!);
         return await Context.SaveChangesAsync() > 0;
-    }
-
-
-    public async Task<IEnumerable<PostModel>> GetAllAsync()
-    {
-        var posts = await Context.Posts.AsNoTracking().ToListAsync();
-        foreach (var post in posts)
-        {
-            await GetAllProfiles(post);
-            await GetAllComments(post);
-        }
-
-        return posts;
     }
 
     public async Task<PaginationWrapper<PostModel>> GetAllByDatePaginatedAsync(int page, int pageCount,
@@ -98,17 +79,6 @@ public class PostRepository : IPostRepository
         }
 
         return new PaginationWrapper<PostModel>(posts, page, pageCount, totalNumberOfPages);
-    }
-
-    public async Task<int> GetSentPostsCountAsync(string oid)
-    {
-        return await Context.Posts.Where(postModel => postModel.Author == oid).CountAsync();
-    }
-
-    public async Task<int> GetReceivedPostsCountAsync(string oid)
-    {
-        return await Context.Posts.Where(postModel => postModel.Recipients.Any(recipientOid => recipientOid == oid))
-            .CountAsync();
     }
 
     public async Task<bool> ReactAsync(int type, string guid, string actorId)

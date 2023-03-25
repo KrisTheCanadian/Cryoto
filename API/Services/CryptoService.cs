@@ -22,11 +22,12 @@ public class CryptoService : ICryptoService
     private readonly ISolanaService _solanaService;
     private readonly ITransactionService _transactionService;
     private readonly IUserProfileService _userProfileService;
+    private readonly ILogger<CryptoService> _logger;
 
 
     public CryptoService(IWalletRepository context, ISolanaService solanaService, IConfiguration configuration,
         QueueClient queueClient, IUserProfileService userProfileService, ITransactionService transactionService,
-        INotificationService notificationService)
+        INotificationService notificationService, ILogger<CryptoService> logger)
     {
         _context = context;
         _solanaService = solanaService;
@@ -35,6 +36,7 @@ public class CryptoService : ICryptoService
         _userProfileService = userProfileService;
         _transactionService = transactionService;
         _notificationService = notificationService;
+        _logger = logger;
     }
 
     public async Task<UserWalletsModel> GetWalletsBalanceAsync(string oid, ClaimsIdentity? user = null)
@@ -56,7 +58,7 @@ public class CryptoService : ICryptoService
             }
             catch (Exception)
             {
-                // making sure mutex is released in case of exception
+                _logger.LogError("Error while getting wallet balance");
                 mutex.ReleaseMutex();
             }
         }

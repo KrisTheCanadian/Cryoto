@@ -86,36 +86,6 @@ public class TransactionServiceTests
         actionResult.Should().BeTrue();
     }
 
-    [Fact]
-    public async Task TransactionService_DeleteTransactionAsync_ReturnsTrue()
-    {
-        //Arrange
-        var transactionModel = GetTransactionModel();
-        A.CallTo(() => _transactionRepository.DeleteTransactionAsync(A<TransactionModel>._)).Returns(true);
-
-
-        //Act
-        var actionResult = await _controller.DeleteTransactionAsync(transactionModel.Result);
-
-        //Assert
-        actionResult.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task TransactionService_UpdateTransactionAsync_ReturnsTrue()
-    {
-        //Arrange
-        var transactionModel = GetTransactionModel();
-        A.CallTo(() => _transactionRepository.UpdateTransactionAsync(A<TransactionModel>._)).Returns(true);
-
-
-        //Act
-        var actionResult = await _controller.UpdateTransactionAsync(transactionModel.Result);
-
-        //Assert
-        actionResult.Should().BeTrue();
-    }
-
     private static Task<List<TransactionResponseModel>> GetTransactionResponseModelList()
     {
         var timestamp = DateTimeOffset.Now;

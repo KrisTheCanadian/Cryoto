@@ -7,7 +7,6 @@ namespace API.Services.Interfaces;
 public interface INotificationService
 {
     public Task SendEmailAsync(string to, string subject, string message, bool isHtml = false);
-    public Task SendEmailsAsync(List<string> to, string subject, string message, bool isHtml = false);
     public Task SendNotificationAsync(Notification notification);
     Task<IEnumerable<Notification>> GetUserNotificationsAsync(string actorId);
     Task<Notification?> GetNotificationAsync(string id);
