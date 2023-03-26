@@ -236,25 +236,25 @@ public class CryptoService : ICryptoService
         return true;
     }
 
-    public async void QueueAnniversaryBonus(List<List<string>> message)
+    public async Task QueueAnniversaryBonusAsync(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
         await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(24), TimeSpan.FromSeconds(-1));
     }
 
-    public async void QueueTokenUpdate(List<List<string>> message)
+    public async Task QueueTokenUpdateAsync(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
         await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(-1));
     }
 
-    public async void QueueSolUpdate(List<List<string>> message)
+    public async Task QueueSolUpdateAsync(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
         await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromHours(48), TimeSpan.FromSeconds(-1));
     }
 
-    public async void QueueMonthlyTokensGift(List<List<string>> message)
+    public async Task QueueMonthlyTokensGiftAsync(List<List<string>> message)
     {
         var serializedMessage = JsonSerializer.Serialize(message);
         await _queueClient.SendMessageAsync(serializedMessage, TimeSpan.FromDays(7), TimeSpan.FromSeconds(-1));
@@ -269,7 +269,8 @@ public class CryptoService : ICryptoService
     {
         var publicKey = _configuration["publicKey"];
         var rpcClient = ClientFactory.GetClient(Cluster.DevNet);
-        return Convert.ToDouble(rpcClient.GetBalance(publicKey).Result.Value);
+        var result = rpcClient.GetBalance(publicKey).Result.Value;
+        return Convert.ToDouble(result);
     }
 
     public async Task<bool> BoostRecognition(string senderId, List<string> recipientIds)
@@ -299,7 +300,7 @@ public class CryptoService : ICryptoService
                 {
                     await _transactionService.AddTransactionAsync(new TransactionModel(recipientId, "toSpend", senderId,
                         "toAward", boostAmount, "boost", DateTimeOffset.UtcNow));
-                    QueueTokenUpdate(new List<List<string>>
+                    await QueueTokenUpdateAsync(new List<List<string>>
                         { new() { "tokenUpdateQueue" }, new() { senderId, recipientId } });
                 }
             }
@@ -349,11 +350,11 @@ public class CryptoService : ICryptoService
 
         await SendNotification(oid, userProfileModel);
 
-        QueueTokenUpdate(new List<List<string>>
+        await QueueTokenUpdateAsync(new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { oid, oid } });
 
         // Register the user to receive the monthly tokens gift
-        QueueMonthlyTokensGift(new List<List<string>>
+        await QueueMonthlyTokensGiftAsync(new List<List<string>>
             { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
 
         return walletModel;

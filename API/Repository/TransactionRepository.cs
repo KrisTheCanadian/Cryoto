@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Models.Transactions;
 using API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class TransactionRepository : ITransactionRepository
 {
     public TransactionRepository(IDataContext context)

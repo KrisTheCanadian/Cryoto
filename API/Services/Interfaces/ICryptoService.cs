@@ -16,13 +16,13 @@ public interface ICryptoService
     public Task<bool> UpdateTokenBalance(double amount, string oid, string walletType);
     public Task<bool> SendMonthlyTokenBasedOnRole(string oid);
     public Task<bool> UpdateSolanaTokenBalance(double tokenBalance, string oid, string walletType);
-    public void QueueTokenUpdate(List<List<string>> message);
-    public void QueueSolUpdate(List<List<string>> message);
-    public void QueueMonthlyTokensGift(List<List<string>> message);
+    public Task QueueTokenUpdateAsync(List<List<string>> message);
+    public Task QueueSolUpdateAsync(List<List<string>> message);
+    public Task QueueMonthlyTokensGiftAsync(List<List<string>> message);
     public double GetSolanaAdminBalance();
     public double GetSolanaAdminTokenBalance();
     public Task<double> GetAnniversaryBonusAmountOfRoleByOIdAsync(string oid);
     public Task<bool> SendAnniversaryTokenByOId(string oid);
-    public void QueueAnniversaryBonus(List<List<string>> message);
+    public Task QueueAnniversaryBonusAsync(List<List<string>> message);
     public Task<bool> BoostRecognition(string senderId, List<string> recipientIds);
 }

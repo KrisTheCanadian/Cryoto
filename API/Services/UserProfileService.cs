@@ -10,7 +10,7 @@ namespace API.Services;
 
 public class UserProfileService : IUserProfileService
 {
-    private readonly HttpClient _client = new();
+    private readonly HttpClient _client;
     private readonly IUserProfileRepository _context;
     private readonly IMsGraphApiService _msGraphApiService;
 
@@ -20,6 +20,7 @@ public class UserProfileService : IUserProfileService
     {
         _context = context;
         _msGraphApiService = msGraphApiService;
+        _client = new HttpClient();
     }
 
     [ExcludeFromCodeCoverage]
@@ -44,7 +45,7 @@ public class UserProfileService : IUserProfileService
 
         return await _context.AddUserProfileAsync(userProfileModel) <= 0 ? null : userProfileModel;
     }
-
+    
     public async Task UpdateUserProfileFakeData()
     {
         var users = await _context.GetAllUsersAsync();
@@ -64,14 +65,16 @@ public class UserProfileService : IUserProfileService
     public async Task<bool> IncrementRecognitionsSent(string oid)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
-        userProfileModel!.RecognitionsSent = userProfileModel.RecognitionsSent + 1;
+        if(userProfileModel == null) return false;
+        userProfileModel.RecognitionsSent += 1;
         return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
     public async Task<bool> IncrementRecognitionsReceived(string oid)
     {
         var userProfileModel = await _context.GetUserByIdAsync(oid);
-        userProfileModel!.RecognitionsReceived = userProfileModel.RecognitionsReceived + 1;
+        if(userProfileModel == null) return false;
+        userProfileModel.RecognitionsReceived += 1;
         return await _context.UpdateUserProfile(userProfileModel) > 0;
     }
 
@@ -152,7 +155,8 @@ public class UserProfileService : IUserProfileService
         return allUsersProfileModelList
             .Select(user => new UserRolesModel(user.OId, user.Name, new List<string>(user.Roles))).ToList();
     }
-
+    
+    [ExcludeFromCodeCoverage(Justification = "Temporary method to generate random start date.")]
     private static DateTime FakeStartDate()
     {
         var start = new DateTime(1987, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -160,6 +164,7 @@ public class UserProfileService : IUserProfileService
         return FakeDate(start, end);
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Temporary method to generate random birthday.")]
     private static DateTime FakeBirthday()
     {
         var start = DateTime.UtcNow.AddYears(-80);
@@ -167,6 +172,7 @@ public class UserProfileService : IUserProfileService
         return FakeDate(start, end);
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Temporary method to generate random date.")]
     private static DateTime FakeDate(DateTime start, DateTime end)
     {
         var rnd = new Random();
@@ -174,6 +180,7 @@ public class UserProfileService : IUserProfileService
         return start + new TimeSpan((long)(range.Ticks * rnd.NextDouble()));
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Temporary method to map fake data to user profile model.")]
     private static UserProfileModel MapUserProfileModel(UserProfileModel userProfileModel,
         UserProfileModel fakeUserProfileModel)
     {

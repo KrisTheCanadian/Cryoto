@@ -17,7 +17,7 @@ namespace API.Controllers;
 [Route("[controller]/[action]")]
 public class PostsController : ControllerBase
 {
-    private readonly string _actorId;
+    public string ActorId;
     private readonly ICommentService _commentService;
     private readonly ICryptoService _cryptoService;
     private readonly ILogger<PostsController> _logger;
@@ -38,14 +38,14 @@ public class PostsController : ControllerBase
         _cryptoService = cryptoService;
         _transactionService = transactionService;
         var identity = contextAccessor.HttpContext!.User.Identity as ClaimsIdentity;
-        _actorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
+        ActorId = identity?.FindFirst(ClaimConstants.ObjectId)?.Value!;
         _notificationService = notificationService;
         _userProfileService = userProfileService;
         _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<PaginationWrapper<PostModel>>> GetUserFeedPaginated(string userId, int page = 1,
+    public async Task<ActionResult<PaginationWrapper<PostModel>>> GetUserFeedPaginated(int page = 1,
         int pageCount = 10)
     {
         return Ok(await _postService.GetUserFeedPaginatedAsync(page, pageCount));
@@ -71,7 +71,7 @@ public class PostsController : ControllerBase
     [HttpPost("{postId:guid}")]
     public async Task<ActionResult<CommentModel>> CommentOnPost(CommentCreateModel commentCreateModel, Guid postId)
     {
-        var commentModel = new CommentModel(commentCreateModel, _actorId, postId.ToString(), "Post");
+        var commentModel = new CommentModel(commentCreateModel, ActorId, postId.ToString(), "Post");
 
         var postModel = await _postService.GetByIdAsync(postId.ToString());
         if (postModel == null) return NotFound();
@@ -80,18 +80,18 @@ public class PostsController : ControllerBase
         if (!created) return BadRequest("Could not comment on the post");
 
         var notificationSent =
-            await _notificationService.SendCommentNotification(_actorId, postId.ToString(), postModel);
+            await _notificationService.SendCommentNotification(ActorId, postId.ToString(), postModel);
         if (!notificationSent)
             _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}",
-                postId.ToString(), _actorId);
+                postId.ToString(), ActorId);
         return Ok(commentModel);
     }
 
     [HttpPost]
     public async Task<ActionResult<PostModel>> Create(PostCreateModel postCreateModel)
     {
-        var postModel = new PostModel(postCreateModel, _actorId);
-        if (postModel.Recipients.Contains(_actorId))
+        var postModel = new PostModel(postCreateModel, ActorId);
+        if (postModel.Recipients.Contains(ActorId))
             return BadRequest("Could not create the post");
         var created = await _postService.CreateAsync(postModel);
         if (!created)
@@ -100,7 +100,7 @@ public class PostsController : ControllerBase
         var amount = (double)createdPostModel!.Coins;
         if (amount == 0)
         {
-            await _userProfileService.IncrementRecognitionsSent(_actorId);
+            await _userProfileService.IncrementRecognitionsSent(ActorId);
             foreach (var recipientProfile in createdPostModel.RecipientProfiles)
             {
                 await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
@@ -110,18 +110,18 @@ public class PostsController : ControllerBase
             return Ok(createdPostModel);
         }
 
-        var actorBalance = _cryptoService.GetTokenBalanceAsync(_actorId, "toAward");
+        var actorBalance = _cryptoService.GetTokenBalanceAsync(ActorId, "toAward");
         if (amount * createdPostModel.RecipientProfiles.Count() > actorBalance)
         {
             await _postService.DeleteByIdAsync(createdPostModel.Id);
             return BadRequest("Your balance is not enough");
         }
 
-        await _cryptoService.UpdateTokenBalance(-(amount * createdPostModel.RecipientProfiles.Count()), _actorId,
+        await _cryptoService.UpdateTokenBalance(-(amount * createdPostModel.RecipientProfiles.Count()), ActorId,
             "toAward");
 
         var queueTokenUpdateOIdsList = new List<List<string>>
-            { new() { "tokenUpdateQueue" }, new() { _actorId } };
+            { new() { "tokenUpdateQueue" }, new() { ActorId } };
         var successfulRecipientsProfiles = new List<UserDto>();
         var successfulRecipients = new List<string>();
         var maxResend = 10;
@@ -134,13 +134,13 @@ public class PostsController : ControllerBase
             foreach (var recipientProfile in recipientProfilesList)
                 try
                 {
-                    var rpcTransactionResult = await _cryptoService.SendTokens(amount, _actorId, recipientProfile.OId);
+                    var rpcTransactionResult = await _cryptoService.SendTokens(amount, ActorId, recipientProfile.OId);
                     if (rpcTransactionResult.error != null)
                         didNotReceiveTransaction.Add(recipientProfile);
                     else
                     {
                         await _transactionService.AddTransactionAsync(new TransactionModel(recipientProfile.OId, "toSpend",
-                            _actorId, "toAward", amount, "Recognition", postCreateModel.CreatedDate));
+                            ActorId, "toAward", amount, "Recognition", postCreateModel.CreatedDate));
                         await _userProfileService.IncrementRecognitionsReceived(recipientProfile.OId);
                         await SendNotification(postCreateModel, recipientProfile, postModel, amount);
                         queueTokenUpdateOIdsList[1].Add(recipientProfile.OId);
@@ -160,7 +160,7 @@ public class PostsController : ControllerBase
 
         if (successfulRecipientsProfiles.Count == 0)
         {
-            await _cryptoService.UpdateTokenBalance(amount * createdPostModel.RecipientProfiles.Count(), _actorId,
+            await _cryptoService.UpdateTokenBalance(amount * createdPostModel.RecipientProfiles.Count(), ActorId,
                 "toAward");
 
             await _postService.DeleteByIdAsync(createdPostModel.Id);
@@ -170,15 +170,15 @@ public class PostsController : ControllerBase
         if (createdPostModel.RecipientProfiles.Count() > successfulRecipientsProfiles.Count)
         {
             var failedRecipientCount = createdPostModel.RecipientProfiles.Count() - successfulRecipientsProfiles.Count;
-            await _cryptoService.UpdateTokenBalance(amount * failedRecipientCount, _actorId, "toAward");
+            await _cryptoService.UpdateTokenBalance(amount * failedRecipientCount, ActorId, "toAward");
 
             createdPostModel.RecipientProfiles = successfulRecipientsProfiles;
             createdPostModel.Recipients = successfulRecipients.ToArray();
             await _postService.UpdateAsync(createdPostModel);
         }
 
-        await _userProfileService.IncrementRecognitionsSent(_actorId);
-        _cryptoService.QueueTokenUpdate(queueTokenUpdateOIdsList);
+        await _userProfileService.IncrementRecognitionsSent(ActorId);
+        await _cryptoService.QueueTokenUpdateAsync(queueTokenUpdateOIdsList);
 
         return Ok(createdPostModel);
     }
@@ -187,7 +187,7 @@ public class PostsController : ControllerBase
     private async Task SendNotification(PostCreateModel postCreateModel, UserDto recipientProfile,
         PostModel postModel, double amount)
     {
-        var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
+        var actorProfile = await _userProfileService.GetUserByIdAsync(ActorId);
 
         if (actorProfile == null)
         {
@@ -196,7 +196,7 @@ public class PostsController : ControllerBase
             return;
         }
 
-        await _notificationService.SendNotificationAsync(new Notification(_actorId, recipientProfile.OId,
+        await _notificationService.SendNotificationAsync(new Notification(ActorId, recipientProfile.OId,
             postCreateModel.Message, postModel.PostType, (int)postCreateModel.Coins));
 
         var senderName = actorProfile.Name;
@@ -212,7 +212,7 @@ public class PostsController : ControllerBase
     {
         var comment = await _commentService.GetCommentById(id.ToString());
         if (comment == null) return NotFound();
-        if (comment.Author != _actorId) return Unauthorized();
+        if (comment.Author != ActorId) return Unauthorized();
         var isSuccessful = await _commentService.DeleteComment(comment);
         if (!isSuccessful) return BadRequest();
 
@@ -225,13 +225,13 @@ public class PostsController : ControllerBase
         var existingPost = await _postService.GetByIdAsync(guid);
         if (existingPost == null) return Conflict("Cannot react to the post because it does not exist.");
 
-        var liked = await _postService.ReactAsync(type, guid, _actorId);
+        var liked = await _postService.ReactAsync(type, guid, ActorId);
         if (!liked) return BadRequest("Could not like the post");
 
-        var notificationSent = await _notificationService.SendReactionNotification(_actorId, type, existingPost);
+        var notificationSent = await _notificationService.SendReactionNotification(ActorId, type, existingPost);
         if (!notificationSent)
             _logger.LogWarning("Failed to send reaction notification on post '{Guid}' by user {ActorId}", guid,
-                _actorId);
+                ActorId);
         return Ok(await _postService.GetByIdAsync(guid));
     }
 
@@ -246,14 +246,14 @@ public class PostsController : ControllerBase
             return BadRequest("Cannot boost to the post because it does not exist.");
         }
 
-        var actorProfile = await _userProfileService.GetUserByIdAsync(_actorId);
+        var actorProfile = await _userProfileService.GetUserByIdAsync(ActorId);
         if (actorProfile == null)
         {
-            _logger.LogError("Could not retrieve user '{ActorId}'", _actorId);
+            _logger.LogError("Could not retrieve user '{ActorId}'", ActorId);
             return BadRequest("Cannot boost the post because user does not exist.");
         }
 
-        if (existingPost.Boosts.Contains(_actorId))
+        if (existingPost.Boosts.Contains(ActorId))
         {
             return BadRequest("Post already boosted.");
         }
@@ -262,28 +262,28 @@ public class PostsController : ControllerBase
         if (!boosted)
         {
             _logger.LogError("Could not complete boost reaction to boost post '{Guid}' by booster '{ActorId}'", guid,
-                _actorId);
+                ActorId);
             return BadRequest("Could not boost the post.");
         }
         
         var recipients = existingPost.Recipients;
-        var transactionSuccess = await _cryptoService.BoostRecognition(_actorId, recipients.ToList());
+        var transactionSuccess = await _cryptoService.BoostRecognition(ActorId, recipients.ToList());
         if (!transactionSuccess)
         {
             _logger.LogError("Could not complete transaction to boost post '{Guid}' by booster '{ActorId}'", guid,
-                _actorId);
+                ActorId);
             var unboosted = await _postService.UnboostAsync(guid, actorProfile);
             if (!unboosted)
             {
                 _logger.LogError("Could not unboost post '{Guid}' by booster '{ActorId}'", guid,
-                    _actorId);
+                    ActorId);
             }
             return BadRequest("Could not complete boost transaction.");
         }
         
-        var notificationSent = await _notificationService.SendBoostNotification(_actorId, existingPost);
+        var notificationSent = await _notificationService.SendBoostNotification(ActorId, existingPost);
         if (!notificationSent)
-            _logger.LogWarning("Failed to send boost notification on post '{Guid}' by user {ActorId}", guid, _actorId);
+            _logger.LogWarning("Failed to send boost notification on post '{Guid}' by user {ActorId}", guid, ActorId);
         return Ok(await _postService.GetByIdAsync(guid));
     }
 }

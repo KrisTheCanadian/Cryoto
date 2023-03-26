@@ -9,6 +9,7 @@ using API.Models.Comments;
 using API.Models.Posts;
 using API.Models.Users;
 using API.Services.Interfaces;
+using API.Tests.Utils;
 using API.Utils;
 using FakeItEasy;
 using FluentAssertions;
@@ -76,29 +77,9 @@ public class PostsControllerTests
         };
     }
 
-    private static IEnumerable<UserDto> GetUserProfileModelList()
-    {
-        var roles1 = new[] { "roles1" };
-        var profile = new UserProfileModel("oid1", "name1", "email1", "en1", roles1);
-        var userProfileModelList = new List<UserDto>
-        {
-            new(profile)
-        };
-        return userProfileModelList;
-    }
-
     private PostModel GetFakePost()
     {
-        return new PostModel(
-            "6aa88f64-5717-4562-b3fc-2c963e66afa6",
-            "A Random Message",
-            new[] { "3fa85f64-5717-4562-b3fc-2c963f66afa6" },
-            new[] { "efficiency", "productivity" },
-            DateTimeOffset.Now,
-            GetUserProfileModelList(),
-            "General",
-            true,
-            50);
+        return new PostModelBuilder().BuildDefaultFakePost();
     }
 
     private PostsController GetControllerWithIodContext(string iod)
@@ -135,7 +116,7 @@ public class PostsControllerTests
                 .GetUserFeedPaginatedAsync(A<int>.Ignored, A<int>.Ignored))
             .Returns(postsPaginated);
         // Act
-        var actionResult = await _controller.GetUserFeedPaginated("6ef89e64-4325-3543-b3fc-2a963f66afa6");
+        var actionResult = await _controller.GetUserFeedPaginated();
 
         var objectResult = actionResult.Result as ObjectResult;
         var objectResultValue = objectResult?.Value as PaginationWrapper<PostModel>;
@@ -460,6 +441,103 @@ public class PostsControllerTests
         A.CallTo(() => _commentService.GetCommentById(A<string>.That.Matches(x => x == commentModel.Id)))
             .MustHaveHappenedOnceExactly();
     }
+    
+    [Fact]
+    public async Task GetUserFeedPaginated_Returns_PaginationWrapper_Of_PostModels()
+    {
+        // Arrange
+        var page = 1;
+        var pageCount = 10;
+        var postService = A.Fake<IPostService>();
+        var expectedPosts = Enumerable.Range(1, 20).Select(i => new PostModel($"authorId{i}", "message", new[] { "rec1", "rec2" }, new[] { "tag" },
+            DateTimeOffset.UtcNow));
+        
+        A.CallTo(() => postService.GetUserFeedPaginatedAsync(page, pageCount)).Returns(
+            new PaginationWrapper<PostModel>(expectedPosts, 1, pageCount, 2));
+        
+        var controller = new PostsController(
+            postService, A.Fake<ICryptoService>(), A.Fake<ITransactionService>(), A.Fake<IHttpContextAccessor>(),
+            A.Fake<INotificationService>(), A.Fake<IUserProfileService>(), A.Fake<ICommentService>(), A.Fake<ILogger<PostsController>>());
+
+        // Act
+        var result = await controller.GetUserFeedPaginated(page, pageCount);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result.Result);
+        var paginationWrapper = result.Result.As<OkObjectResult>().Value as PaginationWrapper<PostModel>;
+        
+        Assert.NotNull(paginationWrapper);
+        Assert.Equal(2, paginationWrapper.TotalPages);
+        Assert.Equal(1, paginationWrapper.Page);
+        Assert.Equal(10, paginationWrapper.ItemsPerPage);
+    }
+
+    [Fact]
+    public async Task CommentOnPost_Sends_Comment_Notification_And_Returns_Comment_Model()
+    {
+        // Arrange
+        var postId = Guid.NewGuid();
+        var actorId = "actor-id";
+        var commentCreateModel = new CommentCreateModel("message", "");
+        var postService = A.Fake<IPostService>();
+        var notificationService = A.Fake<INotificationService>();
+        var postModel = new PostModel("authorId", "message", new[] { "rec1", "rec2" }, new[] { "tag" },
+            DateTimeOffset.UtcNow);
+        A.CallTo(() => postService.GetByIdAsync(postId.ToString())).Returns(postModel);
+        A.CallTo(() => postService.CommentOnPostAsync(postModel, A<CommentModel>._)).Returns(true);
+        A.CallTo(() => notificationService.SendCommentNotification(actorId, postId.ToString(), postModel)).Returns(true);
+        var controller = new PostsController(
+            postService, A.Fake<ICryptoService>(), A.Fake<ITransactionService>(), A.Fake<IHttpContextAccessor>(),
+            notificationService, A.Fake<IUserProfileService>(), A.Fake<ICommentService>(), A.Fake<ILogger<PostsController>>());
+        
+        controller.ActorId = actorId;
+
+        // Act
+        var result = await controller.CommentOnPost(commentCreateModel, postId);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result.Result);
+        var commentModel = (result.Result as OkObjectResult)?.Value as CommentModel;
+        Assert.NotNull(commentModel);
+        A.CallTo(() => postService.CommentOnPostAsync(postModel, commentModel)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => notificationService.SendCommentNotification(actorId, postId.ToString(), postModel)).MustHaveHappenedOnceExactly();
+    }
+    
+    [Fact]
+    public async Task Create_WithRecipientContainingActorId_ReturnsBadRequest()
+    {
+        // Arrange
+        var postCreateModel = new PostCreateModel("message", new []{ "rec1", "rec2" }, new []{ "tag" }, DateTimeOffset.Now, "Kudos", true, 100);
+        _controller.ActorId = "rec1";
+        
+        
+        // Act
+        var result = await _controller.Create(postCreateModel);
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+        Assert.Equal("Could not create the post", (result.Result as BadRequestObjectResult)?.Value);
+    }
+    
+    [Fact]
+    public async Task Create_PostServiceCreateAsyncReturnsFalse_ReturnsBadRequest()
+    {
+        // Arrange
+        var postCreateModel = new PostCreateModel("message", new []{ "rec1", "rec2" }, new []{ "tag" }, DateTimeOffset.Now, "Kudos", true, 100);
+
+        A.CallTo(() => _postService.CreateAsync(A<PostModel>._)).Returns(false);
+        
+        _controller.ActorId = "rec3";
+
+        // Act
+        var result = await _controller.Create(postCreateModel);
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+        Assert.Equal("Could not create the post", (result.Result as BadRequestObjectResult)?.Value);
+    }
+    
+
 
     private Task<RpcTransactionResult> GetRpcTransactionResultSuccessful()
     {

@@ -65,7 +65,7 @@ public class NotificationsControllerTests
         var objectResult = actionResult as ObjectResult;
 
         // Assert
-        Assert.IsType<ConflictObjectResult>(objectResult);
+        Assert.IsType<BadRequestObjectResult>(objectResult);
     }
 
     [Fact]
@@ -137,6 +137,8 @@ public class NotificationsControllerTests
                 User = new ClaimsPrincipal()
             }
         };
+        
+        mockController.ActorId = iod;
 
         // adding claims
         var claims = new ClaimsIdentity();
@@ -144,6 +146,60 @@ public class NotificationsControllerTests
         mockController.HttpContext.User.AddIdentity(claims);
 
         return mockController;
+    }
+    
+    [Fact]
+    public async Task ReadNotification_Returns_Conflict_When_Notification_Is_Null()
+    {
+        // Arrange
+        var id = "notification-id";
+        var notificationService = A.Fake<INotificationService>();
+        A.CallTo(() => notificationService.GetNotificationAsync(id)).Returns((Notification)null!);
+        var controller = new NotificationController(notificationService, A.Fake<IHttpContextAccessor>());
+
+        // Act
+        var result = await controller.ReadNotification(id);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result);
+        Assert.Equal($"Notification {id}.", (result as ConflictObjectResult)?.Value);
+    }
+    
+    [Fact]
+    public async Task ReadNotification_Returns_Conflict_When_User_Is_Not_Receiver()
+    {
+        // Arrange
+        var id = "notification-id";
+        var receiverId = "receiver-id";
+        var notificationService = A.Fake<INotificationService>();
+        A.CallTo(() => notificationService.GetNotificationAsync(id)).Returns(new Notification("sender-id", receiverId, "message", "type", 100));
+        var controller = GetControllerWithIodContext("not-receiver-id");
+        controller.User.AddIdentity(new ClaimsIdentity(new[] { new Claim(ClaimConstants.ObjectId, receiverId) }));
+
+        // Act
+        var result = await controller.ReadNotification(id);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result);
+        Assert.Equal($"User not-receiver-id does not have access to modify notification {id}.", (result as ConflictObjectResult)?.Value);
+    }
+
+    [Fact]
+    public async Task ReadNotification_Returns_Ok_When_Update_Read_Succeeds()
+    {
+        // Arrange
+        var id = "notification-id";
+        var receiverId = "receiver-id";
+        A.CallTo(() => _notificationService.GetNotificationAsync(id)).Returns(new Notification("sender-id", receiverId, "message", "type", 100));
+        A.CallTo(() => _notificationService.UpdateReadAsync(id)).Returns(true);
+        var controller = GetControllerWithIodContext("receiver-id");
+        controller.User.AddIdentity(new ClaimsIdentity(new[] { new Claim(ClaimConstants.ObjectId, receiverId) }));
+
+        // Act
+        var result = await controller.ReadNotification(id);
+
+        // Assert
+        Assert.IsType<OkResult>(result);
     }
 
     private static IEnumerable<Notification> GetTestNotifications()

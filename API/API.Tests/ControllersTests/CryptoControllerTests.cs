@@ -10,6 +10,7 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
 using Xunit;
 
 namespace API.Tests.ControllersTests;
@@ -87,7 +88,6 @@ public class CryptoControllerTests
         objectResultValue.Should().BeOfType<RpcTransactionResult.Error>();
     }
 
-
     [Fact]
     public async Task CryptoController_GetTokenBalance_ReturnsOK()
     {
@@ -106,6 +106,184 @@ public class CryptoControllerTests
         objectResult.Should().BeOfType<OkObjectResult>();
         objectResultValue.Should().BeOfType<UserWalletsModel>();
         objectResultValue.Should().Be(userWalletsModel);
+    }
+    
+    [Fact]
+    public async Task PostTokens_Returns_BadRequest_When_RpcTransactionResult_Has_Error()
+    {
+        // Arrange
+        var amount = 10.0;
+        var walletType = "TestWallet";
+        var expectedError = new RpcTransactionResult.Error { message = "Error Message" };
+
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var rpcTransactionResult = new RpcTransactionResult { error =  expectedError};
+        A.CallTo(() => cryptoService.AddTokensAsync(amount, A<string>._, walletType)).Returns(rpcTransactionResult);
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        var result = await controller.PostTokens(amount, walletType);
+
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
+        Assert.Equal(expectedError, badRequestResult.Value);
+    }
+    
+    [Fact]
+    public async Task PostTokens_Returns_Ok_When_RpcTransactionResult_Is_Successful()
+    {
+        // Arrange
+        var amount = 10.0;
+        var walletType = "TestWallet";
+
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var rpcTransactionResult = new RpcTransactionResult { result = "Success" };
+        A.CallTo(() => cryptoService.AddTokensAsync(amount, A<string>._, walletType)).Returns(rpcTransactionResult);
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        var result = await controller.PostTokens(amount, walletType);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        Assert.Equal(rpcTransactionResult, okResult.Value);
+    }
+    
+    [Fact]
+    public async Task PostTokens_Adds_Transaction()
+    {
+        // Arrange
+        var amount = 10.0;
+        var walletType = "TestWallet";
+        var oId = "123";
+
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var rpcTransactionResult = new RpcTransactionResult { result = "Success" };
+        A.CallTo(() => cryptoService.AddTokensAsync(amount, oId, walletType)).Returns(rpcTransactionResult);
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        await controller.PostTokens(amount, walletType);
+
+        // Assert
+        A.CallTo(() => transactionService.AddTransactionAsync(A<TransactionModel>._)).MustHaveHappenedOnceExactly();
+    }
+    
+    [Fact]
+    public async Task GetTokenBalance_Returns_Ok_With_UserWalletsModel()
+    {
+        // Arrange
+        var oId = "123";
+        var identity = new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimConstants.ObjectId, oId),
+            new Claim(ClaimTypes.Role, "User")
+        });
+
+        var expectedWallets = new UserWalletsModel(5, 5);
+
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        A.CallTo(() => cryptoService.GetWalletsBalanceAsync(oId, identity)).Returns(expectedWallets);
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() },
+            OId = oId,
+            Identity = identity
+        };
+
+        // Act
+        var result = await controller.GetTokenBalance();
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result.Result);
+        var okResult = result.Result as OkObjectResult;
+        Assert.Equal(expectedWallets, okResult?.Value);
+    }
+    
+    [Fact]
+    public void InitiateSolBalanceCheck_Returns_Ok()
+    {
+        // Arrange
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        var result = controller.InitiateSolBalanceCheck();
+
+        // Assert
+        Assert.IsType<OkResult>(result);
+        A.CallTo(() => cryptoService.QueueSolUpdateAsync(A<List<List<string>>>.That.Matches(
+            queue => queue[0][0] == "checkAdminBalanceQueue" && queue[1][0] == "null"))).MustHaveHappenedOnceExactly();
+    }
+    
+    [Fact]
+    public async Task InitiateMonthlyTokensGift_Returns_Ok()
+    {
+        // Arrange
+        var oId = "123";
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        var result = await controller.InitiateMonthlyTokensGift(oId);
+
+        // Assert
+        Assert.IsType<OkResult>(result);
+        A.CallTo(() => cryptoService.SendMonthlyTokenBasedOnRole(oId)).MustHaveHappenedOnceExactly();
+        A.CallTo(() => cryptoService.QueueMonthlyTokensGiftAsync(A<List<List<string>>>.That.Matches(
+            queue => queue[0][0] == "monthlyTokenQueue" && queue[1][0] == oId))).MustHaveHappenedOnceExactly();
+    }
+    
+    [Fact]
+    public void InitiateAnniversaryBonusGifting_Returns_Ok()
+    {
+        // Arrange
+        var cryptoService = A.Fake<ICryptoService>();
+        var transactionService = A.Fake<ITransactionService>();
+
+        var controller = new CryptoController(cryptoService, transactionService, A.Fake<IHttpContextAccessor>())
+        {
+            ControllerContext = new ControllerContext { HttpContext = A.Fake<HttpContext>() }
+        };
+
+        // Act
+        var result = controller.InitiateAnniversaryBonusGifting();
+
+        // Assert
+        Assert.IsType<OkResult>(result);
+        A.CallTo(() => cryptoService.QueueAnniversaryBonusAsync(A<List<List<string>>>.That.Matches(
+            queue => queue[0][0] == "anniversaryBonusQueue" && queue[1][0] == "null"))).MustHaveHappenedOnceExactly();
     }
 
     private Task<List<UserProfileModel>> GetUserProfileModelList()

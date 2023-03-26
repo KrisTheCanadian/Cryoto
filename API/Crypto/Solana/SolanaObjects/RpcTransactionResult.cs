@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace API.Crypto.Solana.SolanaObjects;
 
+[ExcludeFromCodeCoverage]
 public class RpcTransactionResult
 {
     public string? jsonrpc { get; set; }

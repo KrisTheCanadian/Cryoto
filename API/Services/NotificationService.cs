@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Hub;
 using API.Models.Notifications;
 using API.Models.Posts;
@@ -13,11 +14,11 @@ namespace API.Services;
 public class NotificationService : INotificationService
 {
     private const string SenderEmail = "Cryoto@31286fb0-ff2a-4420-8b82-32f62d53c117.azurecomm.net";
-    private readonly string _emailConnectionString;
     private readonly IHubContext<NotificationsHub> _hubContext;
     private readonly ILogger<NotificationService> _logger;
     private readonly INotificationRepository _repository;
     private readonly IUserProfileRepository _userProfileRepository;
+    public EmailClient EmailClient;
 
 
     public NotificationService(IHubContext<NotificationsHub> hubContext, INotificationRepository repository,
@@ -28,14 +29,16 @@ public class NotificationService : INotificationService
         _repository = repository;
         _logger = logger;
         _userProfileRepository = userProfileRepository;
-        _emailConnectionString = configuration["CryotoCommunicationsServiceConnectionString"];
+        var emailConnectionString = configuration["CryotoCommunicationsServiceConnectionString"];
+        EmailClient = new EmailClient(emailConnectionString);
     }
 
+    [ExcludeFromCodeCoverage(Justification = "Not tested, only a wrapper for Azure emails")]
     public async Task SendEmailAsync(string to, string subject, string message, bool isHtml = false)
     {
         try
         {
-            var emailClient = new EmailClient(_emailConnectionString);
+            var emailClient = EmailClient;
             var emailContent = isHtml
                 ? new EmailContent(subject) { Html = message }
                 : new EmailContent(subject) { PlainText = message };
@@ -51,7 +54,8 @@ public class NotificationService : INotificationService
             _logger.LogError(e, "Error sending email");
         }
     }
-
+    
+    [ExcludeFromCodeCoverage(Justification = "Not tested, only a wrapper for Azure emails")]
     public async Task SendNotificationAsync(Notification notification)
     {
         var sender = notification.SenderId == "System"
@@ -103,7 +107,7 @@ public class NotificationService : INotificationService
         {
             0 => post.Hearts.Contains(actorId),
             1 => post.Claps.Contains(actorId),
-            2 => post.Claps.Contains(actorId),
+            2 => post.Celebrations.Contains(actorId),
             _ => true
         };
 

@@ -148,4 +148,20 @@ public class TransactionControllerTests
         Assert.Equal(transaction.ReceiverOId, objectResultValue?.ReceiverOId);
         Assert.Equal(transaction.ReceiverWalletType, objectResultValue?.ReceiverWalletType);
     }
+
+    [Fact]
+    public async Task AddTransaction_InvalidTransaction_ReturnsBadRequest()
+    {
+        // Arrange
+        var transaction = GetFakeTransaction();
+        A.CallTo(() => _transactionService.AddTransactionAsync(transaction)).Returns(false);
+
+        // Act
+        var result = await _controller.AddTransaction(transaction);
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result.Result);
+        var badRequestObjectResult = result.Result as BadRequestObjectResult;
+        Assert.Equal("Could not create the transaction", badRequestObjectResult!.Value);
+    }
 }

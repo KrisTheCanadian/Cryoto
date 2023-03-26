@@ -38,7 +38,7 @@ public class MarketPlaceService : IMarketPlaceService
 
         await _cryptoService.UpdateTokenBalance(-amount, actorId, "toSpend");
 
-        _cryptoService.QueueTokenUpdate(new List<List<string>>
+        await _cryptoService.QueueTokenUpdateAsync(new List<List<string>>
             { new() { "tokenUpdateQueue" }, new() { actorId } });
 
         await _transactionService.AddTransactionAsync(new TransactionModel("MarketPlace", "toAward", actorId,

@@ -7,6 +7,7 @@ using API.Utils;
 
 namespace API.Services;
 
+
 public class PostService : IPostService
 {
     private readonly IPostRepository _postRepository;

@@ -1,12 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using API.Models.Users;
 using API.Repository.Interfaces;
 using API.Services;
 using API.Services.Interfaces;
+using API.Tests.Utils;
 using FakeItEasy;
 using FluentAssertions;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace API.Tests.ServicesTests;
@@ -14,7 +19,7 @@ namespace API.Tests.ServicesTests;
 public class UserProfileServicesTests
 {
     private readonly IUserProfileRepository _context;
-    private readonly UserProfileService _controller;
+    private readonly UserProfileService _service;
     private readonly IMsGraphApiService _msGraphApiService;
 
 
@@ -22,7 +27,7 @@ public class UserProfileServicesTests
     {
         _context = A.Fake<IUserProfileRepository>();
         _msGraphApiService = A.Fake<IMsGraphApiService>();
-        _controller = new UserProfileService(_context, _msGraphApiService);
+        _service = new UserProfileService(_context, _msGraphApiService);
     }
 
     [Fact]
@@ -33,7 +38,7 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetAllUsersAsync()).Returns(userProfileModelList);
 
         //Act
-        var actionResult = await _controller.GetAllUsersRolesDbServiceAsync();
+        var actionResult = await _service.GetAllUsersRolesDbServiceAsync();
 
         //Assert
         actionResult.Should().NotBeNull();
@@ -51,7 +56,7 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetSearchResultAsync(A<string>._, A<string>._)).Returns(userWithDateDtoList);
 
         //Act
-        var actionResult = await _controller.GetSearchResultServiceAsync("keywords", "oid");
+        var actionResult = await _service.GetSearchResultServiceAsync("keywords", "oid");
 
         //Assert
         actionResult.Should().NotBeNull();
@@ -67,7 +72,7 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetUserByIdAsync(A<string>._)).Returns(userProfileModelList.Result[0]);
 
         //Act
-        var actionResult = await _controller.GetUserByIdAsync("keywords");
+        var actionResult = await _service.GetUserByIdAsync("keywords");
 
         //Assert
         actionResult.Should().NotBeNull();
@@ -84,8 +89,8 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetUserByIdAsync(A<string>._)).Returns(updatedUserProfile);
 
         //Act
-        var actionResult = await _controller.UpdateAsync(updatedUserProfile);
-        var actionResult2 = await _controller.GetUserByIdAsync("keywords");
+        var actionResult = await _service.UpdateAsync(updatedUserProfile);
+        var actionResult2 = await _service.GetUserByIdAsync("keywords");
 
         //Assert
         actionResult.Should().BeTrue();
@@ -114,7 +119,7 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.UpdateUserProfile(A<UserProfileModel>._)).Returns(1);
 
         // Act
-        var result = await _controller.UpdateUserRolesService(msGraphAccessToken, oid, newRoles);
+        var result = await _service.UpdateUserRolesService(msGraphAccessToken, oid, newRoles);
 
         // Assert
         result.Should().BeTrue();
@@ -134,7 +139,7 @@ public class UserProfileServicesTests
             .Returns((List<string>?)null!);
 
         // Act
-        var actionResult = await _controller.GetAllUsersRolesServiceAsync(msGraphAccessToken);
+        var actionResult = await _service.GetAllUsersRolesServiceAsync(msGraphAccessToken);
 
         //Assert
         actionResult.Should().NotBeNull();
@@ -151,7 +156,7 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetUpcomingAnniversaries()).Returns(userWithDateDtos);
 
         //Act
-        var actionResult = _controller.GetUpcomingAnniversaries();
+        var actionResult = _service.GetUpcomingAnniversaries();
 
         //Assert
         actionResult.Should().NotBeNull();
@@ -168,12 +173,130 @@ public class UserProfileServicesTests
         A.CallTo(() => _context.GetTopRecognizers()).Returns(recognizers);
 
         //Act
-        var actionResult = _controller.GetTopRecognizers();
+        var actionResult = _service.GetTopRecognizers();
 
         //Assert
         actionResult.Should().NotBeNull();
         actionResult.Should().BeOfType(typeof(List<TopRecognizers>));
     }
+    
+    [Fact]
+    public async Task UpdateUserProfileFakeData_ShouldUpdateAllUsers()
+    {
+        // Arrange
+        var users = new List<UserProfileModel>
+        {
+            new("1", "John", "john@example.com", "en-US", new[] { "user" }),
+            new("2", "Jane", "jane@example.com", "en-US", new[] { "user" })
+        };
+
+        var uri = new Uri("https://my.api.mockaroo.com/workday100.json?key=c4fdbe70");
+        var mockarooResponse = JsonConvert.SerializeObject(new List<UserProfileModel>
+        {
+            new("1", "John", "john@example.com", "en-US", new[] { "user" })
+            {
+                Company = "ABC Inc.",
+                BusinessTitle = "Developer"
+            },
+            new("2", "Jane", "jane@example.com", "en-US", new[] { "user" })
+            {
+                Company = "XYZ Ltd.",
+                BusinessTitle = "Engineer"
+            }
+        });
+
+        // Act
+        await _service.UpdateUserProfileFakeData();
+    }
+    
+    [Fact]
+    public async Task IncrementRecognitionsSent_ShouldReturnTrue_WhenUserProfileExists()
+    {
+        // Arrange
+        var oid = "some-oid";
+        var userProfileModel = new UserProfileModelBuilder().BuildDefaultFakeUserProfile();
+        
+        A.CallTo(() => _context.GetUserByIdAsync(oid)).Returns(userProfileModel);
+        A.CallTo(() => _context.UpdateUserProfile(A<UserProfileModel>._)).Returns(1);
+
+        // Act
+        var result = await _service.IncrementRecognitionsSent(oid);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(1, userProfileModel.RecognitionsSent);
+    }
+    
+    [Fact]
+    public async Task IncrementRecognitionsSent_ShouldReturnFalse_WhenUserProfileDoesNotExist()
+    {
+        // Arrange
+        var oid = "some-oid";
+        
+        A.CallTo(() => _context.GetUserByIdAsync(oid)).Returns((UserProfileModel)null!);
+
+        // Act
+        var result = await _service.IncrementRecognitionsSent(oid);
+
+        // Assert
+        Assert.False(result);
+    }
+    
+    [Fact]
+    public async Task IncrementRecognitionsReceived_ShouldReturnTrue_WhenUserProfileExists()
+    {
+        // Arrange
+        var oid = "some-oid";
+        var userProfileModel = new UserProfileModelBuilder().BuildDefaultFakeUserProfile();
+        
+        A.CallTo(() => _context.GetUserByIdAsync(oid)).Returns(userProfileModel);
+        A.CallTo(() => _context.UpdateUserProfile(A<UserProfileModel>._)).Returns(1);
+
+        // Act
+        var result = await _service.IncrementRecognitionsReceived(oid);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(0, userProfileModel.RecognitionsSent);
+    }
+    
+    [Fact]
+    public async Task IncrementRecognitionsReceived_ShouldReturnFalse_WhenUserProfileDoesNotExist()
+    {
+        // Arrange
+        var oid = "some-oid";
+        
+        A.CallTo(() => _context.GetUserByIdAsync(oid)).Returns((UserProfileModel)null!);
+
+        // Act
+        var result = await _service.IncrementRecognitionsReceived(oid);
+
+        // Assert
+        Assert.False(result);
+    }
+    
+    [Fact]
+    public async Task GetAnniversaryUsersAsync_ReturnsList()
+    {
+        // Arrange
+        var fakeUsers = new List<UserWithBusinessTitleAndDateDto>
+        {
+            new(new UserProfileModelBuilder().BuildDefaultFakeUserProfile()),
+            new(new UserProfileModelBuilder().BuildDefaultFakeUserProfile())
+        };
+        
+        A.CallTo(() => _context.GetAnniversaryUsersAsync()).Returns(fakeUsers);
+        
+
+        // Act
+        var result = await _service.GetAnniversaryUsersAsync();
+
+        // Assert
+        Assert.IsType<List<UserWithBusinessTitleAndDateDto>>(result);
+        Assert.Equal(fakeUsers.Count, result.Count);
+    }
+    
+    
 
     private static Task<List<UserProfileModel>> GetUserProfileModelList()
     {

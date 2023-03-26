@@ -122,7 +122,7 @@ public class CryotoBackgroundService : BackgroundService
             await cryptoService.SendAnniversaryTokenByOId(userProfileModel.OId);
         }
 
-        cryptoService.QueueAnniversaryBonus(new List<List<string>>
+        await cryptoService.QueueAnniversaryBonusAsync(new List<List<string>>
             { new() { "anniversaryBonusQueue" }, new() { "null" } });
     }
 
@@ -151,13 +151,13 @@ public class CryotoBackgroundService : BackgroundService
         if (weekNumber == 4)
         {
             await cryptoService.SendMonthlyTokenBasedOnRole(oid);
-            cryptoService.QueueMonthlyTokensGift(new List<List<string>>
+            await cryptoService.QueueMonthlyTokensGiftAsync(new List<List<string>>
                 { new() { "monthlyTokenQueue" }, new() { oid, "1" } });
         }
         else
         {
             weekNumber += 1;
-            cryptoService.QueueMonthlyTokensGift(new List<List<string>>
+            await cryptoService.QueueMonthlyTokensGiftAsync(new List<List<string>>
             {
                 new() { "monthlyTokenQueue" },
                 new() { oid, weekNumber.ToString() }
@@ -184,7 +184,7 @@ public class CryotoBackgroundService : BackgroundService
                 messageHtml, true);
         }
 
-        cryptoService.QueueSolUpdate(new List<List<string>>
+        await cryptoService.QueueSolUpdateAsync(new List<List<string>>
             { new() { "checkAdminBalanceQueue" }, new() { "null" } });
     }
 }

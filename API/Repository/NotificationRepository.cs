@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using API.Models.Notifications;
 using API.Models.Users;
 using API.Repository.Interfaces;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Repository;
 
+[ExcludeFromCodeCoverage]
 public class NotificationRepository : INotificationRepository
 {
     private readonly IDataContext _context;
