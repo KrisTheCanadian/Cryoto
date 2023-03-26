@@ -1,16 +1,9 @@
 {
   "testEnvironment": "jsdom",
   "verbose": true,
-  "setupFilesAfterEnv": [
-    "<rootDir>/jest-setup.ts"
-  ],
-  "moduleDirectories": [
-    "node_modules",
-    "src/"
-  ],
-  "modulePaths": [
-    "<rootDir>"
-  ],
+  "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+  "moduleDirectories": ["node_modules", "src/"],
+  "modulePaths": ["<rootDir>"],
   "moduleNameMapper": {
     "\\.(css|less)$": "identity-obj-proxy",
     "^@shared(.*)$": "<rootDir>/src/pages/shared$1",
@@ -18,8 +11,5 @@
     "^uuid$": "uuid"
   },
   "collectCoverage": true,
-  "coverageReporters": [
-    "json",
-    "html"
-  ]
+  "coverageReporters": ["json", "html"]
 }

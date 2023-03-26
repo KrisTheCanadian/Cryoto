@@ -56,6 +56,7 @@ describe('Authentication and Permission tests', () => {
     pca = new PublicClientApplication(msalConfig);
     getAllAccountsSpy = jest.spyOn(pca, 'getAllAccounts');
     getAllAccountsSpy.mockImplementation(() => [testAccount]);
+    window.scrollTo = jest.fn();
   });
 
   afterEach(() => {

@@ -286,14 +286,18 @@ function SettingsBox(props: SettingsBoxProps) {
     useState<boolean>(false);
 
   const formatAddress = (data: AddressSettingsElement): string[] => {
-    const l1 = `${data.unit && data.streetNumber ? `${data.unit}-` : ''}${
-      data.streetNumber ? `${data.streetNumber} ` : ''
-    }${data.street}`;
-    const l2 = `${data.city ? `${data.city}` : ''}${
-      data.city && (data.province || data.postalCode) ? ', ' : ''
-    }${data.province ? `${data.province}` : ''}${
-      data.province && data.postalCode ? ', ' : ''
-    }${data.postalCode ? `${data.postalCode}` : ''}`;
+    const unit = data.unit && data.streetNumber ? `${data.unit}-` : '';
+    const streetNumber = data.streetNumber ? `${data.streetNumber} ` : '';
+    const l1 = `${unit}${streetNumber}${data.street}`;
+
+    const city = data.city ? `${data.city}` : '';
+    const cityComma =
+      data.city && (data.province || data.postalCode) ? ', ' : '';
+    const province = data.province ? `${data.province}` : '';
+    const postalCodeComma = data.province && data.postalCode ? ', ' : '';
+    const postalCode = data.postalCode ? `${data.postalCode}` : '';
+    const l2 = `${city}${cityComma}${province}${postalCodeComma}${postalCode}`;
+
     const l3 = data.country ? `${data.country}` : '';
     const l4 = data.additionalInfo ? `${data.additionalInfo}` : '';
     return [l1, l2, l3, l4];

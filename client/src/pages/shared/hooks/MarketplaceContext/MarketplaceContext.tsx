@@ -39,7 +39,7 @@ interface MarketplaceContextState {
 const MarketplaceContext = createContext({} as MarketplaceContextState);
 
 function MarketplaceProvider(props: {children: any}) {
-  const {t, i18n} = useTranslation();
+  const {i18n} = useTranslation();
   const lang = i18n.language.substring(0, 2);
   const itemsJsonTranslated: IItem[] = [];
 

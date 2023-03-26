@@ -241,6 +241,7 @@ function LikeButtons(props: ILikeButtonsProps) {
             layout
           >
             <IconButton
+              data-testid="post-like-button"
               sx={{
                 marginRight: 0.5,
                 color: theme.interface.icon,

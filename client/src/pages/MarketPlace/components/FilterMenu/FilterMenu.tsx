@@ -250,6 +250,52 @@ function FilterMenuItems() {
     </Box>
   );
 }
+function FilterProducts(selectedFilters: any[], allItems: Item[]) {
+  let tempArr: Item[] = [];
+  let filteredArr: Item[] = [];
+
+  let setTempTypeArr = true;
+  let setTempPointsArr = true;
+  selectedFilters.sort((a, b) => a.type - b.type);
+
+  selectedFilters.forEach((f) => {
+    switch (f.type) {
+      case 1:
+        tempArr = allItems.filter((item) => item.brand === f.filter);
+        filteredArr = filteredArr.concat(tempArr);
+        break;
+
+      case 2:
+        if (setTempTypeArr) {
+          tempArr = filteredArr.length > 0 ? filteredArr : allItems;
+          if (filteredArr.length > 0) filteredArr = [];
+          setTempTypeArr = false;
+        }
+
+        filteredArr = filteredArr.concat(
+          tempArr.filter((item) => item.type === f.filter),
+        );
+        break;
+
+      case 3:
+        if (setTempPointsArr) {
+          tempArr = filteredArr.length > 0 ? filteredArr : allItems;
+          if (filteredArr.length > 0) filteredArr = [];
+          setTempPointsArr = false;
+        }
+        if (f.min !== undefined && f.max !== undefined) {
+          const min = f.min;
+          const max = f.max;
+          filteredArr = filteredArr.concat(
+            tempArr.filter((item) => item.points >= min && item.points <= max),
+          );
+        }
+        break;
+    }
+  });
+  filteredArr.sort((item1, item2) => item1.brand.localeCompare(item2.brand));
+  return filteredArr;
+}
 
 function FilterMenu() {
   const theme = useTheme();
@@ -262,7 +308,7 @@ function FilterMenu() {
 
   useEffect(() => {
     if (selectedFilters?.length > 0) {
-      const filteredArray = filterProducts();
+      const filteredArray = FilterProducts(selectedFilters, allItems);
       setItemsDisplayed(filteredArray);
     } else {
       setItemsDisplayed(allItems);
@@ -282,50 +328,6 @@ function FilterMenu() {
     setOpenFilterMenu(null);
   };
 
-  const filterProducts = () => {
-    let tempArr: Item[] = [];
-    let filteredArr: Item[] = [];
-
-    let setTempTypeArr = true;
-    let setTempPointsArr = true;
-    selectedFilters.sort((a, b) => a.type - b.type);
-
-    selectedFilters.forEach((f) => {
-      if (f.type === 1) {
-        tempArr = allItems.filter((item) => item.brand === f.filter);
-        filteredArr = filteredArr.concat(tempArr);
-      }
-
-      if (f.type === 2) {
-        if (setTempTypeArr) {
-          tempArr = filteredArr.length > 0 ? filteredArr : allItems;
-          if (filteredArr.length > 0) filteredArr = [];
-          setTempTypeArr = false;
-        }
-
-        filteredArr = filteredArr.concat(
-          tempArr.filter((item) => item.type === f.filter),
-        );
-      }
-
-      if (f.type === 3) {
-        if (setTempPointsArr) {
-          tempArr = filteredArr.length > 0 ? filteredArr : allItems;
-          if (filteredArr.length > 0) filteredArr = [];
-          setTempPointsArr = false;
-        }
-        if (f.min !== undefined && f.max !== undefined) {
-          const min = f.min;
-          const max = f.max;
-          filteredArr = filteredArr.concat(
-            tempArr.filter((item) => item.points >= min && item.points <= max),
-          );
-        }
-      }
-    });
-    filteredArr.sort((item1, item2) => item1.brand.localeCompare(item2.brand));
-    return filteredArr;
-  };
   return (
     <Box>
       <Button

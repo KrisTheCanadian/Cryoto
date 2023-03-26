@@ -167,12 +167,10 @@ function Notifications() {
     };
 
     const handleNotification = async (notification: INotification) => {
-      notifications.map(
-        async (n) =>
-          // eslint-disable-next-line no-return-await
-          await getUserProfilePhoto(n.senderId).then((response) => {
-            n.senderPhotoUrl = response;
-          }),
+      notifications.map(async (n) =>
+        getUserProfilePhoto(n.senderId).then((response) => {
+          n.senderPhotoUrl = response;
+        }),
       );
       setNotifications((prev) => [notification, ...prev]);
       // invalidate queries in homepage

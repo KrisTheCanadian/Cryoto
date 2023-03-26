@@ -69,6 +69,14 @@ afterEach(() => {
 
 describe('Search functionality', () => {
   it('Should open the new post form when search field is focused', async () => {
+    const intersectionObserverMock = () => ({
+      observe: () => null,
+      unobserve: (el: any) => null,
+    });
+    window.IntersectionObserver = jest
+      .fn()
+      .mockImplementation(intersectionObserverMock);
+
     await act(async () => {
       render(
         <MsalProvider instance={pca}>

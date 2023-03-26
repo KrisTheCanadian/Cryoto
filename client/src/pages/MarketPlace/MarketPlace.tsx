@@ -30,7 +30,7 @@ function MarketPlace() {
   const {itemsDisplayed} = useMarketplaceContext();
 
   const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(20);
   const [itemsDisplayedInPage, setItemsDisplayedInPage] = useState<IItem[]>([]);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import {render, screen} from '@testing-library/react';
+import {act, render, screen} from '@testing-library/react';
 import {MockAppProviders} from '@shared/testing/mocks';
 import {QueryClient, QueryClientProvider} from 'react-query';
 
@@ -36,8 +36,20 @@ function renderCartItems() {
 }
 
 describe('CartItem', () => {
-  it('renders product title and size', () => {
-    renderCartItems();
+  it('renders product title and size', async () => {
+    const intersectionObserverMock = () => ({
+      observe: () => null,
+      unobserve: (el: any) => null,
+    });
+
+    window.IntersectionObserver = jest
+      .fn()
+      .mockImplementation(intersectionObserverMock);
+
+    await act(async () => {
+      renderCartItems();
+    });
+
     expect(screen.getByText('Product Title')).toBeInTheDocument();
     expect(screen.getByText('Size:')).toBeInTheDocument();
     expect(screen.getByText('10')).toBeInTheDocument();

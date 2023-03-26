@@ -28,12 +28,22 @@ it('getAllItems returns success', async () => {
   const url = `${apiRouteMarketPlaceGetAllItems}`;
   mock.onGet(url).reply(200, data);
 
-  const res = await getAllItems();
-  expect(res).toEqual(data);
+  const resp = await getAllItems();
+  expect(resp).toEqual(data);
+});
+
+it('getAllItems returns error', async () => {
+  const data = {response: false};
+
+  const url = `${apiRouteMarketPlaceGetAllItems}`;
+  mock.onGet(url).reply(400, data);
+
+  getAllItems().catch((err) => {
+    expect(err.response.data).toEqual(data);
+  });
 });
 
 it('completePurchase returns success', async () => {
-  const data = {response: true};
   const order: IOrder = {
     id: '1',
     items: [
@@ -56,8 +66,48 @@ it('completePurchase returns success', async () => {
   };
 
   const url = `${apiRouteMarketPlaceCompletePurchase}`;
-  mock.onPost(url).reply(200, data);
+  mock.onPost(url).reply(200, order);
 
-  const res = await completePurchase(order);
-  expect(res).toEqual(data);
+  const result = await completePurchase(order);
+
+  const data = {
+    id: order.id,
+    items: order.items,
+    email: order.email,
+    shippingAddress: order.shippingAddress,
+    date: new Date(order.date).toISOString(),
+  };
+
+  expect(result).toEqual(data);
+});
+
+it('completePurchase returns error', async () => {
+  const data = {response: false};
+  const order: IOrder = {
+    id: '1',
+    items: [
+      {
+        id: 'afd380c1',
+        quantity: 1,
+      },
+    ],
+    email: 'test@test.com',
+    shippingAddress: {
+      id: 1,
+      streetNumber: '20',
+      street: 'Test Street',
+      city: 'Test City',
+      province: 'Test Province',
+      country: 'Test Country',
+      postalCode: 'Test Postal Code',
+    },
+    date: new Date(),
+  };
+
+  const url = `${apiRouteMarketPlaceCompletePurchase}`;
+  mock.onPost(url).reply(400, data);
+
+  completePurchase(order).catch((err) => {
+    expect(err.response.data).toEqual(data);
+  });
 });

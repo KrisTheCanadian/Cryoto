@@ -75,8 +75,8 @@ describe("Sidebar's Mini Wallet tests", () => {
     jest.clearAllMocks();
   });
 
-  it('Mini wallet should be rendered when user is logged in', () => {
-    act(() => {
+  it('Mini wallet should be rendered when user is logged in', async () => {
+    await act(async () => {
       render(
         <MsalProvider instance={pca}>
           <QueryClientProvider client={queryClient}>
@@ -89,6 +89,7 @@ describe("Sidebar's Mini Wallet tests", () => {
         </MsalProvider>,
       );
     });
+
     expect(screen.getByText(MY_BALANCE)).toBeInTheDocument();
     expect(screen.getByText(TO_SPEND_LABEL)).toBeInTheDocument();
     expect(screen.getByText(TO_AWARD_LABEL)).toBeInTheDocument();

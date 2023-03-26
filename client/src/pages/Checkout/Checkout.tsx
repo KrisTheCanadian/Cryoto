@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 /* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @shopify/strict-component-boundaries */
@@ -328,9 +327,14 @@ function Checkout() {
     alignItems: 'center',
   };
 
-  const height = isAddressEmpty ? (isAddressValid ? 485 : 500) : 160;
-  const heightXl = isAddressEmpty ? (isAddressValid ? 465 : 470) : 170;
-  const height600 = isAddressEmpty ? (isAddressValid ? 705 : 715) : height;
+  const validValue = isAddressValid ? 485 : 500;
+  const height = isAddressEmpty ? validValue : 160;
+
+  const validValueXl = isAddressValid ? 465 : 470;
+  const heightXl = isAddressEmpty ? validValueXl : 170;
+
+  const validValue600 = isAddressValid ? 705 : 715;
+  const height600 = isAddressEmpty ? validValue600 : height;
 
   return (
     <PageFrame>

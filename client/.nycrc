@@ -3,8 +3,7 @@
   "excludeAfterRemap": true,
   "report-dir": "cypressCoverage",
   "reporter": ["cobertura"],
-  "extension": [".tsx",".ts"],
-  "include": ["src/**/*.tsx","src/data/**/*.ts"],
-  "exclude": ["src/**/mocks/*","src/**/requests/*"]
-
+  "extension": [".tsx", ".ts"],
+  "include": ["src/**/*.tsx", "src/data/**/*.ts"],
+  "exclude": ["src/**/mocks/*", "src/**/requests/*"]
 }
