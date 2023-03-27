@@ -31,24 +31,24 @@ function SortMenuItems() {
   return (
     <FormControl sx={{ml: 2, mr: 2}}>
       <RadioGroup name="radio-buttons-group" value={selectSort}>
-        <FormControlLabel
+        <FormControlLabel 
           value="LowToHigh"
-          control={<Radio onClick={handleClick} />}
+          control={<Radio id = "lowtohigh" onClick={handleClick} />}
           label={t<string>('marketplace.sort.lowtohigh')}
         />
         <FormControlLabel
           value="HighToLow"
-          control={<Radio onClick={handleClick} />}
+          control={<Radio id = "hightolow" onClick={handleClick} />}
           label={t<string>('marketplace.sort.hightolow')}
         />
-        <FormControlLabel
+        <FormControlLabel 
           value="AToZ"
-          control={<Radio onClick={handleClick} />}
+          control={<Radio id = "AToZ" onClick={handleClick} />}
           label={t<string>('marketplace.sort.AtoZ')}
         />
-        <FormControlLabel
+        <FormControlLabel 
           value="ZToA"
-          control={<Radio onClick={handleClick} />}
+          control={<Radio id = "ZToA" onClick={handleClick} />}
           label={t<string>('marketplace.sort.ZtoA')}
         />
       </RadioGroup>

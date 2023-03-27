@@ -154,9 +154,9 @@ function ProductCard(props: IProductCardProps) {
 
   return (
     <ThemeProvider theme={customTheme}>
-      <Box sx={cardContainerStyle}>
-        <Card sx={cardStyle}>
-          <Box
+      <Box data-testid="productCardBox" sx={cardContainerStyle}>
+        <Card sx={cardStyle} data-testid="productCardCard">
+          <Box data-testid="productCardInnerBox"
             sx={{
               mt: theme.spacing(),
               mb: theme.spacing(),
@@ -166,7 +166,7 @@ function ProductCard(props: IProductCardProps) {
             }}
             onClick={routeChange}
           >
-            <CardMedia
+            <CardMedia 
               sx={{
                 maxHeight: 130,
                 borderRadius: 2,
@@ -176,7 +176,7 @@ function ProductCard(props: IProductCardProps) {
               image={props.image}
             />
           </Box>
-          <CardContent
+          <CardContent data-testid="productCardContent"
             sx={{
               paddingTop: 0,
               '&:last-child': {
@@ -184,7 +184,7 @@ function ProductCard(props: IProductCardProps) {
               },
             }}
           >
-            <Box onClick={routeChange}>
+            <Box onClick={routeChange} data-testid="productTitleBox">
               <Typography
                 gutterBottom
                 variant="body1"

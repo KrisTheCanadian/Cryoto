@@ -89,17 +89,17 @@ function MarketPlace() {
 
   return (
     <PageFrame>
-      <Box flex={8} p={0} sx={{ml: '0!important'}}>
-        <Box p={2} display="flex" alignItems="center" flexDirection="column">
-          <Grid
+      <Box data-testid="marketBox" flex={8} p={0} sx={{ml: '0!important'}}>
+        <Box data-testid="innermarketBox" p={2} display="flex" alignItems="center" flexDirection="column">
+          <Grid data-testid="marketGrid"
             container
             spacing={2}
             sx={{
               justifyContent: 'center',
             }}
           >
-            <Grid item sx={gridStyle1}>
-              <Grid
+            <Grid item sx={gridStyle1} data-testid="marketInnderGrid1">
+              <Grid data-testid="marketInnderGrid2"
                 item
                 xs={12}
                 sm={1}
@@ -169,7 +169,7 @@ function MarketPlace() {
               </Grid>
             </Grid>
           </Grid>
-          <Drawer
+          <Drawer data-testid="drawer"
             anchor="right"
             open={open}
             onClose={toggleDrawer(false)}
@@ -222,7 +222,7 @@ function MarketPlace() {
             </Box>
           </Drawer>
 
-          <Grid
+          <Grid data-testid="displayGrid"
             container
             spacing={{xs: 2, md: 2}}
             columns={{xs: 4, sm: 14, md: 16, xl: 22}}
@@ -242,7 +242,7 @@ function MarketPlace() {
             ))}
           </Grid>
 
-          <Pagination
+          <Pagination data-testid="pagination"
             count={Math.ceil(itemsDisplayed.length / itemsPerPage)}
             page={page}
             onChange={handleChangePage}

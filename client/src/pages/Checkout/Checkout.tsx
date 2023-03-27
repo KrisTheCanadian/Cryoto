@@ -452,7 +452,7 @@ function Checkout() {
                           }}
                           sx={{display: editEmail ? 'none' : 'inherit'}}
                         >
-                          <Edit
+                          <Edit data-testid="emailEditComponent"
                             sx={{
                               fontSize: 15,
                               color: theme.interface.icon,
@@ -471,7 +471,7 @@ function Checkout() {
                             setEditEmail(false);
                           }}
                         >
-                          <Check
+                          <Check data-testid="emailEditCheck"
                             sx={{
                               fontSize: 17,
                             }}
@@ -479,7 +479,7 @@ function Checkout() {
                         </IconButton>
                       </Box>
 
-                      <Typography
+                      <Typography data-testid="emailEditTypo"
                         sx={{
                           display: editEmail ? 'none' : 'inherit',
                           fontSize: 13,
@@ -504,7 +504,7 @@ function Checkout() {
                         {emailAddress}
                       </Typography>
 
-                      <Box
+                      <Box data-testid="box2"
                         sx={{
                           display: editEmail ? 'inherit' : 'none',
                           ml: {xs: 3, sm: 7},
@@ -523,7 +523,7 @@ function Checkout() {
                       </Box>
                     </Box>
                   </Box>
-                  <Box sx={boxStyle}>
+                  <Box sx={boxStyle}> 
                     <Box
                       sx={{
                         backgroundColor: theme.palette.primary.light,
@@ -603,7 +603,7 @@ function Checkout() {
                                   xs={12}
                                   sm={elem.label === 'Unit' ? 0.5 : 3}
                                 >
-                                  <Box sx={{display: 'flex'}}>
+                                  <Box sx={{display: 'flex'}} data-testid="box">
                                     <Typography
                                       sx={{
                                         fontSize: 12,
@@ -811,7 +811,7 @@ function Checkout() {
                     </Typography>
                   </Box>
 
-                  <Box
+                  <Box data-testid="cartItemBoxId"
                     sx={{
                       display: cartItems.length === 0 ? 'flex' : 'none',
                       justifyContent: 'right',

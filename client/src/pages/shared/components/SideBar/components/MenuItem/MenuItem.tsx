@@ -26,7 +26,7 @@ function MenuItem(props: MenuItemProps) {
   };
 
   return (
-    <ListItemButton
+    <ListItemButton data-testid="listItemButton"
       component={NavLink}
       to={to}
       selected={location.pathname === to}

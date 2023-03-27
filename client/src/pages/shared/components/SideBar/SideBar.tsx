@@ -144,7 +144,7 @@ function SideBar() {
               }
             >
               <ListItemButton component={NavLink} to={routeWallet}>
-                <ListItemIcon sx={{width: 100}}>
+                <ListItemIcon data-testid="toSpend" sx={{width: 100}}>
                   {t('layout.ToSpend')}
                 </ListItemIcon>
                 {status === 'loading' ? (
@@ -153,7 +153,7 @@ function SideBar() {
                     size="2rem"
                   />
                 ) : (
-                  <ListItemText
+                  <ListItemText data-testid="toSpendBalance"
                     primaryTypographyProps={{
                       fontSize: '18px',
                       fontWeight: theme.typography.fontWeightMedium,
@@ -164,7 +164,7 @@ function SideBar() {
               </ListItemButton>
               <Divider variant="middle" />
               <ListItemButton component={NavLink} to={routeWallet}>
-                <ListItemIcon sx={{width: 100}}>
+                <ListItemIcon data-testid="toAward" sx={{width: 100}}>
                   {t('layout.ToAward')}
                 </ListItemIcon>
                 {status === 'loading' ? (
@@ -173,7 +173,7 @@ function SideBar() {
                     size="2rem"
                   />
                 ) : (
-                  <ListItemText
+                  <ListItemText data-testid="toAwardBalance"
                     primaryTypographyProps={{
                       fontSize: '18px',
                       fontWeight: theme.typography.fontWeightMedium,
