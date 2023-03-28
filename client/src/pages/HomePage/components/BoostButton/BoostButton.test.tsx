@@ -1,4 +1,4 @@
-import {render, fireEvent, screen, waitFor, act} from '@testing-library/react';
+import {render, screen, act} from '@testing-library/react';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import {AlertProvider} from '@shared/hooks/Alerts';
 import {ThemeContextProvider} from '@shared/hooks/ThemeContextProvider';
@@ -15,16 +15,13 @@ import BoostButton from './BoostButton';
 
 import i18n from '@/i18n/i18n';
 
-jest.mock('@/data/api/requests/posts');
-jest.mock('src/data/api/helpers/', () => {
-  return {
-    getAccessToken: jest.fn(() => {
-      return 'access_token';
-    }),
-    getUserId: jest.fn(() => {
-      return 'homeAccountId';
-    }),
-  };
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 5,
+    },
+  },
 });
 
 const TEST_CONFIG = {
@@ -52,26 +49,46 @@ const testAccount: AccountInfo = {
   tenantId: TEST_DATA_CLIENT_INFO.TEST_UTID,
   username: 'example@microsoft.com',
   name: 'Abe Lincoln',
-  idTokenClaims: {roles: []},
+
+  idTokenClaims: {
+    roles: [],
+  },
+};
+const testAccountPartner: AccountInfo = {
+  homeAccountId: TEST_DATA_CLIENT_INFO.TEST_HOME_ACCOUNT_ID,
+  localAccountId: TEST_DATA_CLIENT_INFO.TEST_UID_ENCODED,
+  environment: 'login.windows.net',
+  tenantId: TEST_DATA_CLIENT_INFO.TEST_UTID,
+  username: 'example@microsoft.com',
+  name: 'Abe Lincoln',
+
+  idTokenClaims: {
+    roles: ['Partner'],
+  },
 };
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+let pca: IPublicClientApplication;
+let getAllAccountsSpy: jest.SpyInstance;
+const msalConfig: Configuration = {
+  auth: {
+    clientId: TEST_CONFIG.MSAL_CLIENT_ID,
+  },
+};
+
+beforeEach(() => {
+  pca = new PublicClientApplication(msalConfig);
+  getAllAccountsSpy = jest.spyOn(pca, 'getAllAccounts');
+  getAllAccountsSpy.mockImplementation(() => [testAccount]);
+});
+
 describe('BoostButton', () => {
-  const queryClient = new QueryClient();
-  let pca: IPublicClientApplication;
-  let getAllAccountsSpy: jest.SpyInstance;
-  const msalConfig: Configuration = {
-    auth: {
-      clientId: TEST_CONFIG.MSAL_CLIENT_ID,
-    },
-  };
-  beforeEach(() => {
-    jest.resetAllMocks();
-    pca = new PublicClientApplication(msalConfig);
-    getAllAccountsSpy = jest.spyOn(pca, 'getAllAccounts');
-    getAllAccountsSpy.mockImplementation(() => [testAccount]);
-  });
+  test('renders the Boost button when the user is of type Partner and can boost', async () => {
+    getAllAccountsSpy.mockImplementation(() => [testAccountPartner]);
 
-  it('renders without errors', async () => {
     await act(async () => {
       render(
         <MsalProvider instance={pca}>
@@ -80,12 +97,12 @@ describe('BoostButton', () => {
               <AlertProvider>
                 <I18nextProvider i18n={i18n}>
                   <BoostButton
-                    postId="post-id-123"
-                    userId="user-id-123"
-                    interactionEnabled
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="2"
                     boosts={[]}
-                    onBoost={() => {}}
-                    onFail={() => {}}
+                    boostProfiles={[]}
+                    recipients={[]}
                   />
                 </I18nextProvider>
               </AlertProvider>
@@ -94,12 +111,13 @@ describe('BoostButton', () => {
         </MsalProvider>,
       );
     });
-
-    expect(screen.getByRole('button')).toBeInTheDocument();
+    const boostButton = screen.getByText('Boost ⭐');
+    expect(boostButton).toBeInTheDocument();
   });
 
-  it('calls onBoost when the user clicks the boost button', async () => {
-    const onBoostMock = jest.fn();
+  test('Partner cannot boost after already boosting', async () => {
+    getAllAccountsSpy.mockImplementation(() => [testAccountPartner]);
+
     await act(async () => {
       render(
         <MsalProvider instance={pca}>
@@ -108,12 +126,12 @@ describe('BoostButton', () => {
               <AlertProvider>
                 <I18nextProvider i18n={i18n}>
                   <BoostButton
-                    postId="post-id-123"
-                    userId="user-id-123"
-                    interactionEnabled
-                    boosts={[]}
-                    onBoost={onBoostMock}
-                    onFail={() => {}}
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="partnerId"
+                    boosts={['partnerId']}
+                    boostProfiles={[{oId: 'partnerId', name: 'partnerName'}]}
+                    recipients={[]}
                   />
                 </I18nextProvider>
               </AlertProvider>
@@ -122,17 +140,13 @@ describe('BoostButton', () => {
         </MsalProvider>,
       );
     });
-
-    const button = screen.getByRole('button');
-
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(onBoostMock).toHaveBeenCalledTimes(1);
-    });
+    const boostButton = screen.getByTestId('boost-button');
+    expect(boostButton).toBeDisabled();
   });
 
-  it('disables the boost button if interaction is not enabled', async () => {
+  test('Partner cannot boost his/her own post', async () => {
+    getAllAccountsSpy.mockImplementation(() => [testAccountPartner]);
+
     await act(async () => {
       render(
         <MsalProvider instance={pca}>
@@ -141,12 +155,15 @@ describe('BoostButton', () => {
               <AlertProvider>
                 <I18nextProvider i18n={i18n}>
                   <BoostButton
-                    postId="post-id-123"
-                    userId="user-id-123"
-                    interactionEnabled={false}
-                    boosts={[]}
-                    onBoost={() => {}}
-                    onFail={() => {}}
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="partnerId"
+                    boosts={['boostedId', 'skjf']}
+                    boostProfiles={[
+                      {oId: 'boostedId', name: 'partnerName'},
+                      {oId: 'skjf', name: 'partnerName'},
+                    ]}
+                    recipients={['partnerId']}
                   />
                 </I18nextProvider>
               </AlertProvider>
@@ -155,7 +172,95 @@ describe('BoostButton', () => {
         </MsalProvider>,
       );
     });
+    const boostButton = screen.getByTestId('boost-button');
+    expect(boostButton).toBeDisabled();
+  });
+  test('Partner can boost his/her own post if there are other recipients in post', async () => {
+    getAllAccountsSpy.mockImplementation(() => [testAccountPartner]);
 
-    expect(screen.queryByRole('button')).toBeNull();
+    await act(async () => {
+      render(
+        <MsalProvider instance={pca}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeContextProvider>
+              <AlertProvider>
+                <I18nextProvider i18n={i18n}>
+                  <BoostButton
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="partnerUser"
+                    boosts={['boostedId', 'skjf']}
+                    boostProfiles={[
+                      {oId: 'boostedId', name: 'partnerName'},
+                      {oId: 'skjf', name: 'partnerName'},
+                    ]}
+                    recipients={['partnerUser', 'otherusers']}
+                  />
+                </I18nextProvider>
+              </AlertProvider>
+            </ThemeContextProvider>
+          </QueryClientProvider>
+        </MsalProvider>,
+      );
+    });
+    const boostButton = screen.getByTestId('boost-button');
+    expect(boostButton).toBeEnabled();
+  });
+
+  test('renders the Boosted button when the user is not a partner', async () => {
+    await act(async () => {
+      render(
+        <MsalProvider instance={pca}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeContextProvider>
+              <AlertProvider>
+                <I18nextProvider i18n={i18n}>
+                  <BoostButton
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="2"
+                    boosts={['boostedId', 'skjf']}
+                    boostProfiles={[
+                      {oId: 'boostedId', name: 'partnerName'},
+                      {oId: 'skjf', name: 'partnerName'},
+                    ]}
+                    recipients={[]}
+                  />
+                </I18nextProvider>
+              </AlertProvider>
+            </ThemeContextProvider>
+          </QueryClientProvider>
+        </MsalProvider>,
+      );
+    });
+    const boostButton = screen.getByText('Boosted ⭐');
+    expect(boostButton).toBeInTheDocument();
+  });
+
+  test('does not render button when the user is not a partner and there are no boosts ', async () => {
+    await act(async () => {
+      render(
+        <MsalProvider instance={pca}>
+          <QueryClientProvider client={queryClient}>
+            <ThemeContextProvider>
+              <AlertProvider>
+                <I18nextProvider i18n={i18n}>
+                  <BoostButton
+                    handleBoost={jest.fn()}
+                    postId="1"
+                    userId="2"
+                    boosts={[]}
+                    boostProfiles={[]}
+                    recipients={[]}
+                  />
+                </I18nextProvider>
+              </AlertProvider>
+            </ThemeContextProvider>
+          </QueryClientProvider>
+        </MsalProvider>,
+      );
+    });
+    const boostButton = screen.queryByTestId('boost-button');
+    expect(boostButton).not.toBeInTheDocument();
   });
 });

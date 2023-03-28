@@ -1,4 +1,3 @@
-/* eslint-disable @shopify/jsx-no-complex-expressions */
 /* eslint-disable jsx-a11y/accessible-emoji */
 /* eslint-disable @shopify/jsx-no-hardcoded-content */
 import {useTheme} from '@mui/material/styles';
@@ -91,11 +90,15 @@ function LikeButtons(props: ILikeButtonsProps) {
   const emojiContainerReactionStyles = {
     background: theme.interface.contrastMain,
     border: theme.border.default,
+    borderWidth: '1.5px',
+    borderColor: theme.palette.divider,
     borderRadius: '25%/50%',
     width: 'fit-content',
     display: 'flex',
     top: '-60px',
     padding: '5px',
+    paddingLeft: '10px',
+    paddingRight: '8px',
     marginLeft: '-32px',
     position: 'absolute',
   };
@@ -234,27 +237,29 @@ function LikeButtons(props: ILikeButtonsProps) {
         >
           <Box
             component={motion.div}
-            whileHover={{scale: 1.2}}
+            whileHover={{scale: 1.1}}
             whileTap={{scale: 0.9}}
-            sx={{marginRight: '10px'}}
+            sx={{marginRight: '5px'}}
             onClick={() => setShowReactions(!showReactions)}
             layout
           >
             <IconButton
               data-testid="post-like-button"
               sx={{
-                marginRight: 0.5,
                 color: theme.interface.icon,
               }}
               onClick={handleLikeButtonClick}
               onMouseEnter={() => handleMouseOver()}
               onMouseLeave={() => handleMouseOut()}
             >
-              {isPostLiked() ? (
-                <AddReaction component={motion.svg} />
-              ) : (
-                <AddReactionOutlined component={motion.svg} />
-              )}
+              <img
+                src="images/svgIcons/addEmoji.svg"
+                alt="Filter"
+                style={{
+                  width: '25px',
+                  height: '25px',
+                }}
+              />
             </IconButton>
           </Box>
 

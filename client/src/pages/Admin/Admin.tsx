@@ -13,7 +13,10 @@ function Admin() {
   return (
     <PageFrame>
       <FullWidthColumn>
-        <Typography variant="h4" sx={{mb: theme.spacing(2)}}>
+        <Typography
+          variant="h4"
+          sx={{mb: theme.spacing(2), fontWeight: 200, fontSize: 32}}
+        >
           {t<string>('adminDashboard.pageTitle')}
         </Typography>
         <AdminUsersTable />

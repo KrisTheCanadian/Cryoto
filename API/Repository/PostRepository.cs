@@ -179,11 +179,20 @@ public class PostRepository : IPostRepository
                 .FirstOrDefaultAsync(x => x.OId.Equals(author));
             if (recipientProfile != null) recipientProfiles.Add(new UserDto(recipientProfile));
         }
-
         postModel.RecipientProfiles = recipientProfiles.ToList();
+        
+        var boostProfiles = new List<UserDto>();
+        // get profiles of boosters
+        foreach (var boosterId in postModel.Boosts)
+        {
+            var boostProfile = await Context.UserProfiles.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.OId.Equals(boosterId));
+            if (boostProfile != null) boostProfiles.Add(new UserDto(boostProfile));
+        }
+        postModel.BoostProfiles = boostProfiles.ToList();
         return postModel;
     }
-
+    
     private static void ToggleCelebrations(string actorId, PostModel post)
     {
         post.Celebrations = post.Celebrations.Contains(actorId)

@@ -2,6 +2,7 @@
 import {createContext, useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useQuery} from 'react-query';
+import {fabClasses} from '@mui/material';
 
 import IMarketPlaceItem from '@/data/api/types/IMarketPlaceItem';
 import {ICartItem, IItem} from '@/data/api/types/ICart';
@@ -103,7 +104,7 @@ function MarketplaceProvider(props: {children: any}) {
     }
   }, [data]);
 
-  const storeCartInLocal = () => {
+  const storeCartInLocal = (cartItems: ICartItem[]) => {
     const localCartItems: ILocalCartItem[] = [];
     cartItems.forEach((item: ICartItem) => {
       localCartItems.push({
@@ -124,20 +125,18 @@ function MarketplaceProvider(props: {children: any}) {
     size: string,
     quantity: number,
   ) => {
+    let cart: ICartItem[] = [];
     if (cartItems.length === 0) {
-      setCartItems([{id, title, image, points, size, quantity}]);
+      cart = [{id, title, image, points, size, quantity}];
     } else {
       const item = cartItems.find((i) => i.id === id && i.size === size);
       if (item) {
         item.quantity += quantity;
-        setCartItems([...cartItems]);
-      } else
-        setCartItems([
-          ...cartItems,
-          {id, title, image, points, size, quantity},
-        ]);
+        cart = [...cartItems];
+      } else cart = [...cartItems, {id, title, image, points, size, quantity}];
     }
-    storeCartInLocal();
+    setCartItems(cart);
+    storeCartInLocal(cart);
   };
 
   const updateCartItem = (id: string, operation: string, size?: number) => {
@@ -147,14 +146,14 @@ function MarketplaceProvider(props: {children: any}) {
     } else if (item && operation === 'minus' && item.quantity !== 0) {
       item.quantity -= 1;
     }
-    storeCartInLocal();
+    storeCartInLocal(cartItems);
   };
 
   const deleteCartItem = (id?: string, size?: string) => {
     if (id) {
       const index = cartItems.findIndex((i) => i.id === id && i.size === size);
       if (index >= 0) cartItems.splice(index, 1);
-      storeCartInLocal();
+      storeCartInLocal(cartItems);
     } else {
       localStorage.setItem('cartItems', JSON.stringify([]));
     }

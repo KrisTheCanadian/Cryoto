@@ -22,6 +22,7 @@ interface IPost {
   commentIds: string[];
   comments: IComment[];
   boosts: string[];
+  boostProfiles: IUserMinimal[];
 }
 
 export default IPost;

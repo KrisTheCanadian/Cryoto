@@ -97,6 +97,16 @@ public class PostsController : ControllerBase
         if (!created)
             return BadRequest("Could not create the post");
         var createdPostModel = await _postService.GetByIdAsync(postModel.Id);
+        
+        // for all recipients check if the recipient is in the database
+
+        foreach (var userid in postCreateModel.Recipients)
+        {
+            var userProfile = await _userProfileService.GetUserByIdAsync(userid);
+            if (userProfile == null) { return BadRequest("Could not create the post because one of the recipients is not in the database"); }
+        }
+        
+        
         var amount = (double)createdPostModel!.Coins;
         if (amount == 0)
         {

@@ -174,7 +174,12 @@ function Profile() {
               }
             />
           </Card>
-          <Typography gutterBottom variant="h5" color={theme.palette.grey[700]}>
+          <Typography
+            gutterBottom
+            variant="h5"
+            color={theme.palette.grey[700]}
+            sx={{fontWeight: 250}}
+          >
             {t('profilePage.recognitions')}
           </Typography>
 

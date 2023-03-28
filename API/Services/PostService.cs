@@ -44,7 +44,7 @@ public class PostService : IPostService
         return await _postRepository.GetAllByDatePaginatedAsync(page, pageCount);
     }
 
-    public async Task<PaginationWrapper<PostModel>> GetUserProfileFeedPaginatedAsync(string userId, int page,
+    async Task<PaginationWrapper<PostModel>> IPostService.GetUserProfileFeedPaginatedAsync(string userId, int page,
         int pageCount)
     {
         return await _postRepository.GetAllByDatePaginatedAsync(page, pageCount, userId);

@@ -115,6 +115,7 @@ it('should render Posts', async () => {
                   claps={[]}
                   celebrations={[]}
                   boosts={[]}
+                  boostProfiles={[]}
                   {...postProps}
                 />
               </ThemeContextProvider>

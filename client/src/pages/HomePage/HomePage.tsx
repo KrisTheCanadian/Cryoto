@@ -33,7 +33,14 @@ function HomePage() {
         <PageFrame>
           <Box
             p={0}
-            sx={{marginRight: '0!important', flex: 6, maxWidth: '600px'}}
+            sx={{
+              marginRight: '0!important',
+              flex: 6,
+              maxWidth: '600px',
+              [theme.breakpoints.down(900)]: {
+                marginLeft: '0!important',
+              },
+            }}
           >
             <Box
               id="Feed"

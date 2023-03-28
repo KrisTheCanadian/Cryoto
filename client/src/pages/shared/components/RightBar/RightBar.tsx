@@ -31,6 +31,9 @@ function RightBar(props: Props) {
     display: {xs: 'none', sm: 'none', md: 'block'},
     overflowY: 'hidden',
     overFlowAnchor: 'none',
+    [theme.breakpoints.down(1000)]: {
+      display: 'none!important',
+    },
   };
   return (
     <Box id="rightBar" p={2} sx={rightBarStyle}>

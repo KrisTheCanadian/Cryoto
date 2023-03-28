@@ -30,7 +30,9 @@ interface CommentHolderProps {
 }
 
 function CommentHolder(props: CommentHolderProps) {
-  const avatarSize = {width: 32, height: 32};
+  const theme = useTheme();
+  const {t} = useTranslation();
+  const avatarSize = {width: 32, height: 32, mt: theme.spacing(1)};
 
   const [userProfilePhoto, setUserProfilePhoto] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -41,9 +43,6 @@ function CommentHolder(props: CommentHolderProps) {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
-
-  const {t} = useTranslation();
-  const theme = useTheme();
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -69,7 +68,7 @@ function CommentHolder(props: CommentHolderProps) {
     marginY: 1,
     boxSizing: 'border-box',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: theme.interface.contrastMain,
     '&:hover': {
       backgroundColor: theme.interface.contrastMain,
@@ -99,7 +98,7 @@ function CommentHolder(props: CommentHolderProps) {
           <Avatar
             {...stringAvatar(
               props.comment?.authorProfile?.name || 'Cryoto User',
-              {avatarSize},
+              {width: 32, height: 32},
             )}
           />
         )}
@@ -108,7 +107,7 @@ function CommentHolder(props: CommentHolderProps) {
           primary={
             <>
               <Typography
-                sx={{display: 'inline'}}
+                sx={{display: 'inline', fontWeight: 500}}
                 component="span"
                 variant="body1"
                 fontSize={14}
@@ -146,7 +145,7 @@ function CommentHolder(props: CommentHolderProps) {
             </>
           }
         />
-        <Box>
+        <Box sx={{alignSelf: 'center'}}>
           {isAuthor && (
             <>
               <IconButton

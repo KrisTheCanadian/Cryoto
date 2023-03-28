@@ -69,7 +69,7 @@ const NewComment = (props: NewCommentProps) => {
 
   return (
     <>
-      <Box sx={{display: 'flex', alignItems: 'center', marginY: 2}}>
+      <Box sx={{display: 'flex', alignItems: 'center', marginTop: 2}}>
         <RoundedInput>
           <ListItemAvatar sx={{minWidth: 0}}>
             {userProfilePhoto ? (

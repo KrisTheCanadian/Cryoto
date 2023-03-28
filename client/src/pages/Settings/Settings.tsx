@@ -216,7 +216,10 @@ function Settings() {
   return (
     <PageFrame>
       <FullWidthColumn>
-        <Typography variant="h4" sx={{mb: theme.spacing(2)}}>
+        <Typography
+          variant="h4"
+          sx={{mb: theme.spacing(2), mt: 1, fontWeight: 200, fontSize: 32}}
+        >
           {t<string>('layout.Settings')}
         </Typography>
         {profileDataState && (

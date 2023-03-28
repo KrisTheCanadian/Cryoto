@@ -69,6 +69,7 @@ export const useMutationCreatePost = (
         commentIds: [],
         comments: [],
         boosts: [],
+        boostProfiles: [],
       };
 
       // Snapshot the previous value

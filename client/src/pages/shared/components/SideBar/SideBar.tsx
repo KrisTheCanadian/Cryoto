@@ -62,7 +62,7 @@ function SideBar() {
       top: 64,
       minHeight: 'calc(100vh - 64px)',
     },
-    maxWidth: 350,
+    maxWidth: 300,
   };
 
   return (
@@ -155,7 +155,7 @@ function SideBar() {
                 ) : (
                   <ListItemText data-testid="toSpendBalance"
                     primaryTypographyProps={{
-                      fontSize: '18px',
+                      fontSize: '17px',
                       fontWeight: theme.typography.fontWeightMedium,
                     }}
                     primary={data?.toSpendBalance}
@@ -175,7 +175,7 @@ function SideBar() {
                 ) : (
                   <ListItemText data-testid="toAwardBalance"
                     primaryTypographyProps={{
-                      fontSize: '18px',
+                      fontSize: '17px',
                       fontWeight: theme.typography.fontWeightMedium,
                     }}
                     primary={data?.toAwardBalance}

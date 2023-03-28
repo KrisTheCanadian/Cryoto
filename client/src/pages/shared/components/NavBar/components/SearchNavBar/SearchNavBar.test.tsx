@@ -33,7 +33,7 @@ describe('SearchNavBar component', () => {
     });
     const searchInput = screen.getByTestId('search-field');
 
-    userEvent.type(searchInput, 'nonexistent user');
+    userEvent.type(searchInput, 'nonexistent');
     await waitFor(() =>
       expect(screen.getByPlaceholderText('Search')).toBeInTheDocument(),
     );

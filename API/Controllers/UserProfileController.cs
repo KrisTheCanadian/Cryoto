@@ -25,7 +25,6 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin")]
     [Route("Admin/[controller]/[action]")]
     public async Task<ActionResult<UserProfileModel>> GetUserById(string userId)
     {

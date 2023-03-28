@@ -50,6 +50,7 @@ interface PostProps {
   celebrations: string[];
   comments: IComment[];
   boosts: string[];
+  boostProfiles: IUserMinimal[];
 }
 
 function Post(props: PostProps) {
@@ -67,6 +68,7 @@ function Post(props: PostProps) {
     id,
     firstName,
     recipientProfiles,
+    recipients,
     message,
     imageUrl,
     tags,
@@ -78,6 +80,7 @@ function Post(props: PostProps) {
     claps,
     celebrations,
     boosts,
+    boostProfiles,
   } = props;
   if (loading) {
     return <LoadingPostSkeleton />;
@@ -101,10 +104,20 @@ function Post(props: PostProps) {
 
   const ChipStyles = {
     backgroundColor: theme.interface.contrastMain,
-    border: theme.border.default,
+    border: `1px solid ${theme.palette.divider}`,
     fontSize: '1rem',
     fontWeight: theme.typography.fontWeightMedium,
     marginRight: theme.spacing(1),
+  };
+  const coinChipStyles = {
+    backgroundColor: theme.interface.contrastMain,
+    border: '1.5px solid',
+    borderColor: theme.palette.primary.main,
+    fontSize: '1rem',
+    fontWeight: theme.typography.fontWeightMedium,
+    '& .MuiChip-label': {
+      color: theme.palette.primary.main,
+    },
   };
 
   const timeAgo = moment.utc(date).local().startOf('seconds').fromNow();
@@ -115,6 +128,10 @@ function Post(props: PostProps) {
 
   const handleAvatarClickRecipient = (recipientId: string) => {
     navigate(`/profile/${recipientId}`);
+  };
+
+  const handleBoost = () => {
+    boosts.push(accounts[0].idTokenClaims?.oid as string);
   };
 
   const getYearWithSuffix = (date: string | undefined, language: string) => {
@@ -152,15 +169,6 @@ function Post(props: PostProps) {
     )}`;
 
     return newTranslation;
-  };
-
-  const allowedToBoost = () => {
-    const userRoles = accounts[0].idTokenClaims?.roles;
-    if (userRoles === undefined || userRoles.length === 0) {
-      return false;
-    }
-    const acceptedRoles = ['Partner', 'SeniorPartner'];
-    return acceptedRoles.some((role) => userRoles.includes(role));
   };
 
   if (tags?.includes('Anniversary')) {
@@ -239,17 +247,7 @@ function Post(props: PostProps) {
                 sx={{display: 'flex', alignItems: 'center', mt: 2, mb: 0.25}}
               >
                 <Chip
-                  sx={{
-                    backgroundColor: theme.interface.contrastMain,
-                    border: '3px solid',
-                    borderColor: theme.palette.primary.main,
-                    fontSize: '1rem',
-                    fontWeight: theme.typography.fontWeightMedium,
-                    marginRight: theme.spacing(1),
-                    '& .MuiChip-label': {
-                      color: theme.palette.primary.main,
-                    },
-                  }}
+                  sx={coinChipStyles}
                   icon={
                     <VolunteerActivismIcon
                       style={{
@@ -381,20 +379,18 @@ function Post(props: PostProps) {
               </>
             </Typography>
             <Box
-              sx={{display: 'flex', alignItems: 'center', mt: 0.25, mb: 0.25}}
+              sx={{
+                mt: 0.5,
+                mb: 0.5,
+                flex: 1,
+                overflow: 'hidden',
+                display: 'inline-flex',
+                flexWrap: 'wrap',
+                gap: 1,
+              }}
             >
               <Chip
-                sx={{
-                  backgroundColor: theme.interface.contrastMain,
-                  border: '3px solid',
-                  borderColor: theme.palette.primary.main,
-                  fontSize: '1rem',
-                  fontWeight: theme.typography.fontWeightMedium,
-                  marginRight: theme.spacing(1),
-                  '& .MuiChip-label': {
-                    color: theme.palette.primary.main,
-                  },
-                }}
+                sx={coinChipStyles}
                 icon={
                   <VolunteerActivismIcon
                     style={{
@@ -408,7 +404,7 @@ function Post(props: PostProps) {
                 label={coinsGiven.toString()}
               />
               {tags?.map((tag) => (
-                <Chip sx={ChipStyles} key={tag} label={tag} />
+                <Chip sx={ChipStyles} key={tag} label={t(`values.${tag}`)} />
               ))}
             </Box>
             <Typography
@@ -438,8 +434,10 @@ function Post(props: PostProps) {
         ) : null}
         <Box
           sx={{
-            display: 'flex',
             justifyContent: 'space-between',
+            display: 'inline-flex',
+            width: '100%',
+            flexWrap: 'wrap',
           }}
         >
           <LikeButtons
@@ -449,22 +447,15 @@ function Post(props: PostProps) {
             claps={claps}
             celebrations={celebrations}
           />
-          <Box sx={{ml: theme.spacing(2)}}>
+          <Box sx={{ml: 'auto', display: 'flex', alignItems: 'center'}}>
             <BoostButton
               data-testid="postboostbutton"
               postId={id}
+              recipients={recipients}
               userId={accounts[0].idTokenClaims?.oid!}
-              interactionEnabled={allowedToBoost()}
               boosts={boosts}
-              onBoost={() => {
-                boosts.push(accounts[0].idTokenClaims?.oid!);
-              }}
-              onFail={() => {
-                boosts.splice(
-                  boosts.indexOf(accounts[0].idTokenClaims?.oid!),
-                  boosts.indexOf(accounts[0].idTokenClaims?.oid!) >= 0 ? 1 : 0,
-                );
-              }}
+              boostProfiles={boostProfiles}
+              handleBoost={handleBoost}
             />
           </Box>
         </Box>

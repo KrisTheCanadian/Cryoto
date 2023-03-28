@@ -41,7 +41,7 @@ function MenuItem(props: MenuItemProps) {
       </ListItemIcon>
       <ListItemText
         primaryTypographyProps={{
-          fontSize: '18px',
+          fontSize: '16px',
           fontWeight: theme.typography.fontWeightMedium,
         }}
         primary={t(text)}

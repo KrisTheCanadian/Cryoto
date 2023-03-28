@@ -54,21 +54,22 @@ function EmojiContainer(props: EmojiContainerProps) {
     position: likes.length === 0 ? 'absolute' : 'relative',
     minWidth: '54px',
     display: 'flex',
-    background: theme.interface.border,
     border: isLiked
-      ? `2px solid ${theme.palette.primary.light}`
-      : '2px solid transparent',
+      ? `1.5px solid ${theme.palette.primary.light}`
+      : `1.5px solid ${theme.palette.divider}`,
     borderRadius: '25%/50%',
-    color: isLiked ? theme.palette.primary.main : theme.palette.text.primary,
+    color: theme.palette.text.primary,
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
     alignItems: 'center',
-    height: '30px',
+    justifyContent: 'center',
+    height: '32px',
+    fontSize: '12px',
     cursor: enabled ? 'pointer' : 'default',
     marginRight: theme.spacing(0.5),
   };
   const emojiStyles = {
-    fontSize: '20px',
+    fontSize: '16px',
     marginRight: '5px',
     userSelect: 'none',
     position: 'relative',
@@ -114,7 +115,7 @@ function EmojiContainer(props: EmojiContainerProps) {
         <Box
           key={`${type < 0 ? 'boost' : `reaction-${type}`}-{id}-{text}`}
           component={motion.div}
-          whileHover={{scale: enabled ? 1.2 : 1}}
+          whileHover={{scale: enabled ? 1.1 : 1}}
           whileTap={{scale: enabled ? 0.9 : 1}}
           onClick={handleClick}
           sx={emojiContainerStyles}
@@ -133,9 +134,7 @@ function EmojiContainer(props: EmojiContainerProps) {
             <Typography
               component={motion.span}
               sx={{
-                fontWeight: isLiked
-                  ? theme.typography.fontWeightBold
-                  : theme.typography.fontWeightRegular,
+                fontWeight: 600,
                 fontSize: '.75rem',
               }}
               variant="body1"

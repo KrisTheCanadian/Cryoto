@@ -37,6 +37,7 @@ public class PostModel
         Comments = new List<CommentModel>();
 
         Boosts = Array.Empty<string>();
+        BoostProfiles = new List<UserDto>();
     }
 
 
@@ -69,6 +70,7 @@ public class PostModel
         Comments = new List<CommentModel>();
 
         Boosts = Array.Empty<string>();
+        BoostProfiles = new List<UserDto>();
     }
 
     public PostModel(PostCreateModel postCreateModel, string actor)
@@ -97,6 +99,7 @@ public class PostModel
         Comments = new List<CommentModel>();
 
         Boosts = Array.Empty<string>();
+        BoostProfiles = new List<UserDto>();
     }
 
     public PostModel(PostUpdateModel postUpdateModel, string actor)
@@ -124,6 +127,7 @@ public class PostModel
         Comments = new List<CommentModel>();
 
         Boosts = postUpdateModel.Boosts;
+        BoostProfiles = new List<UserDto>();
     }
 
     [Key] public string Id { get; set; }
@@ -152,6 +156,8 @@ public class PostModel
     public string[] CommentIds { get; set; }
 
     public string[] Boosts { get; set; }
+    
+    [NotMapped] public IEnumerable<UserDto> BoostProfiles { get; set; }
 
     [NotMapped] public IEnumerable<UserDto> RecipientProfiles { get; set; }
     [NotMapped] public UserDto? AuthorProfile { get; set; }
